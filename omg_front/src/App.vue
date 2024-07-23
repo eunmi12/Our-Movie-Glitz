@@ -30,4 +30,23 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'S-CoreDream-3Light';
+}
+ul{list-style: none;}
+a:link, a:visited{
+    text-decoration: none;
+    color: #333;
+}
+html, body{
+    width: 100%;
+}
+body{
+    background-color: #fff;
+    min-width: 1280px;
+    line-height: 1.5;
+}   
 </style>
