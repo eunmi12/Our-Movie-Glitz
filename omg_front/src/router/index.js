@@ -7,6 +7,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 //진우작성
 
+import Header from '../layouts/Header.vue';
+
 //진우작성완
 
 //은미작성
@@ -15,7 +17,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 
 //재영작성
-import MainPage from '../views/MainPage.vue'
+// import MainPage from '../views/MainPage.vue'
 //재영작성완
 
 //회창작성
@@ -30,19 +32,15 @@ import MainPage from '../views/MainPage.vue'
 
 //치혁작성완
 const routes = [
+  // {
+  //   path: '/',
+  //   name: 'MainPage',
+  //   component: MainPage
+  // },
   {
-    path: '/',
-    name: 'MainPage',
-    component: MainPage
-  },
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  },
+    path: '/test',
+    component: Header,
+  }
 
   //승호작성
 
