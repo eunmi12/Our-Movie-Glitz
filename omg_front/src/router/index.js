@@ -46,10 +46,10 @@ const routes = [
   //   name: 'MainPage',
   //   component: MainPage
   // },
-  {
-    path: '/test',
-    component: Header,
-  },
+  // {
+  //   path: '/test',
+  //   component: Header,
+  // },
 
   //승호작성
 
@@ -61,7 +61,7 @@ const routes = [
   path: '/join',
   name: 'Join',
   component: Join
-}
+},
 //진우작성완
 
 
@@ -76,7 +76,7 @@ const routes = [
   path: '/',
   name: 'MainPage',
   component: MainPage
-}
+},
 //재영작성완
 
 
