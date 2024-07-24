@@ -33,6 +33,11 @@ import MovieBooking from '../views/MovieBooking.vue';
 
 //치혁작성
 
+import Help from '../layouts/Helplayout.vue';
+import Faq from '../views/Faq.vue';
+import Notice from '../views/Notice.vue';
+import Qna from '../views/Qna.vue';
+
 //치혁작성완
 const routes = [
   // {
@@ -92,6 +97,24 @@ const routes = [
 
 //치혁작성
 
+{
+  path: '/help/',
+  component: Help,
+  children: [
+{
+  path: 'faq',
+  component: Faq,
+},
+{
+  path: 'notice',
+  component: Notice,
+},
+{
+  path: 'qna',
+  component: Qna,
+}
+  ]
+}
 //치혁작성완
 
 ]
