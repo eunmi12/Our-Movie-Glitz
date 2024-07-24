@@ -17,7 +17,7 @@ import Header from '../layouts/Header.vue';
 
 
 //재영작성
-// import MainPage from '../views/MainPage.vue'
+import MainPage from '../views/MainPage.vue'
 //재영작성완
 
 //회창작성
@@ -40,7 +40,7 @@ const routes = [
   {
     path: '/test',
     component: Header,
-  }
+  },
 
   //승호작성
 
@@ -59,7 +59,11 @@ const routes = [
 
 
 //재영작성
-
+{
+  path: '/',
+  name: 'MainPage',
+  component: MainPage
+}
 //재영작성완
 
 
