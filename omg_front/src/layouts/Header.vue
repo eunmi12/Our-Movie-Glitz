@@ -24,8 +24,10 @@
                 <li><a href="">이벤트</a></li>
             </ul>
             <ul>
-                <input  id="search" type="text" placeholder="검색">
-                <button type="button" class="search_btn"><img src="../images/search.png" alt=""></button>
+                <div class="total_search">
+                    <input  id="search" type="text" placeholder="검색">
+                    <button type="button" class="search_btn"><img src="../images/search.png" alt=""></button>
+                </div>
             </ul>
         </div>
     </header>
@@ -40,7 +42,7 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
 header{
     width: 100%;
     margin-top: 20px;
@@ -100,9 +102,8 @@ header .wrap .category{
     color: #2f2e2e;
 }
 header .menu{
-    /* background-color: aqua; */
     width: 80%;
-    height: 50px;
+    height: 40px;
     position: absolute;
     top: 110px;
     left: 165px;
@@ -113,7 +114,7 @@ header .menu{
     width: 50%;
     display: flex;
     flex-wrap: wrap;
-    line-height: 50px;
+    line-height: 40px;
     text-align: center;
 }
 .menu .menu_list li{
@@ -126,23 +127,31 @@ header .menu{
     padding-left: 0;
 }
 
+.menu .total_search{
+    width: 300px;
+    height: 40px;
+    /* border: 1px solid black; */
+}
+
 #search{
     width: 200px;
-    height: 50px;
+    height: 35px;
     border-radius: 5px;
     border: 1px solid #ccc;
     padding-left: 10px;
+    margin-top: 1px;
 }
 .menu  .search_btn{
-    width: 50px;
-    height: 50px;
+    width: 30px;
+    height: 30px;
     border: 0;
     margin-left: 10px;
     border-radius: 5px;
+    background: white;
 }
 .menu ul:nth-child(2) img{
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     margin: 0  auto;
 }
 </style>
