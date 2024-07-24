@@ -25,6 +25,9 @@ import Header from '../layouts/Header.vue';
 //회창작성완
 
 //아름작성
+import AdminpageSidebar from '../layouts/AdminpageSidebar.vue';
+import UserList from '../admin/UserList.vue';
+import MovieBooking from '../views/MovieBooking.vue';
 
 //아름작성완
 
@@ -40,7 +43,7 @@ const routes = [
   {
     path: '/test',
     component: Header,
-  }
+  },
 
   //승호작성
 
@@ -69,6 +72,21 @@ const routes = [
 //회창작성완
 
 //아름작성
+{
+  path: "/adminpagesidebar",
+  name: "AdminPageSidebar",
+  component: AdminpageSidebar // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
+},
+{
+  path: "/admin/userlist",
+  name: "UserList",
+  component: UserList
+},
+{
+  path: "/moviebooking",
+  name: "MovieBooking",
+  component: MovieBooking
+},
 
 //아름작성완
 
