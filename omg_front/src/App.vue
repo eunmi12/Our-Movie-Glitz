@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- <Header /> -->
+    <Header />
     <router-view />
     <!-- <Footer /> -->
   </div>
@@ -9,10 +9,10 @@
 
 
 <script>
-// import Header from './layouts/Header.vue';
+import Header from './layouts/Header.vue';
 // import Footer from './layouts/Footer.vue';
 export default {
-  // components: {Header},
+  components: {Header},
   computed: {
     user() {
       return this.$store.state.user;
@@ -28,7 +28,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  /* margin-top: 60px; */
 }
 
 *{
