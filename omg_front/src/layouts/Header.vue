@@ -3,7 +3,7 @@
         <div class="wrap">
             <div class="logo" >
                 <h1>
-                    <a href="">
+                    <a href="http://localhost:8081/">
                         <img class="img1" src="../images/logo5.png" alt="">
                     </a>
                 </h1>
@@ -13,7 +13,7 @@
                 <ul>
                     <li><a href="">로그아웃</a></li>
                     <li><a href="">My Page</a></li>
-                    <li><a href="">고객센터</a></li>
+                    <li><a href="http://localhost:8081/help">고객센터</a></li>
                 </ul>
             </div>
         </div>

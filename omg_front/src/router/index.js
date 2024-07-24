@@ -18,7 +18,7 @@ import Join from '../views/Join.vue'
 
 
 //재영작성
-// import MainPage from '../views/MainPage.vue'
+import MainPage from '../views/MainPage.vue'
 //재영작성완
 
 //회창작성
@@ -26,10 +26,18 @@ import Join from '../views/Join.vue'
 //회창작성완
 
 //아름작성
+import AdminpageSidebar from '../layouts/AdminpageSidebar.vue';
+import UserList from '../admin/UserList.vue';
+import MovieBooking from '../views/MovieBooking.vue';
 
 //아름작성완
 
 //치혁작성
+
+import Help from '../layouts/Helplayout.vue';
+import Faq from '../views/Faq.vue';
+import Notice from '../views/Notice.vue';
+import Qna from '../views/Qna.vue';
 
 //치혁작성완
 const routes = [
@@ -38,10 +46,10 @@ const routes = [
   //   name: 'MainPage',
   //   component: MainPage
   // },
-  // {
-  //   path: '/test',
-  //   component: Header,
-  // }
+  {
+    path: '/test',
+    component: Header,
+  },
 
   //승호작성
 
@@ -64,7 +72,11 @@ const routes = [
 
 
 //재영작성
-
+{
+  path: '/',
+  name: 'MainPage',
+  component: MainPage
+}
 //재영작성완
 
 
@@ -74,11 +86,44 @@ const routes = [
 //회창작성완
 
 //아름작성
+{
+  path: "/adminpagesidebar",
+  name: "AdminPageSidebar",
+  component: AdminpageSidebar // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
+},
+{
+  path: "/admin/userlist",
+  name: "UserList",
+  component: UserList
+},
+{
+  path: "/moviebooking",
+  name: "MovieBooking",
+  component: MovieBooking
+},
 
 //아름작성완
 
 //치혁작성
 
+{
+  path: '/help/',
+  component: Help,
+  children: [
+{
+  path: 'faq',
+  component: Faq,
+},
+{
+  path: 'notice',
+  component: Notice,
+},
+{
+  path: 'qna',
+  component: Qna,
+}
+  ]
+}
 //치혁작성완
 
 ]
