@@ -7,7 +7,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 //진우작성
 
-import Header from '../layouts/Header.vue';
+// import Header from '../layouts/Header.vue';
+import Join from '../views/Join.vue'
 
 //진우작성완
 
@@ -37,10 +38,10 @@ const routes = [
   //   name: 'MainPage',
   //   component: MainPage
   // },
-  {
-    path: '/test',
-    component: Header,
-  }
+  // {
+  //   path: '/test',
+  //   component: Header,
+  // }
 
   //승호작성
 
@@ -48,7 +49,11 @@ const routes = [
 
 
 //진우작성
-
+{
+  path: '/join',
+  name: 'Join',
+  component: Join
+}
 //진우작성완
 
 
