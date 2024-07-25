@@ -26,6 +26,37 @@ const path = require("path");
 //재영작성 완
 
 //아름작성
+// 회원목록 조회 및 삭제 관리
+router.post('/selectUser', (req, res) => {
+    db.query(`select user_no, user_gender, user_name, user_age, user_grade, user_point from user where user_del = "1";`, (err, results) => {
+        if (err) {
+            console.log('회원정보를 조회할 수 없습니다.');
+            return res.status(500).json({ error: 'error'});
+        }
+        return res.json(results);
+    });
+});
+
+router.post('/updateUser', (req, res) => {
+    const { user_no, user_grade } = req.body;
+    db.query(`update user set user_grade = ? where user_no = ?;`, [user_grade, user_no], (err, results) => {
+        if(err) {
+            console.log('회원등급을 변경할 수 없습니다.');
+            return res.status(500).json({ error: 'error'});
+        }
+        return res.json(results);
+    });
+});
+
+router.post('/deleteUser', (req, res) => {
+    db.query(`update user set user_del = '0' where user_no = ?;`, [req.body.user_no], (err, results) => {
+        if(err) {
+            console.log('회원정보를 삭제할 수 없습니다.');
+            return res.status(500).json({ error: 'error' });
+        }
+        return res.json(results);
+    });
+});
 
 //아름작성 완
 

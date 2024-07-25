@@ -22,10 +22,16 @@
                             <th class="user-number value">{{ user.user_no }}</th>
                             <th class="user-gender value">{{ user.user_gender }}</th>
                             <th class="user-name value">{{ user.user_name }}</th>
-                            <th class="user-age value">{{ user.user_age }}</th>
-                            <th class="user-grade value">{{ user.user_grade }}</th>
+                            <th class="user-age value">{{ new Date(user.user_age).toISOString().split('T')[0] }}</th>
+                            <th class="user-grade value">{{ getUserGrade(user.user_grade) }}</th>
                             <th class="user-address value">{{ user.user_point }}포인트</th>
-                            <th><button type="button" class="user-grade-update btn" @click="goToUpdate(user.user_no)">등급수정</button></th>
+                            <th><select class="user-grade-update btn" @change="updateUserGrade(user.user_no, $event)">
+                                <option disabled selected>변경</option>
+                                <option value = 1>브론즈</option>
+                                <option value = 2>실버</option>
+                                <option value = 3>골드</option>
+                                <option value = 4>플래티넘</option>
+                            </select></th>
                             <th><button type="button" class="user-delete btn" @click="goToDelete(user.user_no)">삭제</button></th>
                         </tr>
                     </tbody>
@@ -84,23 +90,25 @@ export default {
             this.pageSelectUser = this.selectUser.slice(start, start + this.onePageCnt);
         },
 
-        goToUpdate(user_n) {
-            if (confirm('정말 등급을 내리시겠습니까?')) {
+        updateUserGrade(user_n, event) {
+            const newGrade = event.target.value;
+            if (confirm('정말 등급을 변경하시겠습니까?')) {
                 axios({
                     url: `http://localhost:3000/admin/updateUser`,
                     method: "POST",
                     data: {
                         user_no: user_n,
+                        user_grade: newGrade,
                     }
                 }).then((results) => {
-                    // console.log(results);
+                    console.log(results);
                     this.updateUser = results.data;
                     this.AllSelectUser(); // 등급 업데이트 후 목록을 갱신
                     window.location.href = `http://localhost:8081/admin/userlist`;
                 })
-                // .catch((error) => {
-                //     console.error('error'); // back이 아직 없어서 error부분에서 오류나는듯, back 완성되면 주석 풀어야 됨 (밑에 delete에서도)
-                // });
+                .catch(() => {
+                    console.error('error'); 
+                });
             } else {
                 window.location.href = `http://localhost:8081/admin/userlist`;
             }
@@ -120,12 +128,22 @@ export default {
                     this.AllSelectUser();
                     window.location.href = `http://localhost:8081/admin/userlist`;
                 })
-                // .catch((error) => {
-                //     console.error('error');
-                // });
+                .catch(() => {
+                    console.error('error');
+                });
             } else {
                 window.location.href = `http://localhost:8081/admin/userlist`;
             }
+        },
+
+        getUserGrade(grade) {
+            const grades = {
+                1: '브론즈',
+                2: '실버',
+                3: '골드',
+                4: '플래티넘'
+            };
+            return grades[grade] || 'Unknown'; // grades[grade]가 유효하면 그 값을 반환, 아니면 Unknown을 반환
         }
 
     }
@@ -190,31 +208,32 @@ export default {
     width: 15%;
 }
 
-.user-delete {
+/* .user-delete {
     width: 10%;
-}
+} */
 
 .user-all-list {
     border-bottom: 1px solid #d4cdcd;
-    padding-bottom: 20px;
+    height: 57px;
     font-size: small;
     color: #5d5b5b;
     text-align: center;
     font-weight: 50px;
 }
 
-.user-delete-btn {
+.btn {
     border: none;
-    width: 25%;
+    width: 80px;
     border: solid 2px rgb(178, 180, 181);
     border-radius: 5px;
-    background-color: rgb(178, 180, 181);
+    background-color: rgb(162, 170, 178);
     color: rgb(0, 0, 0);
     padding: 7px 0;
     font-weight: 600;
+    font-size: small;
 }
 
-.user-grade-update-btn {
+/* .user-grade-update-btn {
     border: none;
     width: 25%;
     border: solid 2px rgb(178, 180, 181);
@@ -223,5 +242,5 @@ export default {
     color: rgb(0, 0, 0);
     padding: 7px 0;
     font-weight: 600;
-}
+} */
 </style>
