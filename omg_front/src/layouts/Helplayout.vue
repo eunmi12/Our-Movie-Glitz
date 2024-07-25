@@ -5,10 +5,11 @@
   </div>
   <div class="view">
     <div class="helpsidebar">
-    <ul class="list">
-        <li><a href="http://localhost:8081/help/faq">&bull;FAQ</a></li>
-        <li><a href="http://localhost:8081/help/notice">&bull;공지사항</a></li>
-        <li><a href="http://localhost:8081/help/qna">&bull;1:1문의</a></li>
+      <ul class="list">
+      <li v-for="menu in type" :key="menu.id" @click="selectMenu(menu.id, menu.link)"
+          :class="{ 'active': selectedMenu === menu.id }">
+        <span>{{ menu.name }}</span>
+      </li>
     </ul>
     </div> 
   <div class="content">
@@ -20,8 +21,23 @@
 
 <script>
 export default {
-
-}
+  data() {
+    return {
+      type: [
+        { id: 1, name: '• FAQ', link: '/help/faq' },
+        { id: 2, name: '• 공지사항', link: '/help/notice' },
+        { id: 3, name: '• 1:1문의', link: '/help/qna' }
+      ],
+      selectedMenu: null
+    };
+  },
+  methods: {
+    selectMenu(id, link) {
+      this.selectedMenu = id;
+      this.$router.push(link);
+    }
+  }
+};
 </script>
 
 <style  scoped>
@@ -36,31 +52,37 @@ export default {
 
 .helpsidebar {
     padding-top:50px;
-    margin-left:180px;
     flex: 1;
 }
 
 .list {
-    text-align:left;
-    font-size:25px;
-    line-height:200%;
+  text-align:left;
+  font-size:25px;
+  line-height:200%;
 }
 
 li {
-    width:150px;
+  width:150px;
+  cursor: pointer;
 }
 
 li:hover {
-    background-color:lightgray;
+  color: burlywood;
+}
+
+.list li.active {
+  background-color:lightgray;
 }
 
 .view {
   display: flex;
-  width: 40%;
+  margin: auto;
+  width: 80%;
 }
 
 .content {
-  flex: 1;
+  padding-top: 30px;
+  flex: 6;
 }
 
 </style>
