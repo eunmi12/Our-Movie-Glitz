@@ -11,6 +11,7 @@
             </div>
             <div class="category">
                 <ul>
+                    <li><a href="http://localhost:8081/join">회원가입</a></li>
                     <li><a href="">로그아웃</a></li>
                     <li><a href="">My Page</a></li>
                     <li><a href="http://localhost:8081/help">고객센터</a></li>
@@ -79,7 +80,7 @@ header .wrap .logo span{
 }
 
 header .wrap .category{
-    width: 300px;
+    width: 400px;
     height: 100px;
     /* display: flex; */
 }
@@ -91,7 +92,7 @@ header .wrap .category{
     line-height: 50px;
 }
 .category ul li{
-    width: 33.3%;
+    width: 25%;
 }
 .category ul li a{
     color: #5b5a53;
