@@ -5,7 +5,7 @@
             <MypageSideBar />
             <div class="mypagebox">
                 <div class="rev_box">
-                    <p class="text1">MY 예약내역</p>
+                    <p class="text1">MY 리뷰내역</p>
                 </div>
             </div>
         </div>

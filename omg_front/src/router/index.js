@@ -22,7 +22,16 @@ import MainPage from '../views/MainPage.vue'
 //재영작성완
 
 //회창작성
-
+import MypageMain from '../mypage/MypageMain.vue'
+import MypageSideBar from '../layouts/MypageSideBar.vue'
+import MypageTop from '../layouts/MypageTop.vue'
+import Coupon from '../mypage/Coupon.vue'
+import Gogaekcenter from '../mypage/Gogaekcenter.vue'
+import Point from '../mypage/Point.vue'
+import Rev from '../mypage/Rev.vue'
+import UserMypage from '../mypage/UserMypage.vue'
+import UserOut from '../mypage/UserOut.vue'
+import Review from '../mypage/Review.vue'
 //회창작성완
 
 //아름작성
@@ -38,6 +47,7 @@ import Help from '../layouts/Helplayout.vue';
 import Faq from '../views/Faq.vue';
 import Notice from '../views/Notice.vue';
 import Qna from '../views/Qna.vue';
+
 
 //치혁작성완
 const routes = [
@@ -81,8 +91,56 @@ const routes = [
 
 
 //회창작성
-
-
+{
+  path: '/mypagemain',
+  name: 'MypageMain',
+  component: MypageMain
+},
+{
+  path: '/mypagesidebar',
+  name: 'MypageSideBar',
+  component: MypageSideBar
+},
+{
+  path: '/mypagetop',
+  name: 'MypageTop',
+  component: MypageTop
+},
+{
+  path: '/coupon',
+  name: 'Coupon',
+  component: Coupon
+},
+{
+  path: '/gogaekcenter',
+  name: 'Gogaekcenter',
+  component: Gogaekcenter
+},
+{
+  path: '/point',
+  name: 'Point',
+  component: Point
+},
+{
+  path: '/rev',
+  name: 'Rev',
+  component: Rev
+},
+{
+  path: '/usermypage',
+  name: 'UserMypage',
+  component: UserMypage
+},
+{
+  path: '/userout',
+  name: 'UserOut',
+  component: UserOut
+},
+{
+  path: '/review',
+  name: 'Review',
+  component: Review
+},
 //회창작성완
 
 //아름작성

@@ -1,81 +1,117 @@
 <template>
-    <div class="container">
-      <div class="sidebartop">
-        <div @click="goToAboutPage1">MY OMG HOME</div>
+  <div class="container3">
+    <div class="sidebartop" @click="goToAboutPage1">MY OMG HOME</div>
+    <div class="sidebarmain">
+      <div class="text" @click="goToAboutPage2">&bull; 나의 예매내역</div>
+      <div class="text" @click="goToAboutPage3">&bull; 포인트 적립내역</div>
+      <div class="text" @click="goToAboutPage4">&bull; 나의 쿠폰</div>
+      <div class="text" @click="toggleVisibility">&bull; 회원 정보</div>
+      <div v-if="isVisible" class="toggle">
+        <div class="sub-text" @click="goToAboutPage5">&bull; 개인정보 변경</div>
+        <div class="sub-text" @click="goToAboutPage6">&bull; 회원탈퇴</div>
       </div>
-      <div class="sidebarmain">
-        <div class="text" @click="goToAboutPage2">&bull; 나의 예매내역</div>
-        <div class="text" @click="goToAboutPage3">&bull; 포인트 적립내역</div>
-        <div class="text" @click="goToAboutPage4">&bull; 나의 쿠폰</div>
-        <div class="text" @click="toggleVisibility">&bull; 회원 정보</div>
-        <div v-if="isVisible">
-          <div class="toggle">
-            <div style="cursor: pointer" @click="goToAboutPage5">&bull; 개인정보 변경</div>
-            <div style="cursor: pointer" @click="goToAboutPage6">&bull; 회원탈퇴</div>
-          </div>
-        </div>
-        <div class="text"  @click="goToAboutPage7">&bull; 나의 문의내역</div>
-      </div>
+      <div class="text" @click="goToAboutPage8">&bull; 나의 리뷰내역</div>
+      <div class="text" @click="goToAboutPage7">&bull; 나문희내역</div>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        isVisible: false,
-      };
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      isVisible: false,
+    };
+  },
+  methods: {
+    toggleVisibility() {
+      this.isVisible = !this.isVisible;
     },
-    methods: {
-      toggleVisibility() {
-        this.isVisible = !this.isVisible;
-      },
-      goToAboutPage1() {
-        this.$router.push('./user/home');
-      },
-      goToAboutPage2() {
-        this.$router.push('./user/rev');
-      },
-      goToAboutPage3() {
-        this.$router.push('./user/point');
-      },
-      goToAboutPage4() {
-        this.$router.push('./user/coupon');
-      },
-      goToAboutPage5() {
-        this.$router.push('./user/user');
-      },
-      goToAboutPage6() {
-        this.$router.push('./user/userout');
-      },
-      goToAboutPage7() {
-        this.$router.push('./user/gogaekcenter')
-      }
+    goToAboutPage1() {
+      this.$router.push('/mypagemain');
     },
-  };
-  </script>
+    goToAboutPage2() {
+      this.$router.push('./rev');
+    },
+    goToAboutPage3() {
+      this.$router.push('./point');
+    },
+    goToAboutPage4() {
+      this.$router.push('./coupon');
+    },
+    goToAboutPage5() {
+      this.$router.push('./usermypage');
+    },
+    goToAboutPage6() {
+      this.$router.push('./userout');
+    },
+    goToAboutPage7() {
+      this.$router.push('./gogaekcenter');
+    },
+    goToAboutPage8() {
+      this.$router.push('./gogaekcenter');
+    }
+  },
+};
+</script>
+
 <style scoped>
-.container {
-    width: 15%;
-    margin: 400px 1000px 100px 200px;
-}
-.sidebartop {
-    background-color: #f0eeda;
-    border: 1px solid none;
-    font-size: 20px;
-    cursor: pointer;
-}
-.text {
-    margin: 10px auto;
-    text-align: left;
-    font-size: 20px;
-    cursor: pointer;
-    font-weight: bold;
-}
-.toggle {
-    font-size: 18px;
-    text-align: justify;
-    margin-left: 30px;
+.container3 {
+  width: 25%;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: auto;
 }
 
+.sidebartop {
+  background-color: #f0eeda;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sidebarmain {
+  padding-left: 10px;
+}
+
+.text {
+  margin: 10px 0;
+  padding: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+  text-align: left;
+}
+
+.text:hover {
+  background-color: #f0eeda;
+}
+
+.toggle {
+  margin-left: 20px;
+}
+
+.sub-text {
+  margin: 5px 0;
+  padding: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+  text-align: left;
+}
+
+.sub-text:hover {
+  background-color: #f0eeda;
+}
 </style>
