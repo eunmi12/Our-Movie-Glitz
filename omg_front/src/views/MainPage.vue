@@ -1,33 +1,45 @@
 <template>
     <div>
     <div class="carousel"> 
-         <!-- 슬라이드 이미지들을 담는 컨테이너 -->
-      <div class="slides" :style="{ transform: `translateX(-${currentIndex * slideWidth}px)` }">
-        <div class="slide" v-for="(images, index) in images" :key="index">
-            <!-- 메인 이미지 요소 -->
-          <img :src="require(`../images/mainpage/${images}`)" :alt="'Slide ' + (index + 1)">
-        </div>
-      </div>
-      <button style="color: black; font-size: 50px;"  class="prev" @click="changeSlide(-1)">◀</button>
-      <button style="color: black; font-size: 50px;" class="next" @click="changeSlide(1)">▶</button>
+          <!-- <video src="../videos/영화1.mp4" autoplay muted loop><a href=""></a></video> -->
+          <img src="../images/mainpage/영화1.png">
+          <strong class="main_name">파일럿</strong>
+          <span class="main_sname">파일럿의 서브 내용입니다ddddddddddddddd</span>
     </div>
     <div class="list">
         <div class="movie">
-        <div class="menu_list1">
-                <a href="">액션1</a>
-                <p>액션 영화 1 제목입니다</p>
-                <a href="">액션2</a>
-                <a href="">액션3</a>
+        <div class="menu_list">
+                <a href="" class="link"><img class="img" src="../images/mainpage/영화1.png" alt="">
+                    <p class="chart"><span>액션 영화 1 제목입니다</span></p>
+                </a>
+                <a href="" class="link"><img class="img" src="../images/mainpage/영화1.png" alt="">
+                    <p class="chart"><span>액션 영화 2 제목입니다</span></p>
+                </a>
+                <a href="" class="link"><img class="img" src="../images/mainpage/영화1.png" alt="">
+                    <p class="chart"><span>액션 영화 3 제목입니다</span></p>
+                </a>
         </div>
-            <div class="menu_list2">
-                <a href="">코미디1</a>
-                <a href="">코미디2</a>
-                <a href="">코미디3</a>
+            <div class="menu_list">
+                <a href="" class="link"><img class="img" src="../images/mainpage/영화2.png" alt="">
+                    <p class="chart"><span>코미디 영화 1 제목입니다</span></p>
+                </a>
+                <a href="" class="link"><img class="img" src="../images/mainpage/영화2.png" alt="">
+                    <p class="chart"><span>코미디 영화 2 제목입니다</span></p>
+                </a>
+                <a href="" class="link"><img class="img" src="../images/mainpage/영화2.png" alt="">
+                    <p class="chart"><span>코미디 영화 2 제목입니다</span></p>
+                </a>
             </div>
-            <div class="menu_list3">
-                <a href="">가족1</a>
-                <a href="">가족2</a>
-                <a href="">가족3</a>
+            <div class="menu_list">
+                <a href="" class="link"><img class="img" src="../images/mainpage/영화3.png" alt="">
+                    <p class="chart"><span>가족 영화 1 제목입니다</span></p>
+                </a>
+                <a href="" class="link"><img class="img" src="../images/mainpage/영화3.png" alt="">
+                    <p class="chart"><span>가족 영화 2 제목입니다</span></p>
+                </a>
+                <a href="" class="link"><img class="img" src="../images/mainpage/영화3.png" alt="">
+                    <p class="chart"><span>가족 영화 3 제목입니다</span></p>
+                </a>
             </div>
     </div>
     </div>
@@ -36,86 +48,84 @@
   
 <script>
   export default {
-    data() {
-      return {
-        currentIndex: 0,
-        slideWidth: 1000,
-        slideInterval: 5000,
-        images: ['영화1.png', '영화2.png', '영화3.png', '영화4.png' ,'영화5.png'], // 이미지 파일명 배열
-      };
-    },
-    mounted() {
-      setInterval(() => {
-        this.changeSlide(1);
-      }, this.slideInterval);
-    },
-    methods: {
-      changeSlide(direction) {
-        const slideCount = this.images.length;
-        this.currentIndex = (this.currentIndex + direction + slideCount) % slideCount;
-      }
-    }
+   
   };
 </script>
   
 <style scoped>
  /* 전체 캐러셀 컨테이너 스타일 */
-.carousel {
-  width: 1000px; /* 캐러셀 전체 너비 */
-  margin: auto; /* 가운데 정렬을 위한 마진 설정 */
-  margin-top: 50px; /* 위쪽 마진 설정 */
-  overflow: hidden; /* 넘치는 부분 숨김 처리 */
-  position: relative; /* 상대적 위치 지정 */
-}
+ .carousel {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: auto; /* 또는 원하는 높이 */
+    }
 
-/* 슬라이드 그룹 컨테이너 스타일 */
-.slides {
-  display: flex; /* 플렉스 박스 사용하여 슬라이드 정렬 */
-  transition: transform 0.5s ease-in-out;  /* 슬라이드 전환 속도 설정 */
-  width: 3000px; /* 슬라이드 전체 너비: 1000px * 3 (슬라이드 개수) */
+    .carousel video {
+      width: 100%; /* 또는 원하는 너비 */
+      height: 500px; /* 또는 원하는 높이 */
+      object-fit: cover; /* 동영상이 컨테이너를 채우도록 설정 */
+    }
+.carousel .main_name{
+    position: absolute; /* 위치를 절대적으로 설정하여 부모 요소를 기준으로 위치 지정 */
+    top: 170px; /* 상단에서 170px 떨어진 위치에 배치 */
+    left: 200px; /* 좌측에서 0px 떨어진 위치에 배치 */
+    font-weight: 700; /* 글씨 두께를 굵게 설정 */
+    font-size: 40px; /* 글씨 크기를 40px로 설정 */
+    color: #fff; /* 글씨 색상을 흰색으로 설정 */
+    line-height: 1.450em; /* 줄 높이를 1.45배로 설정하여 텍스트 줄 간격 조정 */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.72); /* 텍스트에 그림자를 추가하여 가독성을 높임 (2px의 수평 및 수직 그림자, 4px의 흐림) */
+    z-index: 2; /* z-축에서 요소의 우선순위를 높여서 다른 요소 위에 표시되도록 설정 */
+    pointer-events: none; /* 포인터 이벤트를 무시하여 클릭이 다른 요소로 전달되도록 설정 */
 }
-
-/* 각 슬라이드 요소 스타일 */
-.slide {
-  min-width: 1000px; /* 각 슬라이드 최소 너비 지정 */
-  box-sizing: border-box; /* 박스 크기 계산을 경계와 패딩 포함하여 설정 */
+.carousel .main_sname{
+    white-space: nowrap;
+    overflow: hidden; /* 넘치는 콘텐츠를 숨깁니다 */
+    position: absolute; /* 위치를 절대적으로 설정하여 부모 요소를 기준으로 위치 지정 */
+    top: 239px; /* 상단에서 239px 떨어진 위치에 배치 */
+    left: 200px; /* 좌측에서 0px 떨어진 위치에 배치 */
+    max-width: 100px; /* 최대 너비를 100%로 설정하여 부모 요소의 너비에 맞게 확장 */
+    font-size: 20px; /* 글씨 크기를 20px로 설정 */
+    color: #fff; /* 글씨 색상을 흰색으로 설정 */
+    line-height: 1.450em; /* 줄 높이를 글씨 크기의 1.45배로 설정하여 텍스트 줄 간격 조정 */
+    text-overflow: ellipsis; /* 넘치는 텍스트를 '...'으로 표시 */
+    z-index: 3; /* z-축에서 요소의 우선순위를 설정하여 다른 요소 위에 표시되도록 설정 */
+    pointer-events: none; /* 포인터 이벤트를 무시하여 클릭이 다른 요소로 전달되도록 설정 */
+    height: 80px;
 }
-
-/* 슬라이드 이미지 스타일 */
-.slide img {
-  width: 1000px; /* 이미지 너비 고정 */
-  height: 500px; /* 이미지 높이 설정 */
-  object-fit: fill; /* 이미지 비율 유지 및 크기 조정 */
-  border-radius: none; /* 이미지 모서리 둥글게 설정 */
-}
-
-/* 이전 버튼 스타일 */
-.prev, .next {
-  position: absolute; /* 절대적 위치 지정 */
-  top: 50%; /* 상단에서 50% 위치 */
-  transform: translateY(-50%); /* Y축 기준으로 가운데 정렬 */
-  background-color: rgba(0, 0, 0, 0); /* 배경색 투명 설정 */
-  color: white; /* 텍스트 색상 흰색 설정 */
-  border: none; /* 테두리 없음 */
-  padding: 10px; /* 패딩 설정 */
-  cursor: pointer; /* 마우스 커서 포인터로 변경 */
-}
-
-/* 이전 버튼 위치 왼쪽으로 설정 */
-.prev {
-  left: 0;
-}
-
-/* 다음 버튼 위치 오른쪽으로 설정 */
-.next {
-  right: 0;
+.carousel .move_movie{
+    pointer-events: painted;
 }
 .movie{
+    padding: 0px 300px;
     display:flex;
     justify-content: center;
 }
+.movie .link {
+    width: 100px;
 
-.list .menu_list1{
+    margin: 100px;
+    padding: 5px;
+}
+.movie .img{
+    width: 100px;
+    height: 150px;
+    object-fit: fill; /* 이미지 비율 유지 및 크기 조정 */
+}
+.movie .menu_list{
+    margin: 10px;
+    padding: 20px 19px 30px;;
+    border: 2px solid #e4e4e4;;
+    border-radius: 10px;
+    width: 100%;
+    line-height: 50px;
+    text-align: center;
+    flex-direction: column;
+
+}
+
+/* .movie .menu_list2{
     width: 100%;
     flex-wrap: wrap;
     line-height: 50px;
@@ -123,31 +133,14 @@
     flex-direction: column;
     display:flex;
 }
-.list .menu_list2{
+.movie .menu_list3{
     width: 100%;
     flex-wrap: wrap;
     line-height: 50px;
     text-align: center;
     flex-direction: column;
     display:flex;
-}
-.list .menu_list3{
-    width: 100%;
-    flex-wrap: wrap;
-    line-height: 50px;
-    text-align: center;
-    flex-direction: column;
-    display:flex;
-}
-.list .menu_list li{
-    width: 25%;
-    
-}
-.list .menu_list:nth-child(2){
-    width: 280px;
-    display: flex;
-    padding-left: 0;
-}
+} */
 
 </style>
   
