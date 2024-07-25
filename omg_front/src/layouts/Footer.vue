@@ -25,6 +25,7 @@ export default {
     text-align: center;
     background: #ccc;
     padding: 20px;
+    margin-top: 50px;
     /* 언제든 수정 가능 */
     /* position: relative;
     bottom: 0;

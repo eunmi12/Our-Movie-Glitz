@@ -48,6 +48,7 @@ header{
     width: 100%;
     margin-top: 20px;
     margin: 0 auto;
+    margin-bottom: 60px;
     background-color: #f0eeda;
 }
 header .wrap{
