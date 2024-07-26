@@ -4,11 +4,11 @@
       <div class="update_box">
         <div class="namebox">
           <span class="namebox1">이름</span>
-          <span class="namebox2">김회창</span>
+          <span class="namebox2">{{ user.user_name}}</span>
         </div>
         <div class="namebox">
           <span class="namebox1">아이디</span>
-          <span class="namebox2">example_id</span>
+          <span class="namebox2">{{ user.user_id}}</span>
         </div>
         <div class="namebox">
           <span class="namebox1">비밀번호</span>
@@ -16,11 +16,11 @@
         </div>
         <div class="namebox">
           <span class="namebox1">생년월일</span>
-          <span class="namebox2">1990-01-01</span>
+          <span class="namebox2">{{ user.user_age}}</span>
         </div>
         <div class="namebox">
           <span class="namebox1">성별</span>
-          <span class="namebox2">남성</span>
+          <span class="namebox2">{{ user.user_gender }}</span>
         </div>
         <div class="namebox">
           <span class="namebox1">핸드폰번호</span>
@@ -35,14 +35,39 @@
   </template>
   
   <script>
+import axios from 'axios';
+
   export default {
     data() {
-      return {};
+      return {
+        user: {
+          user_name: '',
+          user_id: '',
+          user_gender: '',
+        }
+      };
     },
+    computed: {
+        user1(){
+            return this.$store.state.user;
+            },
+        },
     methods: {
       gotomainpage() {
-        this.$router.push('/mypagemain');
-      }
+        this.$router.push(`/mypagemain/${this.user.user_no}`);
+      },
+      async userinfo() {
+          const user_no = this.$route.params.user_no;
+          try {
+              const response = await axios.post(`http://localhost:3000/user/mypage/${user_no}`);
+              this.user = response.data[0];
+          } catch (error) {
+              console.error("마이페이지 에러 발생", error);
+          }
+      },
+    },
+    mounted() {
+      this.userinfo();
     }
   };
   </script>
