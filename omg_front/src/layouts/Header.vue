@@ -14,7 +14,7 @@
                     <li><a href="http://localhost:8081/join">회원가입</a></li>
                     <li><a href="">로그아웃</a></li>
                     <li><a href="">My Page</a></li>
-                    <li><a href="http://localhost:8081/help">고객센터</a></li>
+                    <li @click="gotohelp()"><a>고객센터</a></li>
                 </ul>
             </div>
         </div>
@@ -40,6 +40,11 @@ export default {
         return {
             sampleData: ''
         };
+    },
+    methods: {
+        gotohelp() {
+            this.$router.push({ path: '/help/notice'});
+        },
     }
 }
 </script>

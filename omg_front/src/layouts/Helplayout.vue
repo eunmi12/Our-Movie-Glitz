@@ -24,8 +24,8 @@ export default {
   data() {
     return {
       type: [
-        { id: 1, name: '• FAQ', link: '/help/faq' },
-        { id: 2, name: '• 공지사항', link: '/help/notice' },
+        { id: 1, name: '• 공지사항', link: '/help/notice' },
+        { id: 2, name: '• FAQ', link: '/help/faq' },
         { id: 3, name: '• 1:1문의', link: '/help/qna' }
       ],
       selectedMenu: null
@@ -35,7 +35,23 @@ export default {
     selectMenu(id, link) {
       this.selectedMenu = id;
       this.$router.push(link);
+    },
+     setSelectedMenuFromRoute(route) {
+      const routeLinkToIdMap = {
+        '/help/notice': 1,
+        '/help/faq': 2,
+        '/help/qna': 3
+      };
+      this.selectedMenu = routeLinkToIdMap[route.path] || null;
     }
+  },
+  watch: {
+    $route(to) {
+      this.setSelectedMenuFromRoute(to);
+    }
+  },
+  mounted() {
+    this.setSelectedMenuFromRoute(this.$route);
   }
 };
 </script>

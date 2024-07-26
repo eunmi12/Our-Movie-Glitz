@@ -4,6 +4,7 @@ const db = require('../db.js');
 const fs = require('fs');
 const multer = require('multer');
 const path = require("path");
+const { log } = require('console');
 
 //승호작성
 
@@ -14,6 +15,28 @@ const path = require("path");
 //진우작성 완
 
 //치혁작성
+
+//공지사항리스트
+router.get('/noticelist',(req, res) => {
+    db.query(`select notice_title,notice_date,notice_cnt from notice;`, (err, results) => {
+        if(err) {
+            console.log('공지사항을 조회할 수 없습니다.');
+            return res.status(500).json({ error: err });
+        } 
+        return res.json(results);
+    });
+});
+
+//faq리스트
+router.get('/faqlist',(req, res) => {
+    db.query(`select faq_no,faq_q,faq_a from faq;`, (err, results) => {
+        if(err) {
+            console.log('FAQ를 조회할 수 없습니다.');
+            return res.status(500).json({ error: err });
+        } 
+        return res.json(results);
+    });
+});
 
 //치혁작성 완
 
