@@ -12,16 +12,22 @@
             <div class="category">
                 <ul>
                     <li><a href="http://localhost:8081/join">회원가입</a></li>
-                    <li><a href="">로그아웃</a></li>
-                    <li><a href="">My Page</a></li>
-                    <li @click="gotohelp()"><a>고객센터</a></li>
+
+                   // <li><a href="">로그아웃</a></li>
+                   // <li><a href="">My Page</a></li>
+                   // <li @click="gotohelp()"><a>고객센터</a></li>
+
+                    <li><a href="http://localhost:8081/login">로그인</a></li>
+                    <li><a href="http://localhost:8081/mypagemain">My Page</a></li>
+                    <li><a href="http://localhost:8081/help">고객센터</a></li>
+
                 </ul>
             </div>
         </div>
         <div class="menu">
             <ul class="menu_list">
                 <li><a href="">영화</a></li>
-                <li><a href="">예매</a></li>
+                <li><a href="http://localhost:8081/moviebooking">예매</a></li>
                 <li><a href="">이벤트</a></li>
             </ul>
             <ul>

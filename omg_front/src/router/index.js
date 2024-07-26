@@ -9,6 +9,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 // import Header from '../layouts/Header.vue';
 import Join from '../views/Join.vue'
+import Login from '../views/Login.vue'
 
 //진우작성완
 
@@ -72,6 +73,11 @@ const routes = [
   name: 'Join',
   component: Join
 },
+{
+  path: '/login',
+  name: 'Login',
+  component: Login
+},
 //진우작성완
 
 
@@ -92,7 +98,7 @@ const routes = [
 
 //회창작성
 {
-  path: '/mypagemain',
+  path: '/mypagemain/:user_no',
   name: 'MypageMain',
   component: MypageMain
 },
@@ -107,37 +113,37 @@ const routes = [
   component: MypageTop
 },
 {
-  path: '/coupon',
+  path: '/coupon/:user_no',
   name: 'Coupon',
   component: Coupon
 },
 {
-  path: '/gogaekcenter',
+  path: '/gogaekcenter/:user_no',
   name: 'Gogaekcenter',
   component: Gogaekcenter
 },
 {
-  path: '/point',
+  path: '/point/:user_no',
   name: 'Point',
   component: Point
 },
 {
-  path: '/rev',
+  path: '/rev/:user_no',
   name: 'Rev',
   component: Rev
 },
 {
-  path: '/usermypage',
+  path: '/usermypage/:user_no',
   name: 'UserMypage',
   component: UserMypage
 },
 {
-  path: '/userout',
+  path: '/userout/:user_no',
   name: 'UserOut',
   component: UserOut
 },
 {
-  path: '/review',
+  path: '/review/:user_no',
   name: 'Review',
   component: Review
 },
