@@ -1,50 +1,58 @@
 <template>
     <div class="movie-booking">
         <h1>영화 예매</h1>
+        <div class="movie-booking2">
         <!-- Step 1: 영화 선택 -->
-        <div v-if="currentStep === 1">
+        <div class="select-movie" v-if="currentStep === 1">
             <h2>영화 선택</h2>
-            <ul>
-                <li class="select-movie" v-for="(movie, i) in movies" :key="i" @click="selectMovie(movie)">{{ movie.movie_title }} {{ movie.movie_age }}</li>
+            <ul v-for="(movie, i) in movies" :key="i" @click="selectMovie(movie)" style="display: flex;">
+                <!-- &nbsp; : 띄어쓰기 -->
+                <li class="movie-title">{{ movie.movie_title }}</li>&nbsp;&nbsp;
+                <li class="movie-age">{{ movie.movie_age }}</li>
             </ul>
         </div>
-        <!-- Step 2: 날짜 선택 -->
-         <div v-if="currentStep === 2">
+        <!-- Step 2: 상영관 선택 -->
+        <div class="select-cinema" v-if="currentStep === 2">
+            <h2>상영관 선택</h2>
+            <ul>
+                <li v-for="(cinema, i) in cinemas" :key="i" @click="selectCinema(cinema)">{{ cinema.cinema_name }}</li>
+            </ul>
+         </div>
+        <!-- Step 3: 날짜 선택 -->
+         <div class="select-date" v-if="currentStep === 3">
             <h2>날짜 선택</h2>
             <ul>
                 <!-- date를 시작일과 종료일로 계산해서 넣어야 됨 -->
                  <!-- dates 배열에 각 날짜에 대한 리스트 아이템을 생성 -->
-                <li v-for="(date, i) in dates" :key="i" @click="selectDate(date)">{{ date }}</li>
+                <li v-for="date in dates" :key="date" @click="selectDate(date)">{{ new Date(date).toISOString().split('T')[0] }}</li>
             </ul>
          </div>
-         <!-- Step 3: 상영관 선택 -->
-         <div v-if="currentStep === 3">
-            <h2>상영관 선택</h2>
-            <ul>
-                <li v-for="screen in screens" :key="screen" @click="selectScreen(screen)">{{ movie_screen }}</li>
-            </ul>
-          </div>
          <!-- Step 4: 시간 선택 -->
-          <div v-if="currentStep === 4">
+         <div class="select-time" v-if="currentStep === 4">
             <h2>시간 선택</h2>
             <ul>
-                <!-- time : screen 테이블의 상영시작 시간 -->
-                 <!-- times 배열의 각 시간에 대해 리스트 아이템을 생성 -->
                 <li v-for="time in times" :key="time" @click="selectTime(time)">{{ time }}</li>
             </ul>
           </div>
           <!-- Step 5: 좌석 선택 -->
-           <div v-if="currentStep === 5">
+           <div class="select-seat" v-if="currentStep === 5">
             <h2>좌석 선택</h2>
             <div class="seats">
                 <!-- seats 배열의 각 좌석에 대해 div 요소를 생성 -->
-                <div v-for="seat in seats" :key="seat" @click="selectSeat(seat)" :class="{ selected: selectedSeats.includes(seat) }">{{ movie_seat }}</div>
+                <div v-for="seat in seats" :key="seat.seat_no" @click="selectSeat(seat)" :class="{ selected: selectedSeats.includes(seat.seat_no) }">{{ seat.seat_name }}</div>
             </div>
         </div>
         <!-- 이전 단계로 돌아가기 버튼 (1단계 이후부터 보임) -->
          <div v-if="currentStep > 1">
             <button @click="previousStep">이전</button>
          </div>
+         <div v-if="currentStep < 5">
+            <button @click="nextStep">다음</button>
+         </div>
+         <div v-if="currentStep === 5">
+            <button @click="confirmBooking">예매 완료</button>
+         </div>
+    </div>
     </div>
 </template>
 
@@ -55,17 +63,41 @@ export default {
     data() {
         return {
             currentStep: 1, // 현재 단계 (1: 영화, 2: 날짜, 3: 상영관, 4: 시간, 5: 좌석)
+            movies: [], // 영화 목록
+            cinemas: [], // 상영관 목록
+            availableDates: [], // 상영가능 날짜 목록
+            times: ['9:00 - 11:00', '13:00 - 15:00', '16:00 - 18:00'], // 상영가능 시간 목록
+            seats: [], // 좌석 목록
             selectedMovie: null, // 선택된 영화
+            selectedCinema: null, // 선택된 상영관
             selectedDate: null, // 선택된 날짜
-            selectedScreen: null, // 선택된 상영관
             selectedTime: null, // 선택된 시간
             selectedSeats: [], // 선택된 좌석 목록
-            movies: [], // 영화 목록
-            dates: [], // 날짜 목록
-            screens: [], // 상영관 목록
-            times: [], // 시간목록
-            seats: [], // 좌석 목록
+            today: new Date().toISOString().split('T')[0],
+            tomorrow: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0],
+            currentHour: new Date().getHours(), // 현재 시간 (24시간제)
         };
+    },
+
+    created() {
+        this.fetchMovies();
+    },
+
+    computed: {
+        dates() {
+            return this.availableDates.filter(date => new Date(date) >= new Date(this.tomorrow));
+        },
+        // validTimes() {
+        //     if (this.selectedDate === this.today) {
+        //         // const currentHour = new Date().getHours();
+        //         return this.times.filter(time => {
+        //             const [startTime] = time.split(' - ');
+        //             const startHour = parseInt(startTime.split(':')[0]);
+        //             return startHour > this.currentHour;
+        //         });
+        //     }
+        //     return this.times;
+        // },
     },
 
     mounted() {
@@ -74,78 +106,80 @@ export default {
 
     methods: {
         fetchMovies() {
-            axios.get('http://localhost:3000/movie/movies')
-            .then(response => {
-                this.movies = response.data;
-                // 예를 들어 첫 번째 영화를 선택한 경우, 날짜를 가져오도록 설정
-                if (this.movies.length > 0) {
-                    this.selectMovie(this.movies[0]);
-                }
-            })
-            .catch(error => {
-                console.error('영화 목록을 가져오는 데 실패했습니다.', error);
+            axios.get(`http://localhost:3000/movie/movies`)
+            .then(results => {
+                this.movies = results.data;
             });
         },
         selectMovie(movie) {
             this.selectedMovie = movie;
-            this.fetchDates(movie); // 선택된 영화에 대한 날짜를 가져옴
+            this.fetchCinemas();
+            this.currentStep = 2;
             },
-        fetchDates(movie) {
-            this.dates = this.generateDates(movie.movie_startdate, movie.movie_enddate);
-
-            // 모든 날짜에 대해 예약 가능 여부를 확인
-            const availabilityChecks = this.dates.map(date =>
-                axios.get(`http://localhost:3000/movie/movies/${movie.movie_no}/dates/${date}/availability`)
-            );
-
-            axios.all(availabilityChecks)
-                .then(results => {
-                    // 각 날짜의 응답 결과를 필터링하여 예매 가능한 날짜만 남김
-                    this.dates = this.dates.filter((date, index) => results[index].data.available);
+        fetchCinemas() {
+            axios.get(`http://localhost:3000/movie/cinemas`)
+            .then(results => {
+                this.cinemas = results.data;
+                // 현재 상영관이 없는 영화는 알럿 띄움
+                if (this.cinemas.length === 0) {
+                    alert('현재 상영 중이지 않은 영화입니다.');
+                } else {
                     this.currentStep = 2;
-                })
-                .catch(error => {
-                    console.error('상영 날짜를 가져오는 데 실패했습니다.', error);
-                });
+                }
+            }).catch(error => {
+                console.error('상영관 정보를 불러올 수 없습니다.', error);
+                alert('상영관 정보를 불러올 수 없습니다.');
+            });
         },
-        generateDates(startDate, endDate) {
-            const dates = [];
-            let currentDate = new Date(startDate);
-            const end = new Date(endDate);
-
-            while (currentDate <= end) {
-                dates.push(currentDate.toISOString().split('T')[0]);
-                currentDate.setDate(currentDate.getDate() + 1);
-            }
-
-            return dates;
+        selectCinema(cinema) {
+            this.selectedCinema = cinema;
+            this.fetchAvailableDates();
+            this.currentStep = 3;
         },
-        // isAvailableDate(date) {
-
-        // },
+        fetchAvailableDates() {
+            axios.post(`http://localhost:3000/movie/availableDates`, {
+                movie_no: this.selectedMovie.movie_no,
+                cinema_no: this.selectedCinema.cinema_no
+            }).then(results => {
+                // console.log('rerererer', results);
+                this.availableDates = results.data;
+                if (this.availableDates.length === 0) {
+                    alert('해당 영화의 상영 일정이 없습니다.');
+                    this.currentStep = 2;
+                } else {
+                    this.currentStep = 3;
+                }
+            }).catch(error => {
+                console.error('상영 날짜를 불러오는 중 오류가 발생했습니다.', error);
+                alert('상영 날짜를 불러오는 중 오류가 발생했습니다.');
+            });
+        },
         selectDate(date) {
             // 날짜 저장하고 다음 단계 이동
             this.selectedDate = date;
-            this.currentStep = 3;
-        },
-        selectScreen(screen) {
-            // 상영관 저장, 다음 단계 이동
-            this.selectedScreen = screen;
             this.currentStep = 4;
         },
         selectTime(time) {
             // 시간 저장, 다음 단계 이동
             this.selectedTime = time;
+            this.fetchSeats();
             this.currentStep = 5;
+        },
+        fetchSeats() {
+            axios.post(`http://localhost:3000/seats`, {
+                cinema_no: this.selectCinema.cinema_no
+            }).then(results => {
+                this.seats = results.data;
+            });
         },
         selectSeat(seat) {
             // 좌석 선택 저장 또는 선택 해제
-            if (this.selectedSeats.includes(seat)) { // this.selectedSeats : 사용자가 현재 선택한 좌석 목록(배열) => incluses(seat)메서드로 배열에 seat가 포함되어있는지 확인
+            if (this.selectedSeats.includes(seat.seat_no)) { // this.selectedSeats : 사용자가 현재 선택한 좌석 목록(배열) => incluses(seat)메서드로 배열에 seat가 포함되어있는지 확인
                 // 만약 seat가 배열에 포함되어 있다면, 사용자가 이미 해당 좌석을 선택한 상태라는 의미
-                this.selectedSeats = this.selectedSeats.filter(s => s !== seat); // s : 배열의 각 요소, s !== seat는 현재요소 s가 seat와 같지 않을 경우에만 true 반환
+                this.selectedSeats = this.selectedSeats.filter(s => s !== seat.seat_no); // s : 배열의 각 요소, s !== seat는 현재요소 s가 seat와 같지 않을 경우에만 true 반환
                 // 따라서 filter 메서드는 seat와 같은 요소를 제외한 새로운 배열을 반환 => 선택 해제하려는 좌석을 배열에서 제거하는 역할
             } else {
-                this.selectedSeats.push(seat); // seat가 this.selectedSeats 배열에 포함되어 있지 않은 경우에 실행
+                this.selectedSeats.push(seat.seat_no); // seat가 this.selectedSeats 배열에 포함되어 있지 않은 경우에 실행
                 // push 메서드는 배열의 끝에 새로운 요소를 추가 => 사용자가 해당 좌석을 선택했음을 나타냄
             }
         },
@@ -153,11 +187,57 @@ export default {
             // 이전 단계로 돌아가기
             this.currentStep--;
         },
-    }
-}
+        nextStep() {
+            this.currentStep++;
+        },
+        bookTickets() {
+            const bookingDetails = {
+                movie_no: this.selectedMovie.movie_no,
+                cinema_no: this.selectedCinema.cinema_no,
+                date: this.selectedDate,
+                time: this.selectedTime,
+                seate: this.selectedSeats.map(seat => seat.seat_no),
+                total_price: this.selectedMovie.movie_price * this.selectedSeats.length,
+                ticket_type: 'standard' // 예매 타입은 필요에 따라 변경
+            };
+
+            axios.post(`http://localhost:3000/movie/book`, bookingDetails).then((results) => {
+                alert(results.data.message);
+            }).catch(() => {
+                alert('예매 중 오류가 발생했습니다.');
+            });
+        },
+    },
+};
 </script>
 
 <style scoped>
+.movie-booking {
+ width: 80%;
+ margin: 0 auto;
+}
+
+.movie-booking h1 {
+    text-align: left;
+    padding: 3%;
+    border-bottom: 1px solid #ccc;
+}
+
+.movie-booking h2 {
+    text-align: center;
+    margin-top: 3%;
+    color: rgb(74, 73, 73);
+}
+
+.movie-age {
+    border: 1px solid #dc3f3f;
+    width: 20px;
+    height: 20px;
+    background-color: #d54646;
+    color: #ffffff;
+    border-radius: 3px;
+}
+
 .seats {
   display: flex;
   gap: 10px;
@@ -171,5 +251,9 @@ export default {
 .seats div.selected {
   background-color: #4caf50;
   color: white;
+}
+
+.select-movie {
+    cursor: pointer;
 }
 </style>
