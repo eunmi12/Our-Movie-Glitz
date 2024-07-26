@@ -81,7 +81,7 @@
                     </div>
                 <div class="join_btn">
                     <button type="submit" name="clear" id="clear">회원가입</button>
-                    <button type="button" name="exit" id="exit" >취소</button>
+                    <button type="button" name="exit" id="exit" @click="exit" >취소</button>
                 </div>
             </form>
         </div>
@@ -108,11 +108,53 @@ export default {
         };
     },
     methods: {
-        id_check(){
-           
+        async id_check(){
+            if(this.user_id.length < 6 || this.user_id.length > 20){
+                this.$swal("아이디는 6~20자 사이여야 합니다.");
+                return;
+            }
+            const user_id = this.user_id;
+
+            try{
+                const response = await axios.post('http://localhost:3000/auth/id_check', {user_id});
+
+                if(response.data.exists){
+                    this.$swal('이미 존재하는 아이디입니다.');
+                } else {
+                    this.$swal('사용 가능한 아이디입니다.');
+                }
+            } catch(error){
+                console.error('아이디 확인 중 오류가 발생했습니다.', error);
+                this.$swal('아이디 확인 중 오류가 발생했습니다. 다시 시도해주세요.');
+            }
         },
         pwd_check(){
+            const pwd = this.user_pwd;
+            const pwdcheck = this.user_pwd2;
 
+            if(pwd !== pwdcheck){
+                this.$swal('비밀번호가 일치하지 않습니다.');
+                return;
+            }
+
+            if (pwd.length < 8 || pwd.length > 20) {
+                this.$swal('비밀번호는 8~20자 사이여야 합니다.');
+                return;
+            }
+
+            const hasUpperCase = /[A-Z]/.test(pwd);
+            const hasLowerCase = /[a-z]/.test(pwd);
+            const hasNumbers = /\d/.test(pwd);
+            const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(pwd);
+
+            const typesCount = [hasUpperCase, hasLowerCase, hasNumbers, hasSpecial].filter(Boolean).length;
+
+            if (typesCount < 3) {
+                this.$swal('비밀번호는 영문 대소문자, 숫자, 특수문자 중 세 가지 이상을 포함해야 합니다.');
+                return;
+            }
+
+            this.$swal('비밀번호가 일치합니다.');
         },
         async onsubmitForm(){
 
@@ -127,11 +169,24 @@ export default {
             console.log("data : ----> ", data);
 
             try{
-                const response = await axios.post(`http://localhost:3000/auth/join`, data, );
+                const response = await axios.post(`http://localhost:3000/auth/join`, data, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+                });
 
                 console.log("response.data : ---->", response.data);
             }catch(error){
                 console.error('폼 제출 중 오류 발생', error);
+            }
+        },
+        exit(){
+            if (Object.values(this.$data).some(field => field)) {
+                if (confirm("회원가입을 취소하시겠습니까?")) {
+                    this.$router.push({ path: "/" });
+                }
+            } else {
+                this.$router.push({ path: "/" });
             }
         }
     }
