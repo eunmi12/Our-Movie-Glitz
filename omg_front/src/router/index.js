@@ -9,6 +9,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 // import Header from '../layouts/Header.vue';
 import Join from '../views/Join.vue'
+import Login from '../views/Login.vue'
 
 //진우작성완
 
@@ -71,6 +72,11 @@ const routes = [
   path: '/join',
   name: 'Join',
   component: Join
+},
+{
+  path: '/login',
+  name: 'Login',
+  component: Login
 },
 //진우작성완
 
