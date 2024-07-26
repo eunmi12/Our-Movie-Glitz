@@ -17,40 +17,46 @@
 </template>
 
 <script>
+
 export default {
   data() {
     return {
       isVisible: false,
     };
   },
+  computed: {
+        user(){
+            return this.$store.state.user;
+            },
+        },
   methods: {
     toggleVisibility() {
       this.isVisible = !this.isVisible;
     },
     goToAboutPage1() {
-      this.$router.push('/mypagemain');
+      this.$router.push(`/mypagemain/${this.user.user_no}`);
     },
     goToAboutPage2() {
-      this.$router.push('./rev');
+      this.$router.push(`/rev/${this.user.user_no}`);
     },
     goToAboutPage3() {
-      this.$router.push('./point');
+      this.$router.push(`/point/${this.user.user_no}`);
     },
     goToAboutPage4() {
-      this.$router.push('./coupon');
+      this.$router.push(`/coupon/${this.user.user_no}`);
     },
     goToAboutPage5() {
-      this.$router.push('./usermypage');
+      this.$router.push(`/usermypage/${this.user.user_no}`);
     },
     goToAboutPage6() {
-      this.$router.push('./userout');
+      this.$router.push(`/userout/${this.user.user_no}`);
     },
     goToAboutPage7() {
-      this.$router.push('./gogaekcenter');
+      this.$router.push(`/gogaekcenter/${this.user.user_no}`);
     },
     goToAboutPage8() {
-      this.$router.push('./gogaekcenter');
-    }
+      this.$router.push(`/review/${this.user.user_no}`);
+    },
   },
 };
 </script>

@@ -13,7 +13,7 @@
                 <ul>
                     <li><a href="http://localhost:8081/join">회원가입</a></li>
                     <li><a href="">로그아웃</a></li>
-                    <li><a href="">My Page</a></li>
+                    <li><a href="http://localhost:8081/mypagemain">My Page</a></li>
                     <li><a href="http://localhost:8081/help">고객센터</a></li>
                 </ul>
             </div>
