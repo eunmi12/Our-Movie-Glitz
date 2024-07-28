@@ -13,10 +13,22 @@
                     <span @click="goToReview">• 관람평 관리</span>
                 </li>
                 <li>
+                    <span @click="goToCinema">• 상영 관리</span>
+                </li>
+                <li>
+                    <span @click="goToMovie">• 영화 관리</span>
+                </li>
+                <li>
                     <span @click="goToTicket">• 예매 관리</span>
                 </li>
                 <li>
                     <span @click="goToEvent">• 이벤트 관리</span>
+                </li>
+                <li>
+                    <span @click="goToFAQ">• FAQ 관리</span>
+                </li>
+                <li>
+                    <span @click="goToHelp">• 1:1 문의 사항</span>
                 </li>
             </ul>
         </div>
@@ -45,12 +57,32 @@ export default {
                 path: '/admin/'
             });
         },
+        goToCinema() {
+            this.$router.push({
+                path: '/admin/'
+            })
+        },
+        goToMovie() {
+            this.$router.push({
+                path: '/admin/'
+            })
+        },
         goToTicket() {
             this.$router.push({
                 path: '/admin/'
             });
         },
         goToEvent() {
+            this.$router.push({
+                path: '/admin/'
+            })
+        },
+        goToFAQ() {
+            this.$router.push({
+                path: '/admin/Faq'
+            })
+        },
+        goToHelp() {
             this.$router.push({
                 path: '/admin/'
             })
