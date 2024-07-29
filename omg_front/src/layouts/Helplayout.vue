@@ -42,7 +42,8 @@ export default {
         '/help/faq': 2,
         '/help/qna': 3
       };
-      this.selectedMenu = routeLinkToIdMap[route.path] || null;
+      const matchedRoute = Object.keys(routeLinkToIdMap).find(path => route.path.startsWith(path));
+      this.selectedMenu = routeLinkToIdMap[matchedRoute] || null;
     }
   },
   watch: {
