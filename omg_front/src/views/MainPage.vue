@@ -15,14 +15,14 @@
          <ul class="menu_list">
            <li>
              <dl class="type">
-                    <dt><span>액션</span><a href="" class="btn_more">더보기</a></dt>
+                    <dt><span>영화</span><a href="" class="btn_more">더보기</a></dt>
                   <dd>
                      <a href="">
                          <div class="img_wrap" data-scale="false">
                              <img src="../images/mainpage/영화1.png" alt="액션 영화 1 제목입니다">
                          </div>
                          <div class="img_wrapinfo">
-                            <span>영화 제목입니다</span>
+                            <span>영화</span>
                             <strong>영화 평점입니다</strong>
                          </div>
                       </a>
@@ -127,16 +127,60 @@
                   </dd>
               </dl>
           </li>   
+          <li>
+             <dl class="type">
+                    <dt><span>액션</span><a href="" class="btn_more">더보기</a></dt>
+                  <dd>
+                     <a href="">
+                         <div class="img_wrap" data-scale="false">
+                             <img src="../images/mainpage/영화5.png" alt="공포 영화 1 제목입니다">
+                         </div>
+                         <div class="img_wrapinfo">
+                            <span>영화 제목입니다</span>
+                            <strong>영화 평점입니다</strong>
+                         </div>
+                      </a>
+                  </dd>
+                  <dd>
+                     <a href="">
+                         <div class="img_wrap" data-scale="false">
+                             <img src="../images/mainpage/영화5.png" alt="공포 영화 2 제목입니다">
+                         </div>
+                         <div class="img_wrapinfo">
+                            <span>영화 제목입니다</span>
+                            <strong>영화 평점입니다</strong>
+                         </div>
+                      </a>
+                  </dd>
+                  <dd>
+                     <a href="">
+                         <div class="img_wrap" data-scale="false">
+                             <img src="../images/mainpage/영화5.png" alt="공포 영화 3 제목입니다">
+                         </div>
+                         <div class="img_wrapinfo">
+                            <span>영화 제목입니다</span>
+                            <strong>영화 평점입니다</strong>
+                         </div>
+                      </a>
+                  </dd>
+              </dl>
+          </li>   
         </ul>
      </div>
     </div>
 <div class="events">
     <div class="contents">
         <div class="event_name">
-            <h3>EVENTS</h3>
+            <h3>EVENTS</h3><a href="" class="event_all">더보기</a>
         </div>
         <div class="event_title">
+            <div>
+                <div>
+                    <div>
 
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -145,9 +189,31 @@
 </template>
   
 <script>
+import axios from 'axios';
+  
   export default {
-   
-  };
+    data() {
+        return{
+            movielist:[],
+        };
+    },
+    created() {
+    this.fetchMovielist();
+  },
+  methods: {
+    fetchMovielist() {
+      axios.get('http://localhost:3000/movielist')
+        .then(response => {
+          this.movielist = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching movies:', error);
+        });
+    },
+  },
+};
+        
+
 </script>
   
 <style scoped>
@@ -220,6 +286,9 @@
     height: 100%;
     margin: 0 auto;
 }
+.contents h3{
+    margin-left: 160px;
+}
 .menu_list{
     display: flex;
     justify-content: center;
@@ -243,7 +312,7 @@
     vertical-align: baseline;
     word-break: break-all;
 }
-.tpye dt{
+.type dt{
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -261,6 +330,7 @@
     border: 1px solid #f4f4f4;
     border-radius: 11px;
     margin-left: 100px;
+
 }
 .type dd:first-of-type {
       margin-top: 27px;
@@ -314,6 +384,32 @@
     overflow: hidden;
     position: relative;
     padding: 60px 0 6px;
+}
+.event_name {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+
+
+.event_name .event_all{
+    margin-top: 0; /* 추가적인 상단 여백을 제거합니다 */
+    float: right;
+    margin-top: 4px;
+    margin-right: 120px;
+    padding: 4px 28px 4px 28px;
+    font-size: 14px;
+    color: #222;
+    line-height: 1.429em;
+    background: transparent calc(100% - 7px) center / 8px 13px scroll no-repeat;
+    border: 1px solid #e2e2e2;
+    border-radius: 15px;
+    box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+}
+.events .event_title {
+    overflow: visible;
+    position: relative;
 }
 </style>
   
