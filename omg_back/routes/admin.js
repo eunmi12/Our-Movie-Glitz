@@ -18,12 +18,26 @@ const { log } = require('console');
 
 //공지사항리스트
 router.get('/noticelist',(req, res) => {
-    db.query(`select notice_title,notice_date,notice_cnt from notice;`, (err, results) => {
+    const notice = req.body.notice_no;
+    db.query(`select notice_no,notice_title,notice_date,notice_cnt from notice;`, (err, results) => {
         if(err) {
             console.log('공지사항을 조회할 수 없습니다.');
             return res.status(500).json({ error: err });
         } 
         return res.json(results);
+    });
+});
+
+//공지사항페이지
+router.get('/notice/:notice_no' , (req , res ) => {
+    const notice_no = req.params.notice_no;
+    console.log("notice_no ---->", notice_no);
+    db.query(`select notice_no,notice_title,notice_date,notice_coment,notice_cnt from notice where notice_no=?;`, [notice_no] , (err, results) => {
+        if(err) {
+            console.log('공지사항을 불러올 수 없습니다.');
+            return res.status(500).json({ error : err })
+        }
+        return res.status(200).json({ data: results });
     });
 });
 
