@@ -14,7 +14,7 @@ import Login from '../views/Login.vue'
 //진우작성완
 
 //은미작성
-
+import AdminFaqList from '../admin/FaqList.vue'
 //은미작성완
 
 
@@ -82,7 +82,11 @@ const routes = [
 
 
 //은미작성
-
+{
+  path: "/admin/Faq",
+  name: "AdminFaqList",
+  component: AdminFaqList // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
+},
 
 //은미작성완
 
