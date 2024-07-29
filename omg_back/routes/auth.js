@@ -81,6 +81,63 @@ router.post("/join", async (req, res) => {
 })
 // ----------------------------------------------------------------------
 
+// 로그인-------------------------------------
+router.post("/login", async(req, res) => {
+  console.log("req.body : -------> ",req.body);
+
+  const user_id = req.body.user_id;
+  const user_pwd = req.body.user_pwd;
+
+  db.query("select user_no, user_id, user_pwd, user_name, user_phone, user_auth from user where user_id = ?",
+    [user_id, user_pwd],
+    (err, results, fields) => {
+      if(err){
+        res.send({
+          code: 400,
+          failed: "error occurred",
+          error: err,
+        });
+      } else{
+        if(results.length > 0) {
+          console.log("results : ------>",results);
+          
+          const user = results[0];
+
+          console.log(user.user_id);
+          console.log(user.user_pwd);
+          console.log(user.user_auth);
+          console.log(user.user_no);
+
+          if(user.user_pwd === user_pwd){
+            res.send({
+              //login success
+              code : 200,
+              message : "로그인 성공",
+              user_no : user.user_no,
+              user_id: user.user_id,
+              user_pwd: user.user_pwd,
+              user_auth: user.user_auth,
+              user_name: user.user_name,
+            })
+          } else{
+            res.send({
+              //비밀번호 불일치 시
+              code: 401,
+              message: "비밀번호가 일치하지 않습니다."
+            })
+          }
+        } else{
+          res.send({
+            //이메일이 존재하지 않을 시
+            code: 404,
+            message: "사용자를 찾을 수 없습니다."
+          });
+        }
+      }
+    }
+  )
+})
+
 
 //진우작성 완
 
