@@ -47,6 +47,7 @@ import SeatSelection from '../views/SeatSelection.vue'
 
 import Help from '../layouts/Helplayout.vue';
 import Faq from '../views/Faq.vue';
+import Noticelist from '../views/Noticelist.vue';
 import Notice from '../views/Notice.vue';
 import Qna from '../views/Qna.vue';
 
@@ -185,12 +186,16 @@ const routes = [
   component: Help,
   children: [
 {
-  path: 'faq',
-  component: Faq,
+  path: 'notice',
+  component: Noticelist,
 },
 {
-  path: 'notice',
+  path: 'notice/:notice_no',
   component: Notice,
+},
+{
+  path: 'faq',
+  component: Faq,
 },
 {
   path: 'qna',

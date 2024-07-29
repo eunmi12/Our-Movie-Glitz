@@ -22,7 +22,7 @@
                 <ul v-if="this.user.user_auth !== 1 && this.user.user_auth !== 0">
                     <li><router-link to="/login">로그인</router-link></li>
                     <li><router-link to="/join">회원가입</router-link></li>
-                    <li><router-link to="/help/notice">고객센터</router-link></li>
+                    <li><a @click="gotohelp()">고객센터</a></li>
 
                 </ul>
                 <ul v-if="this.user.user_auth === 1">                    
@@ -65,9 +65,9 @@ export default {
     },
     methods: {
         ...mapMutations(['setUser']),
-        // gotohelp() {
-        //     this.$router.push({ path: '/help/notice'});
-        // },
+        gotohelp() {
+            this.$router.push({ path: '/help/notice'});
+        },
         logout(){
             this.setUser({ user_id: '', user_no: '', user_auth: '' });
             localStorage.clear();
