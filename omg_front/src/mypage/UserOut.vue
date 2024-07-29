@@ -41,14 +41,14 @@ export default {
         MypageSideBar,
     },
     computed: {
-        user(){
+        users(){
             return this.$store.state.user;
             },
         },
     methods: {
         gotomainpage() {
             // 메인 페이지로 이동하는 로직 추가
-            this.$router.push(`/mypagemain/${this.user.user_no}`);
+            this.$router.push(`/mypagemain/${this.users.user_no}`);
         }
     }
 }
