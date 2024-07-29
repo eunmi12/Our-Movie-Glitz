@@ -123,6 +123,7 @@ export default {
     border: 1px solid #fdfbe7;
     border-radius: 20px;
     display: flex;
+    text-align: center;
 }
 .login_list{
     width: 50%;
