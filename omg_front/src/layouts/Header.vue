@@ -3,54 +3,79 @@
         <div class="wrap">
             <div class="logo" >
                 <h1>
-                    <a href="http://localhost:8081/">
+                    <router-link to="/">
                         <img class="img1" src="../images/logo5.png" alt="">
-                    </a>
+                    </router-link>
                 </h1>
                 <span>Our Movie Glitz</span>
             </div>
             <div class="category">
-                <ul>
-                    <li><a href="http://localhost:8081/join">회원가입</a></li>
 
-                   // <li><a href="">로그아웃</a></li>
+                <!-- // <li><a href="">로그아웃</a></li>
                    // <li><a href="">My Page</a></li>
-                   // <li @click="gotohelp()"><a>고객센터</a></li>
+                   // <li @click="gotohelp()"><a>고객센터</a></li> -->
 
-                    <li><a href="http://localhost:8081/login">로그인</a></li>
+                    <!-- <li><a href="http://localhost:8081/login">로그인</a></li>
                     <li><a href="http://localhost:8081/mypagemain">My Page</a></li>
-                    <li><a href="http://localhost:8081/help">고객센터</a></li>
+                    <li><a href="http://localhost:8081/help/notice">고객센터</a></li> -->
 
+                <ul v-if="this.user.user_auth !== 1 && this.user.user_auth !== 0">
+                    <li><router-link to="/login">로그인</router-link></li>
+                    <li><router-link to="/join">회원가입</router-link></li>
+                    <li><router-link to="/help/notice">고객센터</router-link></li>
+
+                </ul>
+                <ul v-if="this.user.user_auth === 1">                    
+                    <li><router-link to="/" @click="logout">로그아웃</router-link></li>
+                    <li><router-link :to="`/mypagemain/${user.user_no}`">My Page</router-link></li>
+                    <li><router-link to="/help/notice">고객센터</router-link></li>
+                </ul>
+                <ul v-if="this.user.user_auth === 0">                    
+                    <li><router-link to="/" @click="logout">로그아웃</router-link></li>
+                    <li><router-link :to="`/mypagemain/${user.user_no}`">My Page</router-link></li>
+                    <li><router-link to="/help/notice">고객센터</router-link></li>
                 </ul>
             </div>
         </div>
         <div class="menu">
-            <ul class="menu_list">
-                <li><a href="">영화</a></li>
-                <li><a href="http://localhost:8081/moviebooking">예매</a></li>
-                <li><a href="">이벤트</a></li>
-            </ul>
-            <ul>
-                <div class="total_search">
-                    <input  id="search" type="text" placeholder="검색">
-                    <button type="button" class="search_btn"><img src="../images/search.png" alt=""></button>
-                </div>
-            </ul>
+            <div class="menu_wrap">
+                <ul class="menu_list">
+                    <li><a href="">영화</a></li>
+                    <li><a href="http://localhost:8081/moviebooking">예매</a></li>
+                    <li><a href="">이벤트</a></li>
+                </ul>
+                <ul>
+                    <div class="total_search">
+                        <input  id="search" type="text" placeholder="검색">
+                        <button type="button" class="search_btn"><img src="../images/search.png" alt=""></button>
+                    </div>
+                </ul>
+            </div>
         </div>
     </header>
     
 </template>
 <script>
+import { mapMutations } from 'vuex';
 export default {
-    data() {
-        return {
-            sampleData: ''
-        };
+    computed:{
+        user() {
+            return this.$store.state.user;       
+        },        
     },
     methods: {
-        gotohelp() {
-            this.$router.push({ path: '/help/notice'});
-        },
+        ...mapMutations(['setUser']),
+        // gotohelp() {
+        //     this.$router.push({ path: '/help/notice'});
+        // },
+        logout(){
+            this.setUser({ user_id: '', user_no: '', user_auth: '' });
+            localStorage.clear();
+            window.location.href ="/login"
+        }
+    },
+    mounted() {
+        console.log("this.user.user_auth",this.user.user_auth);
     }
 }
 </script>
@@ -104,7 +129,7 @@ header .wrap .category{
     line-height: 50px;
 }
 .category ul li{
-    width: 25%;
+    width: 30%;
 }
 .category ul li a{
     color: #5b5a53;
@@ -115,15 +140,21 @@ header .wrap .category{
     color: #2f2e2e;
 }
 header .menu{
-    width: 80%;
+    width: 100%;
     height: 40px;
     position: absolute;
     top: 110px;
-    left: 165px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid rgb(242, 242, 242);
+}
+.menu_wrap{
+    width: 80%;
+    height: 40px;
     display: flex;
+    margin: 0 auto;
     justify-content: space-between;
 }
-.menu .menu_list{
+.menu_list{
     width: 50%;
     display: flex;
     flex-wrap: wrap;

@@ -5,7 +5,7 @@ const store = createStore({
     state() {
         return {
             user: {
-                user_email: '',
+                user_id: '',
                 user_no: '',
                 user_auth:'',
             }
@@ -17,12 +17,12 @@ const store = createStore({
         }
     },
     actions: {
-        updateUserEmail({ commit }, email) {
-            commit('setUserEmail', email);
+        updateUserEmail({ commit }, user_id) {
+            commit('setUserEmail', user_id);
         }
     },
     getters: {
-        userEmail: state => state.user.user_email
+        user_id: state => state.user.user_id
     },
 
     plugins: [
