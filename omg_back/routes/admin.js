@@ -130,6 +130,15 @@ router.post('/createfaq',(req,res) =>{
         res.json(result);
     });
 });
+router.get('/user/seats', (req, res) => {
+    let sql = 'SELECT seat_no, seat_cinema_no, seat_name,seat_reserve FROM seat WHERE seat_cinema_no = 1';
+    db.query(sql, (err, results) => {
+      if (err) {
+        throw err;
+      }
+      res.json(results);
+    });
+  });
 
 
 //은미작성 완
