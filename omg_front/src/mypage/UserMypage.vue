@@ -20,7 +20,7 @@
         </div>
         <div class="namebox">
           <span class="namebox1">성별</span>
-          <span class="namebox2">{{ user.user_gender }}</span>
+          <span class="namebox2">{{ user_gender }}</span>
         </div>
         <div class="namebox">
           <span class="namebox1">핸드폰번호</span>
@@ -48,13 +48,20 @@ import axios from 'axios';
       };
     },
     computed: {
-        user1(){
+        users(){
             return this.$store.state.user;
             },
+        user_gender() {
+          const gender = {
+            F: '여자',
+            M: '남자'
+          }
+          return gender[this.user.user_gender];
+        }
         },
     methods: {
       gotomainpage() {
-        this.$router.push(`/mypagemain/${this.user.user_no}`);
+        this.$router.push(`/mypagemain/${this.users.user_no}`);
       },
       async userinfo() {
           const user_no = this.$route.params.user_no;
