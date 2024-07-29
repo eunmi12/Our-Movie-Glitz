@@ -47,6 +47,20 @@ router.get('/movies', (req, res) => {
         return res.json(results);
     });
 });
+// 영화 목록 페이지네이션
+router.get('/movies/page', (req, res) => {
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const offset = parseInt(req.query.offset, 10) || 0;
+
+    const query = `select * from movie limit ? offset ?`;
+    db.query(query, [limit, offset], (error, results) => {
+        if (error) {
+            console.log('영화를 조회할 수 없습니다.');
+            return res.status(500).json({ error: 'error' });
+        }
+        return res.json(results);
+    });
+});
 // 영화 예매 - 상영관 선택
 router.get('/cinemas', (req, res) => {
     db.query(`select * from cinema;`, (error, results) => {
@@ -84,29 +98,84 @@ router.post('/availableDates', (req, res) => {
         return res.json(results.map(row => row.DT));
     });
 });
-// 영화 예매 - 예매 가능한 시간 조회
-// router.post('/availableTimes', (req, res) => {
-//     const { movie_no, date } = req.body;
-//     const now = new Date();
-//     const currenHour = now.getHours();
-//     const query = `select distinct screen_starttime, screen_endtime from screen where sc_movie_no = ? and screen_startdate <= ? and screen_enddate >= ? and (scrren_starttime >= ? or screen_startdate > ?)`;
-//     db.query(query, [movie_no, date, date, `${currentHour}:00:00`, date], (error, results) => {
-//         if (error) {
-//             return res.status(500).json({ error: '시간 조회 error' });
-//         }
-//         return res.json(results.map(row => row.screen_starttime));
-//     });
-// });
-// 영화 예매 - 좌석 목록 조회
-router.post('/seats', (req, res) => {
-    const { cinema_no } = req.body;
-    const query = `select * from seat where seat_cinema_no = ?`;
-    db.query(query, [cinema_no], (error, results) => {
+// 예매 날짜 목록 페이지네이션
+router.post('/availableDates/page', (req, res) => {
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const offset = parseInt(req.query.offset, 10) || 0;
+
+    const query = `select * from movie limit ? offset ?`;
+    db.query(query, [limit, offset], (error, results) => {
         if (error) {
-            return res.status(500).json({ error: '좌석 조회 error' });
+            console.log('날짜를 조회할 수 없습니다.');
+            return res.status(500).json({ error: 'error' });
         }
         return res.json(results);
     });
+});
+// 영화 예매 - 예매 가능한 시간 조회
+router.post('/availableTimes', (req, res) => {
+    // const { movie_no, cinema_no, date } = req.body;
+    // console.log('rerererere', req.body);
+    // const now = new Date();
+    // const currenHour = now.getHours();
+    // const date = req.body.date
+    // const ddate = date.toString().split('T')[0];
+    const query = `select distinct screen_starttime, screen_endtime from screen where sc_movie_no = ? and sc_cinema_no = ? and screen_date = ?`;
+    db.query(query, [req.body.movie_no, req.body.cinema_no, req.body.date], (error, results) => {
+        // console.log('받고있나', results);
+        if (error) {
+            return res.status(500).json({ error: '시간 조회 error' });
+        }
+        return res.json(results.map(row => row.screen_starttime));
+        // return res.json(results);
+    });
+});
+// 영화 예매 - 좌석 목록 조회
+router.post('/seats', async(req, res) => {
+    // console.log(req.body);
+    const date = `WITH RECURSIVE T_TEMP_DATES AS (
+        SELECT movie_startdate AS DT
+        FROM movie
+        WHERE movie_no = ? 
+        UNION
+        SELECT DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 DAY) 
+        FROM T_TEMP_DATES, movie
+        WHERE DATE_ADD(T_TEMP_DATES.DT, INTERVAL 1 DAY) <= (
+        SELECT movie_enddate FROM movie WHERE movie_no = ?
+        )
+        AND movie.movie_no = ? 
+        )
+        SELECT DT FROM T_TEMP_DATES WHERE DT >= ?;`
+    const time = `select distinct screen_starttime, screen_endtime from screen where sc_movie_no = ? and sc_cinema_no = ? and screen_date = ?;`
+    try {
+        const { movie_no, cinema_no, date, time } = req.body;
+        console.log('확인', req.body);
+        const rows = await db.query(`select s.seat_name, s.seat_reserve 
+                                    from seat s 
+                                    join movie m on m.cinema_no = s.seat_cinema_no 
+                                    join screen sc on sc.sc_cinema_no = s.seat_cinema_no
+                                    where m.movie_no = ? and s.seat_cinema_no = ? and m.date = ? and m.time = ?`, [movie_no, cinema_no, date, time]);
+        console.log('확인2', rows);
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+// 좌석 예약 상태 업데이트
+router.post('/reserve', async(req, res) => {
+    try {
+        const { seat_no, reserve } = req.body;
+        const [result] = await db.query(`update seat set seat_reserve = 0 where seat_no = ?`, [reserve, seat_no]);
+
+        if (result.affectedRows > 0) {
+            const [updatedSeat] = await db.query(`select * from seat where seat_no = ?`, [seat_no]);
+            res.json(updatedSeat[0]);
+        } else {
+            res.status(404).json({ message: 'Seat not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 // 영화 예매 - 예매 완료
 router.post('/book', (req, res) => {
