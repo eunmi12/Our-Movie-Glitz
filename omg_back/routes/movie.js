@@ -22,7 +22,18 @@ const path = require("path");
 //은미작성 완
 
 //재영작성
-
+// router.get('/movielist', (req, res) => {
+//     const movie_tag = req.params.movie_tag;
+//     db.query(`
+//       select movie_no, movie_title, movie_img0, movie_tag from movie;
+//     `,[movie_tag], (error, results, fields) => {
+//       if (error) {
+//         console.error('데이터베이스에서 프로그램 목록을 가져오는 중 오류 발생:', error);
+//         return res.status(500).json({ error: '데이터베이스 오류' });
+//       }
+//       res.json(results); // 정렬된 프로그램 목록을 JSON 형태로 응답
+//     });
+//   });
 //재영작성 완
 
 //아름작성

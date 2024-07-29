@@ -22,13 +22,16 @@
                     <span @click="goToTicket">• 예매 관리</span>
                 </li>
                 <li>
+                    <span @click="goToHelp">• 공지사항 관리</span>
+                </li>
+                <li>
                     <span @click="goToEvent">• 이벤트 관리</span>
                 </li>
                 <li>
                     <span @click="goToFAQ">• FAQ 관리</span>
                 </li>
                 <li>
-                    <span @click="goToHelp">• 1:1 문의 사항</span>
+                    <span @click="goToQNA">• 1:1 문의 사항</span>
                 </li>
             </ul>
         </div>
@@ -72,6 +75,11 @@ export default {
                 path: '/admin/'
             });
         },
+        goToHelp() {
+            this.$router.push({
+                path: '/admin/'
+            })
+        },
         goToEvent() {
             this.$router.push({
                 path: '/admin/'
@@ -82,7 +90,7 @@ export default {
                 path: '/admin/Faq'
             })
         },
-        goToHelp() {
+        goToQNA() {
             this.$router.push({
                 path: '/admin/'
             })
@@ -95,7 +103,8 @@ export default {
 .adminpage-bar {
   height: 100%;
   width: 10%;
-  position: relative;
+  position: sticky;
+  top: 30px; /* 스크롤 시 고정될 위치 */
   background-color: rgb(255, 255, 255);
   margin: 80px 2% 0 5%;
   min-height: 250px;

@@ -60,6 +60,7 @@ export default {
               console.error("마이페이지 에러 발생", error);
           }
       },
+      
   },
   mounted() {
       this.userinfo();

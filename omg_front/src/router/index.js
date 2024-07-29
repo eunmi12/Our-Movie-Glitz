@@ -15,6 +15,8 @@ import Login from '../views/Login.vue'
 
 //은미작성
 import AdminFaqList from '../admin/FaqList.vue'
+import Admin from '../admin/adminmain.vue'
+import AdminCreateFaq from '../admin/CreateFaq.vue'
 //은미작성완
 
 
@@ -47,6 +49,7 @@ import SeatSelection from '../views/SeatSelection.vue'
 
 import Help from '../layouts/Helplayout.vue';
 import Faq from '../views/Faq.vue';
+import Noticelist from '../views/Noticelist.vue';
 import Notice from '../views/Notice.vue';
 import Qna from '../views/Qna.vue';
 
@@ -88,7 +91,16 @@ const routes = [
   name: "AdminFaqList",
   component: AdminFaqList // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
 },
-
+{
+  path: "/admin",
+  name: "Admin",
+  component: Admin // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
+},
+{
+  path: "/admin/CreateFaq",
+  name: "AdminCreateFaq",
+  component: AdminCreateFaq // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
+},
 //은미작성완
 
 
@@ -185,12 +197,16 @@ const routes = [
   component: Help,
   children: [
 {
-  path: 'faq',
-  component: Faq,
+  path: 'notice',
+  component: Noticelist,
 },
 {
-  path: 'notice',
+  path: 'notice/:notice_no',
   component: Notice,
+},
+{
+  path: 'faq',
+  component: Faq,
 },
 {
   path: 'qna',
