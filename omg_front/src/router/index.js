@@ -39,6 +39,7 @@ import Review from '../mypage/Review.vue'
 import AdminpageSidebar from '../layouts/AdminpageSidebar.vue';
 import UserList from '../admin/UserList.vue';
 import MovieBooking from '../views/MovieBooking.vue';
+import SeatSelection from '../views/SeatSelection.vue'
 
 //아름작성완
 
@@ -168,6 +169,11 @@ const routes = [
   path: "/moviebooking",
   name: "MovieBooking",
   component: MovieBooking
+},
+{
+  path: "/seatselection",
+  name: "SeatSelection",
+  component: SeatSelection,
 },
 
 //아름작성완
