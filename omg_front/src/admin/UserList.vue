@@ -215,10 +215,9 @@ export default {
 .user-all-list {
     border-bottom: 1px solid #d4cdcd;
     height: 57px;
-    font-size: small;
+    font-size: medium;
     color: #5d5b5b;
     text-align: center;
-    font-weight: 50px;
 }
 
 .btn {
@@ -230,7 +229,7 @@ export default {
     color: rgb(0, 0, 0);
     padding: 7px 0;
     font-weight: 600;
-    font-size: small;
+    font-size: medium;
 }
 
 /* .user-grade-update-btn {

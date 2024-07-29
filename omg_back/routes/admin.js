@@ -43,7 +43,7 @@ router.get('/faqlist',(req, res) => {
 //은미작성
 
 //faq 수정
-router.post('/faqupdate',(req,res) =>{
+router.post('/qupdate',(req,res) =>{
     const faq_q = req.body.faq_q;
     const faq_no = req.body.faq_no;
 
@@ -53,10 +53,70 @@ router.post('/faqupdate',(req,res) =>{
             console.log("FAQ 수정 중 오류 발생");
             return res.status(500).json({ error: 'error'});
         }
-        console.log("FAQ수정:",result);
         return res.json(result);
     });
 });
+router.post('/aupdate',(req,res) =>{
+    const faq_a = req.body.faq_a;
+    const faq_no = req.body.faq_no;
+
+    console.log('Received data:', faq_a, faq_no);
+    db.query(`update faq set faq_a = ? where faq_no = ?`,[faq_a,faq_no], (error, result) =>{
+        if(error){
+            console.log("FAQ 수정 중 오류 발생");
+            return res.status(500).json({ error: 'error'});
+        }
+        return res.json(result);
+    });
+});
+router.post('/aupdate',(req,res) =>{
+    const faq_a = req.body.faq_a;
+    const faq_no = req.body.faq_no;
+
+    db.query(`update faq set faq_a = ? where faq_no = ?`,[faq_a,faq_no], (error, result) =>{
+        if(error){
+            console.log("FAQ 수정 중 오류 발생");
+            return res.status(500).json({ error: 'error'});
+        }
+        return res.json(result);
+    });
+});
+router.post('/aupdate',(req,res) =>{
+    const faq_a = req.body.faq_a;
+    const faq_no = req.body.faq_no;
+
+    db.query(`update faq set faq_a = ? where faq_no = ?`,[faq_a,faq_no], (error, result) =>{
+        if(error){
+            console.log("FAQ 수정 중 오류 발생");
+            return res.status(500).json({ error: 'error'});
+        }
+        return res.json(result);
+    });
+});
+router.post('/deletefaq',(req,res) =>{
+    const faq_no = req.body.faq_no;
+
+    db.query(`delete from faq where faq_no = ?`,[faq_no], (error, result) =>{
+        if(error){
+            console.log("FAQ 삭제 중 오류 발생");
+            return res.status(500).json({ error: 'error'});
+        }
+        return res.json(result);
+    });
+});
+router.post('/createfaq',(req,res) =>{
+    const faq_a = req.body.faq_a;
+    const faq_q = req.body.faq_q;
+    console.log('faq_a:',faq_a,"faq_q:",faq_q);
+    db.query(`insert into faq (faq_q,faq_a) values (?,?)`,[faq_q,faq_a], (error, result) =>{
+        if(error){
+            console.log("FAQ 등록 중 오류 발생");
+            return res.status(500).json({ error: 'error'});
+        }
+        res.json(result);
+    });
+});
+
 
 //은미작성 완
 
