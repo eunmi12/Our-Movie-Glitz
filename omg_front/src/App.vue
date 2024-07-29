@@ -22,6 +22,7 @@ export default {
 </script>
 
 <style>
+
  @font-face {
     font-family: 'SBAggroL';
     src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroL.woff') format('woff');

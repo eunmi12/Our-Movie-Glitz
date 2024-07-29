@@ -84,7 +84,7 @@ header{
     width: 100%;
     margin-top: 20px;
     margin: 0 auto;
-    margin-bottom: 60px;
+    margin-bottom: 70px;
     background-color: #f0eeda;
 }
 header .wrap{
@@ -141,7 +141,7 @@ header .wrap .category{
 }
 header .menu{
     width: 100%;
-    height: 40px;
+    height: 50px;
     position: absolute;
     top: 110px;
     margin-bottom: 5px;

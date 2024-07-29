@@ -23,13 +23,13 @@ export default {
 <style scoped>
 .footer{
     text-align: center;
-    background: #ccc;
+    background: #f8f8f8;
     padding: 20px;
     margin-top: 50px;
     /* 언제든 수정 가능 */
-    /* position: relative;
-    bottom: 0;
-    width: 100%; */
+    position: relative;
+    top: 0;
+    width: 100%;
 }
 
 p{
