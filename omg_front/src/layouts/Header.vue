@@ -44,12 +44,12 @@
                 <ul v-if="this.user.user_auth === 1">                    
                     <li><router-link to="/" @click="logout">로그아웃</router-link></li>
                     <li><router-link :to="`/mypagemain/${user.user_no}`">My Page</router-link></li>
-                    <li><router-link to="/help/notice">고객센터</router-link></li>
+                    <li><a @click="gotohelp()">고객센터</a></li>
                 </ul>
                 <ul v-if="this.user.user_auth === 0">                    
                     <li><router-link to="/" @click="logout">로그아웃</router-link></li>
                     <li><router-link :to="`/mypagemain/${user.user_no}`">My Page</router-link></li>
-                    <li><router-link to="/help/notice">고객센터</router-link></li>
+                    <li><a @click="gotohelp()">고객센터</a></li>
                 </ul>
             </div>
         </div>
