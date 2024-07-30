@@ -56,7 +56,7 @@ router.post('/getcoupon', function(request, response, next){
         function(error, result, field){
         if(error){
             console.error(error);
-            return response.status(500).json({ error: '마이페이지 유저정보 에러' });
+            return response.status(500).json({ error: '쿠폰갯수 에러' });
         }
         response.json(result);
         console.log(result);
@@ -67,12 +67,12 @@ router.post('/getcoupon', function(request, response, next){
 router.post('/rev/:user_no', function(request, response, next){
     const user_no = request.params.user_no;
 
-    db.query(`select m.movie_title, DATE_FORMAT(ticket_date, "%Y년 %m월 %d일 %h시") AS ticket_date, ticket_total_price,ticket_cnt,ticket_seat from ticket t join user u on t.ticket_user_no = u.user_no join movie m on t.ticket_movie_no = m.movie_no where user_no = ?;`,
+    db.query(`select m.movie_title, DATE_FORMAT(ticket_date, "%Y-%m-%d-%h시") AS ticket_date, ticket_total_price,ticket_cnt,ticket_seat from ticket t join user u on t.ticket_user_no = u.user_no join movie m on t.ticket_movie_no = m.movie_no where user_no = ?;`,
         [user_no],
         function(error, result, field){
         if (error) {
             console.error(error);
-            return response.status(500).json({ error: '마이페이지 예약정보 에러' });
+            return response.status(500).json({ error: '예매내역 에러' });
         }
         response.json(result);
         console.log(result);
@@ -82,12 +82,12 @@ router.post('/rev/:user_no', function(request, response, next){
 router.post('/gogaek/:user_no', function(request, response, next){
     const user_no = request.params.user_no;
 
-    db.query(`select qna_no, qna_title, DATE_FORMAT(qna_date, "%Y-%m-%d-%h:%i") AS qna_date from qna where qna_user_no = ?;`,
+    db.query(`select qna_no, qna_comment, qna_title, DATE_FORMAT(qna_date, "%Y-%m-%d-%h:%i") AS qna_date from qna where qna_user_no = ?;`,
         [user_no],
         function(error, result, field){
         if (error) {
             console.error(error);
-            return response.status(500).json({ error: '마이페이지 예약정보 에러' });
+            return response.status(500).json({ error: '문희내역 에러' });
         }
         response.json(result);
         console.log(result);
@@ -97,7 +97,7 @@ router.post('/gogaek/:user_no', function(request, response, next){
 router.post('/review/:user_no', function(request, response, next){
     const user_no = request.params.user_no;
 
-    db.query(`select m.movie_title, r.review_comment, r.review_like, DATE_FORMAT(r.review_date, "%Y-%m-%d") AS review_date, r.review_rate 
+    db.query(`select review_no, m.movie_title, r.review_comment, r.review_like, DATE_FORMAT(r.review_date, "%Y-%m-%d") AS review_date, r.review_rate 
                 from review r
                 join movie m on r.re_movie_no = m.movie_no
                 join user u on r.re_user_no = u.user_no
@@ -106,7 +106,7 @@ router.post('/review/:user_no', function(request, response, next){
         function(error, result, field){
         if (error) {
             console.error(error);
-            return response.status(500).json({ error: '마이페이지 예약정보 에러' });
+            return response.status(500).json({ error: '리뷰내역 에러' });
         }
         response.json(result);
         console.log(result);
@@ -124,7 +124,37 @@ router.post('/coupon/:user_no', function(request, response, next){
         function(error, result, field){
         if (error) {
             console.error(error);
-            return response.status(500).json({ error: '마이페이지 예약정보 에러' });
+            return response.status(500).json({ error: '쿠폰 상세 정보 에러' });
+        }
+        response.json(result);
+        console.log(result);
+    });
+});
+//리뷰 삭제하기
+router.post('/delreview', function(request, response, next){
+    const review_no = request.body.review_no;
+
+    db.query(`DELETE FROM review WHERE review_no = ?;`,
+        [review_no],
+        function(error, result, field){
+        if (error) {
+            console.error(error);
+            return response.status(500).json({ error: '리뷰 삭제 중 에러 발생' });
+        }
+        response.json(result);
+        console.log(result);
+    });
+});
+//qna 삭제하기
+router.post('/delqna', function(request, response, next){
+    const qna_no = request.body.qna_no;
+
+    db.query(`delete from qna where qna_no = ?;`,
+        [qna_no],
+        function(error, result, field){
+        if (error) {
+            console.error(error);
+            return response.status(500).json({ error: '문희내역 삭제 중 에러 발생' });
         }
         response.json(result);
         console.log(result);

@@ -25,8 +25,8 @@
             </div>
         </div>
         <div class="button">
-            <button class="ok">수정 완료</button>
-            <button class="no" @click="gotomainpage">수정 취소</button>
+            <button class="ok" @click="deleteuser(user.user_no)">탈퇴하기</button>
+            <button class="no" @click="gotomainpage">탈퇴취소</button>
         </div>
     </div>    
 </template>
