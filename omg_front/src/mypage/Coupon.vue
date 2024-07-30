@@ -6,18 +6,25 @@
       <div class="mypagebox">
         <div class="rev_box">
           <p class="text1">MY 쿠폰</p>
-          <div v-for="cp in coupon" :key="cp.coupon_title" class="user_coupon">
-            <div class="coupon_info">
-              <span class="coupon_title">{{ cp.coupon_title }}</span>
+            <div v-if="coupon.length > 0">
+              <div v-for="cp in coupon" :key="cp.coupon_title" class="user_coupon">
+                <div class="coupon_info">
+                  <span class="coupon_title">{{ cp.coupon_title }}</span>
+                </div>
+                <div class="coupon_details">
+                  <div class="img_box">
+                    <img src="../images/coupon.png" class="coupon_img">
+                  </div>
+                  <div class="info">
+                    <span class="coupon_sale">{{ cp.coupon_sale }}원</span>
+                    <!-- <span class="coupon_img1">{{ cp.coupon_img1 }}</span> -->
+                    <span class="coupon_enddate">{{ cp.coupon_enddate }}까지</span>
+                    <span class="coupon_comment">{{ cp.coupon_comment }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="coupon_details">
-              <span class="coupon_sale">{{ cp.coupon_sale }}원</span>
-              <span class="coupon_img1">{{ cp.coupon_img1 }}</span>
-              <span class="coupon_startdate">{{ cp.coupon_startdate }}부터</span>
-              <span class="coupon_enddate">{{ cp.coupon_enddate }}까지</span>
-              <span class="coupon_comment">{{ cp.coupon_comment }}</span>
-            </div>
-          </div>
+          <div v-else>쿠폰함이 비어있습니다</div>
         </div>
       </div>
     </div>
@@ -118,13 +125,20 @@ export default {
 
 .coupon_details {
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   gap: 5px;
   padding-left: 10px;
   padding-top: 10px;
+  text-align: right;
 }
-
 .coupon_details span {
   display: block;
+}
+.coupon_img {
+  width: 200px;
+  height: 200px;
+}
+.info {
+  margin-top: 50px;
 }
 </style>
