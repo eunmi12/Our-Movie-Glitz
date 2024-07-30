@@ -313,6 +313,7 @@ option{
 }
 
 .join_btn{
+    text-align: center;
     margin: 20px;
 }
 
