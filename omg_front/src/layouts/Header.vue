@@ -1,9 +1,25 @@
 <template>
     <header>
         <div class="wrap">
-            <div class="logo" >
+            <div class="logo" v-if="this.user.user_auth !== 1 && this.user.user_auth !== 0">
                 <h1>
                     <router-link to="/">
+                        <img class="img1" src="../images/logo5.png" alt="">
+                    </router-link>
+                </h1>
+                <span>Our Movie Glitz</span>
+            </div>
+            <div class="logo" v-if="this.user.user_auth === 1">
+                <h1>
+                    <router-link to="/">
+                        <img class="img1" src="../images/logo5.png" alt="">
+                    </router-link>
+                </h1>
+                <span>Our Movie Glitz</span>
+            </div>
+            <div class="logo" v-if="this.user.user_auth === 0">
+                <h1>
+                    <router-link to="/admin">
                         <img class="img1" src="../images/logo5.png" alt="">
                     </router-link>
                 </h1>
