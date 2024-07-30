@@ -4,9 +4,15 @@
       <div class="mypagemain">
         <MypageSideBar />
         <div class="mypagebox">
-          <div class="rev_box">
-            <p class="text1">MY 문희내역</p>
+          <div class="qna_box">
+          <p class="text1">MY 문의내역</p>
+          <div v-for="qna in helpcenter" :key="qna.qna_title" class="user_qna">
+            <div class="qna_info">
+              <span class="qna_title">{{ qna.qna_title }}</span>
+              <span class="qna_date">{{ qna.qna_date }}</span>
+            </div>
           </div>
+        </div>
         </div>
       </div>
     </div>    
@@ -15,12 +21,32 @@
   <script>
   import MypageSideBar from '../layouts/MypageSideBar.vue';
   import MypageTop from '../layouts/MypageTop.vue';
+  import axios from 'axios';
   
   export default {
     components: {
       MypageTop,
       MypageSideBar,
     },
+    data() {
+      return {
+        helpcenter: [],
+      };
+    },
+    methods: {
+      async userqna() {
+        const user_no = this.$route.params.user_no;
+        try {
+          const response = await axios.post(`http://localhost:3000/user/gogaek/${user_no}`);
+          this.helpcenter = response.data;
+        } catch (error) {
+          console.error("문희내역 에러 발생", error);
+        }
+      },
+    },
+    mounted() {
+      this.userqna();
+    }
   }
   </script>
   
@@ -62,5 +88,21 @@
     padding-bottom: 10px;
     margin-bottom: 10px;
   }
+  .user_qna {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+.qna_info {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+.qna_title {
+  font-weight: bold;
+}
+.qna_date {
+  color: #888;
+}
   </style>
   
