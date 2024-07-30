@@ -25,10 +25,11 @@ const path = require("path");
 router.get('/movielist/:tag', (req, res) => {
     const movie_tag = req.params.tag;
     const sql = `
-        SELECT m.movie_no, m.movie_img0, m.movie_title, r.review_rate
+        SELECT m.movie_no, m.movie_img0, m.movie_title, r.review_rate, m.movie_cnt
         FROM movie m
         LEFT JOIN review r ON m.movie_no = r.re_movie_no 
         WHERE m.movie_tag = ?
+        order by m.movie_cnt desc
         LIMIT 3;
     `;
     db.query(sql, [movie_tag], (err, results) => {

@@ -1,201 +1,98 @@
 <template>
     <div>
-    <div class="carousel"> 
-          <!-- <video src="../videos/영화1.mp4" autoplay muted loop><a href=""></a></video> -->
-          <!-- <video src="../videos/영화1.mp4"><a href=""></a></video> -->
-          <img src="../images/mainpage/영화1.png">
-          <strong class="main_name">파일럿</strong>
-          <span class="main_sname">파일럿의 상세내용 입니다.<br>asdsadsadasdsadsa</span>
-          <div class="main_select"><a href="" id="select">상세보기</a></div>
-    </div>
-
-     <div class="list">
-       <div class="contents">
-        <h3>MOVIE</h3>
-         <ul class="menu_list">
-            <li>
-             <dl class="type">
-                    <dt><span>액션</span><a href="" class="btn_more">더보기</a></dt>
-                  <dd v-for="movie in movielist" :key="movie.movie_no">
-                     <a href="">
-                         <div class="img_wrap" data-scale="false">
-                             <img :src="require(`../images/mainpage/${movie.movie_img0}`)" alt="액션 영화 1 제목입니다">
-                         </div>
-                         <div class="img_wrapinfo">
-                            <span>{{ movie.movie_title }}</span>
-                            <strong>영화 평점입니다</strong>
-                         </div>
-                      </a>
-                  </dd>
-              </dl>
-          </li>   
-          <li>
-             <dl class="type">
-                    <dt><span>코미디</span><a href="" class="btn_more">더보기</a></dt>
-                  <dd>
-                     <a href="">
-                         <div class="img_wrap" data-scale="false">
-                             <img src="../images/mainpage/영화2.png" alt="코미디 영화 1 제목입니다">
-                         </div>
-                         <div class="img_wrapinfo">
-                            <span>영화 제목입니다</span>
-                            <strong>영화 평점입니다</strong>
-                         </div>
-                      </a>
-                  </dd>
-                  <dd>
-                     <a href="">
-                         <div class="img_wrap" data-scale="false">
-                             <img src="../images/mainpage/영화2.png" alt="코미디 영화 1 제목입니다">
-                         </div>
-                         <div class="img_wrapinfo">
-                            <span>영화 제목입니다</span>
-                            <strong>영화 평점입니다</strong>
-                         </div>
-                      </a>
-                  </dd>
-                  <dd>
-                     <a href="">
-                         <div class="img_wrap" data-scale="false">
-                             <img src="../images/mainpage/영화2.png" alt="코미디 영화 1 제목입니다">
-                         </div>
-                         <div class="img_wrapinfo">
-                            <span>영화 제목입니다</span>
-                            <strong>영화 평점입니다</strong>
-                         </div>
-                      </a>
-                  </dd>
-              </dl>
-          </li>   
-          <li>
-             <dl class="type">
-                    <dt><span>가족</span><a href="" class="btn_more">더보기</a></dt>
-                  <dd>
-                     <a href="">
-                         <div class="img_wrap" data-scale="false">
-                             <img src="../images/mainpage/영화3.png" alt="가족 영화 1 제목입니다">
-                         </div>
-                         <div class="img_wrapinfo">
-                            <span>영화 제목입니다</span>
-                            <strong>영화 평점입니다</strong>
-                         </div>
-                      </a>
-                  </dd>
-                  <dd>
-                     <a href="">
-                         <div class="img_wrap" data-scale="false">
-                             <img src="../images/mainpage/영화3.png" alt="가족 영화 2 제목입니다">
-                         </div>
-                         <div class="img_wrapinfo">
-                            <span>영화 제목입니다</span>
-                            <strong>영화 평점입니다</strong>
-                         </div>
-                      </a>
-                  </dd>
-                  <dd>
-                     <a href="">
-                         <div class="img_wrap" data-scale="false">
-                             <img src="../images/mainpage/영화4.png" alt="가족 영화 3 제목입니다">
-                         </div>
-                         <div class="img_wrapinfo">
-                            <span>영화 제목입니다</span>
-                            <strong>영화 평점입니다</strong>
-                         </div>
-                      </a>
-                  </dd>
-              </dl>
-          </li>   
-          <li>
-             <dl class="type">
-                    <dt><span>액션</span><a href="" class="btn_more">더보기</a></dt>
-                  <dd>
-                     <a href="">
-                         <div class="img_wrap" data-scale="false">
-                             <img src="../images/mainpage/영화5.png" alt="공포 영화 1 제목입니다">
-                         </div>
-                         <div class="img_wrapinfo">
-                            <span>영화 제목입니다</span>
-                            <strong>영화 평점입니다</strong>
-                         </div>
-                      </a>
-                  </dd>
-                  <dd>
-                     <a href="">
-                         <div class="img_wrap" data-scale="false">
-                             <img src="../images/mainpage/영화5.png" alt="공포 영화 2 제목입니다">
-                         </div>
-                         <div class="img_wrapinfo">
-                            <span>영화 제목입니다</span>
-                            <strong>영화 평점입니다</strong>
-                         </div>
-                      </a>
-                  </dd>
-                  <dd>
-                     <a href="">
-                         <div class="img_wrap" data-scale="false">
-                             <img src="../images/mainpage/영화5.png" alt="공포 영화 3 제목입니다">
-                         </div>
-                         <div class="img_wrapinfo">
-                            <span>영화 제목입니다</span>
-                            <strong>영화 평점입니다</strong>
-                         </div>
-                      </a>
-                  </dd>
-              </dl>
-          </li>   
-        </ul>
-     </div>
-    </div>
-<div class="events">
-    <div class="contents">
-        <div class="event_name">
-            <h3>EVENTS</h3><a href="" class="event_all">더보기</a>
-        </div>
-        <div class="event_title">
-            <div>
-                <div>
-                    <div>
-
+      <div class="carousel">
+        <img src="../images/mainpage/액션1.png" alt="">
+        <!-- <video src="../videos/영화1.mp4"><a href=""></a></video> -->
+        <strong class="main_name">파일럿</strong>
+        <span class="main_sname">파일럿의 상세내용 입니다.<br>asdsadsadasdsadsa</span>
+        <div class="main_select"><a href="" id="select">상세보기</a></div>
+      </div>
+  
+      <div class="list">
+        <div class="contents">
+          <h3>MOVIE</h3>
+          <ul class="menu_list">
+            <li v-for="(tag, index) in tags" :key="index">
+              <dl class="type">
+                <dt>
+                  <span>{{ tag }}</span>
+                  <a href="" class="btn_more">더보기</a>
+                </dt>
+                <dd v-for="movie in movielists[index]" :key="movie.movie_no">
+                  <a href="">
+                    <div class="img_wrap" data-scale="false">
+                      <img :src="getImagePath(movie.movie_img0)" alt="영화 이미지">
                     </div>
-                </div>
-            </div>
+                    <div class="img_wrapinfo">
+                      <span>{{ movie.movie_title }}</span>
+                      <strong>{{ movie.review_rate ? movie.review_rate : '평점 정보 없음' }}</strong>
+                    </div>
+                  </a>
+                </dd>
+              </dl>
+            </li>
+          </ul>
         </div>
+      </div>
+  
+      <div class="events">
+        <div class="contents">
+          <div class="event_name">
+            <h3>EVENTS</h3>
+            <a href="" class="event_all">더보기</a>
+          </div>
+          <div class="event_title">
+            <div class="event_box1">
+              <div class="event_box2">
+                <div class="event_box3">
+                    <a href="">
+                        <div class="img_wrap1">
+                            <img src="../images/mainpage/영화1.png" alt="이벤트 이미지당">
+                        </div>
+                        <strong>이벤트 제목</strong>
+                        <span>이벤트 기간</span>
+                    </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
-
- </div>
-</template>
+  </template>
   
-<script>
-import axios from 'axios';
+  <script>
+  import axios from 'axios';
   
-export default {
-  data() {
-    return {
-      movielist: [],
-    };
-  },
-  created() {
-    this.fetchMovielist('액션');
-  },
-//   mounted() {
-//         this.fetchMovielist('액션'); // 컴포넌트가 마운트 될 때, 영화 목록을 가져옴
-//     },
-methods: {
-    fetchMovielist(tag) {
-      axios.get(`http://localhost:3000/movie/movielist/${tag}`)
-        .then(response => {
-          console.log('Movies fetched:', response.data);
-          this.movielist = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching movielist:', error);
-        });
+  export default {
+    data() {
+      return {
+        tags: ['액션', '가족', '로맨스', '공포'], // 태그 배열
+        movielists: [[], [], [], []], // 태그별 영화 목록 배열
+      };
     },
-  },
-};
-
-</script>
+    created() {
+      this.tags.forEach((tag, index) => {
+        this.fetchMovielist(tag, index);
+      });
+    },
+    methods: {
+      fetchMovielist(tag, index) {
+        axios.get(`http://localhost:3000/movie/movielist/${tag}`)
+          .then(response => {
+            console.log(`Movies fetched for tag ${tag}:`, response.data);
+            this.movielists[index] = response.data; // movielists 배열에 데이터 설정
+          })
+          .catch(error => {
+            console.error(`Error fetching movielist for tag ${tag}:`, error);
+          });
+      },
+      getImagePath(imageName) {
+        return require(`../images/mainpage/tag/${imageName}`);
+      }
+    },
+  };
+  </script>
   
 <style scoped>
  /* 전체 캐러셀 컨테이너 스타일 */
@@ -327,7 +224,7 @@ methods: {
 .type dd a .img_wrap{
     position: relative;
     width: 75px;
-    height: 76px;
+    height: 95px;
     border-radius: 5px;
 }
 .img_wrap{
@@ -340,7 +237,7 @@ methods: {
     top: 50%;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     transform: translate(0, -50%);
 }
 .type dd a .img_wrapinfo{
@@ -391,6 +288,35 @@ methods: {
 .events .event_title {
     overflow: visible;
     position: relative;
+
+}
+
+.img_wrap1 img{
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform: translate(0, -50%);
+}
+.event_box1{
+    width: 270px;
+  margin: 100px 100px;
+    border: 1px solid #e4e4e4;
+    border-radius: 10px;
+}
+.event_box2{
+    width: 270px;
+    padding: 20px 19px 30px;
+    border: 1px solid #e4e4e4;
+    border-radius: 10px;
+}
+.event_box3{
+    width: 270px;
+    padding: 20px 19px 30px;
+    border: 1px solid #e4e4e4;
+    border-radius: 10px;
 }
 </style>
   
