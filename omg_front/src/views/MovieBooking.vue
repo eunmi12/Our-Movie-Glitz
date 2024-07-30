@@ -258,7 +258,8 @@ export default {
                         movie_no: this.selectedMovie.movie_no,
                         cinema_no: this.selectedCinema.cinema_no,
                         date: this.selectedDate.toString().split('T')[0],
-                        time: this.selectedTime
+                        time: this.selectedTime,
+                        user_no: this.$store.state.user.user_no,
                     }
                 }).then(results => {
                     console.log('예매 정보 저장 완료');
@@ -316,10 +317,10 @@ export default {
                 movie_no: this.selectedMovie.movie_no,
                 cinema_no: this.selectedCinema.cinema_no,
                 date: this.selectedDate.toString().split('T')[0],
+                user_no: this.$store.state.user.user_no,
                 time: this.selectedTime,
-                seate: this.selectedSeats.map(seat => seat.seat_no),
+                // seate: this.selectedSeats.map(seat => seat.seat_no),
                 total_price: this.selectedMovie.movie_price * this.selectedSeats.length,
-                ticket_type: 'standard' // 예매 타입은 필요에 따라 변경
             };
 
             axios.post(`http://localhost:3000/movie/book`, bookingDetails).then((results) => {

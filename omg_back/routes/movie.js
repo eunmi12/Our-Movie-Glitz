@@ -139,7 +139,7 @@ router.post('/availableTimes', (req, res) => {
 // 영화 예매 - 좌석 목록 조회
 // 앞단계 정보 저장
 router.post('/saveinfo', (req, res) => {
-    db.query(`insert into reservation (movie_no, cinema_no, date, time) values (?, ?, ?, ?)`, [req.body.movie_no, req.body.cinema_no, req.body.date, req.body.time], (error, results) => {
+    db.query(`insert into reservation (movie_no, cinema_no, date, time, user_no) values (?, ?, ?, ?, ?)`, [req.body.movie_no, req.body.cinema_no, req.body.date, req.body.time, req.body.user_no], (error, results) => {
         if (error) {
             return res.status(500).json({ error: '저장 error' });
         }
@@ -221,18 +221,37 @@ router.post('/reserve', async(req, res) => {
 });
 // 영화 예매 - 예매 완료
 router.post('/book', (req, res) => {
-    const { movie_no, cinema_no, date, time, seats } = req.body;
-    const query = `insert into ticket (ticket_movie_no, ti_se_cinema_no, ticket_date, ticket_time, ticket_seat_no, ticket_type)
-                    values (?, ?, ?, ?, ?, '1')`;
-    const values = seats.map(seat_no => [movie_no, cinema_no, date, time, seat_no]);
+    const bookingDetails = {
+        date: this.formatDate(this.date),
+        time: this.time,
+        seats: this.selectedSeats,
+        movie_no: this.selectedMovie.movie_no,
+        cinema_no: this.selectedCinema.cinema_no,
+        // date: this.selectedDate.toString().split('T')[0],
+        user_no: this.$store.state.user.user_no,
+        time: this.selectedTime,
+        // seate: this.selectedSeats.map(seat => seat.seat_no),
+        total_price: this.selectedMovie.movie_price * this.selectedSeats.length,
+    };
+    const { date, time, seats, movie_no, cinema_no, user_no, total_price } = req.body;
+    const reservationsql = `select * from reservation;`
+    db.query(reservationsql, (error, results) => {
+        if(error) {
+            return res.status(500).json({ error: '가져오기 error' });
+        } return res.json({ message: '정보 가져옴' });
+    });
 
-    db.query(query, [values], (error, results) => {
+    const query = `insert into ticket (ticket_total_price, ticket_date, ticket_user_no, ticket_movie_no, ti_se_cinema_no)
+                    values (?, ?, ?, ?, ?, ?)`;
+    // const values = seats.map(seat_no => [movie_no, cinema_no, date, time, seat_no]);
+
+    db.query(query, [date, time, seats, movie_no, cinema_no, user_no, total_price], (error, results) => {
         if (error) {
             return res.status(500).json({ error: '예매 error' });
         }
         return res.json({ message: '예매가 완료되었습니다.' });
     });
-});
+}); 
 
 //아름작성 완
 
