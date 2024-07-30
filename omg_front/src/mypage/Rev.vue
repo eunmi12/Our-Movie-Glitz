@@ -1,44 +1,84 @@
 <template>
-    <div class="container">
-      <MypageTop />
-      <div class="mypagemain">
-        <MypageSideBar />
-        <div class="mypagebox">
-          <div class="rev_box">
-            <p class="text1">MY 예매내역</p>
-            <div v-for="rev in reservations" :key="rev.movie_title" class="user_rev">
-              <div class="rev_info">
+  <div class="container">
+    <MypageTop />
+    <div class="mypagemain">
+      <MypageSideBar />
+      <div class="mypagebox">
+        <div class="rev_box">
+          <p class="text1">MY 예매내역</p>
+          <div v-if="reservations.length > 0">
+            <div v-for="(rev, index) in reservations" :key="rev.movie_title" class="user_rev">
+              <div class="rev_info" @click="revtoggle(index)">
                 <span class="rev_title">{{ rev.movie_title }}</span>
                 <span class="rev_date">{{ rev.ticket_date }}</span>
               </div>
               <div class="rev_details">
                 <span class="rev_cnt">{{ rev.ticket_cnt }}명</span>
-                <span class="rev_seat">{{ rev.ticket_seat }}</span>
                 <span class="rev_price">{{ rev.ticket_total_price }}원</span>
+              </div>
+              <div v-if="selectedRevIndex === index" class="toggle ticket">
+                <div class="ticket-container">
+                  <img src="../images/mainpage/영화1.png" class="ticket-image">
+                  <div class="ticket-content">
+                    <div class="ticket-header">
+                      <div class="ticket-from">
+                        <span class="label">Title</span>
+                        <span class="value">{{ rev.movie_title }}</span>
+                        <span class="sub-label">enjoy</span>
+                      </div>
+                      <div class="ticket-to">
+                        <span class="label">Price</span>
+                        <span class="value">{{ rev.ticket_total_price }}</span>
+                        <span class="sub-label">원</span>
+                      </div>
+                    </div>
+                    <div class="ticket-info">
+                      <div class="ticket-seat">
+                        <span class="label">Seat</span>
+                        <span class="value">{{ rev.ticket_seat }}</span>
+                      </div>
+                      <div class="ticket-gate">
+                        <span class="label">Gate</span>
+                        <span class="value">3</span>
+                      </div>
+                      <div class="ticket-time">
+                        <span class="label">Start Time</span>
+                        <span class="value">{{ rev.ticket_date }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+          <p v-else>예매내역이 없습니다</p>
         </div>
       </div>
-    </div>    
-  </template>
-  
-  <script>
-  import MypageSideBar from '../layouts/MypageSideBar.vue';
-  import MypageTop from '../layouts/MypageTop.vue';
-  import axios from 'axios';
-  
-  export default {
-    components: {
-      MypageTop,
-      MypageSideBar,
-    },
-    data() {
+    </div>
+  </div>
+</template>
+
+<script>
+import MypageSideBar from '../layouts/MypageSideBar.vue';
+import MypageTop from '../layouts/MypageTop.vue';
+import axios from 'axios';
+
+export default {
+  components: {
+    MypageTop,
+    MypageSideBar,
+  },
+  data() {
     return {
       reservations: [],
+      selectedRevIndex: null, // 선택된 예약의 인덱스를 저장할 변수
     };
   },
   methods: {
+    revtoggle(index) {
+      // 같은 인덱스를 클릭하면 토글, 다른 인덱스를 클릭하면 선택 변경
+      this.selectedRevIndex = this.selectedRevIndex === index ? null : index;
+    },
     async userrev() {
       const user_no = this.$route.params.user_no;
       try {
@@ -52,47 +92,53 @@
   mounted() {
     this.userrev();
   }
-  }
+}
 </script>
-  
+
 <style scoped>
 .container {
-    width: 80%;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 .mypagemain {
-    display: flex;
-    margin-top: 20px;
+  display: flex;
+  margin-top: 20px;
 }
+
 .mypagebox {
-    width: 100%;
-    margin-left: 100px;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
+  width: 100%;
+  margin-left: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
+
 .rev_box {
-    border: 1px solid #f0eeda;
-    padding: 20px;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f0eeda;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
+
 .text1 {
-    text-align: left;
-    font-weight: bold;
-    border-bottom: 1px solid rgb(179, 177, 177);
-    padding-bottom: 10px;
-    margin-bottom: 10px;
+  text-align: left;
+  font-weight: bold;
+  border-bottom: 1px solid rgb(179, 177, 177);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
 }
+
 .user_rev {
   margin-bottom: 20px;
   border-bottom: 1px solid #ddd;
   padding-bottom: 10px;
+  cursor: pointer;
 }
 
 .rev_info {
@@ -114,5 +160,82 @@
 .rev_date {
   color: #888;
 }
-  </style>
-  
+
+.toggle {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+.ticket {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 10px;
+}
+
+.ticket-container {
+  display: flex;
+  gap: 20px; /* 이미지와 컨텐츠 사이의 간격을 넓혔습니다 */
+  width: 100%;
+}
+
+.ticket-image {
+  width: 160px;
+  height: 170px;
+}
+
+.ticket-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* 컨텐츠 내부 요소 간의 간격을 넓혔습니다 */
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ticket-from,
+.ticket-to {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ticket-info {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* 티켓 정보 요소 간의 간격을 넓혔습니다 */
+}
+
+.ticket-time,
+.ticket-seat,
+.ticket-gate,
+.ticket-class {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.label {
+  font-weight: bold;
+  color: #333;
+}
+
+.value {
+  font-size: 1.2em;
+  color: #555;
+}
+
+.sub-label {
+  color: #999;
+}
+
+.ticket-qr {
+  display: flex;
+  justify-content: center;
+  padding-top: 10px;
+}
+</style>

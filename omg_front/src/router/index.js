@@ -18,6 +18,7 @@ import AdminFaqList from '../admin/FaqList.vue'
 import Admin from '../admin/adminmain.vue'
 import AdminCreateFaq from '../admin/CreateFaq.vue'
 import AdminNotice from '../admin/notice.vue'
+import moviecreate from '../admin/createmovie.vue'
 import userseat from '../views/test.vue'
 //은미작성완
 
@@ -37,6 +38,7 @@ import Rev from '../mypage/Rev.vue'
 import UserMypage from '../mypage/UserMypage.vue'
 import UserOut from '../mypage/UserOut.vue'
 import Review from '../mypage/Review.vue'
+import GogaekDetail from '../mypage/GogaekDetail.vue'
 //회창작성완
 
 //아름작성
@@ -109,10 +111,16 @@ const routes = [
   component: AdminNotice // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
 },
 {
+  path: "/admin/movie",
+  name: "moviecreate",
+  component: moviecreate // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
+},
+{
   path: "/user/seat",
   name: "userseat",
   component: userseat // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
 },
+
 //은미작성완
 
 
@@ -175,6 +183,11 @@ const routes = [
   path: '/review/:user_no',
   name: 'Review',
   component: Review
+},
+{
+  path: '/gogaekdetail/:user_no',
+  name: 'GogaekDetail',
+  component: GogaekDetail
 },
 //회창작성완
 

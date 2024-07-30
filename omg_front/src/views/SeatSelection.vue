@@ -19,7 +19,7 @@
         <div v-for="(row, rowIndex) in seatRows" :key="rowIndex" class="seat-row">
           <span class="seat-label">{{ row.label }}</span>
           <span
-            v-for="seat in row.seats"
+            v-for="seat in row.seat"
             :key="seat.seat_no"
             :class="['seat', { 'selected': seat.selected, 'reserved': !seat.seat_reserve }]"
             @click="selectSeat(seat)"
@@ -29,78 +29,22 @@
         </div>
       </div>
       <div class="confirm-seats">
-        <button @click="confirmSeats">좌석 선택 완료</button>
+        <button @click="confirmBooking">예약 완료</button>
       </div>
     </div>
   </template>
   
   <script>
+import axiot from 'axios';
+
   export default {
     data() {
       return {
-        seats: [
-          { seat_no: 1, seat_cinema_no: 1, seat_name: 'A1', seat_reserve: 1 },
-          { seat_no: 2, seat_cinema_no: 1, seat_name: 'A2', seat_reserve: 1 },
-          { seat_no: 3, seat_cinema_no: 1, seat_name: 'A3', seat_reserve: 1 },
-          { seat_no: 4, seat_cinema_no: 1, seat_name: 'A4', seat_reserve: 1 },
-          { seat_no: 5, seat_cinema_no: 1, seat_name: 'A5', seat_reserve: 1 },
-          { seat_no: 6, seat_cinema_no: 1, seat_name: 'A6', seat_reserve: 1 },
-          { seat_no: 7, seat_cinema_no: 1, seat_name: 'A7', seat_reserve: 1 },
-          { seat_no: 8, seat_cinema_no: 1, seat_name: 'A8', seat_reserve: 1 },
-          { seat_no: 9, seat_cinema_no: 1, seat_name: 'A9', seat_reserve: 1 },
-          { seat_no: 10, seat_cinema_no: 1, seat_name: 'A10', seat_reserve: 1 },
-        //   { seat_no: 11, seat_cinema_no: 1, seat_name: 'A11', seat_reserve: 1 },
-        //   { seat_no: 12, seat_cinema_no: 1, seat_name: 'A12', seat_reserve: 1 },
-        //   { seat_no: 13, seat_cinema_no: 1, seat_name: 'A13', seat_reserve: 1 },
-        //   { seat_no: 14, seat_cinema_no: 1, seat_name: 'A14', seat_reserve: 1 },
-        //   { seat_no: 15, seat_cinema_no: 1, seat_name: 'A15', seat_reserve: 1 },
-        //   { seat_no: 16, seat_cinema_no: 1, seat_name: 'A16', seat_reserve: 1 },
-        //   { seat_no: 17, seat_cinema_no: 1, seat_name: 'A17', seat_reserve: 1 },
-        //   { seat_no: 18, seat_cinema_no: 1, seat_name: 'A18', seat_reserve: 1 },
-        //   { seat_no: 19, seat_cinema_no: 1, seat_name: 'A19', seat_reserve: 1 },
-        //   { seat_no: 20, seat_cinema_no: 1, seat_name: 'A20', seat_reserve: 1 },
-          { seat_no: 11, seat_cinema_no: 2, seat_name: 'A1', seat_reserve: 1 },
-          { seat_no: 12, seat_cinema_no: 2, seat_name: 'A2', seat_reserve: 1 },
-          { seat_no: 13, seat_cinema_no: 2, seat_name: 'A3', seat_reserve: 1 },
-          { seat_no: 14, seat_cinema_no: 2, seat_name: 'A4', seat_reserve: 1 },
-          { seat_no: 15, seat_cinema_no: 2, seat_name: 'A5', seat_reserve: 1 },
-          { seat_no: 16, seat_cinema_no: 2, seat_name: 'A6', seat_reserve: 1 },
-          { seat_no: 17, seat_cinema_no: 2, seat_name: 'A7', seat_reserve: 1 },
-          { seat_no: 18, seat_cinema_no: 2, seat_name: 'A8', seat_reserve: 1 },
-          { seat_no: 19, seat_cinema_no: 2, seat_name: 'A9', seat_reserve: 1 },
-          { seat_no: 20, seat_cinema_no: 2, seat_name: 'A10', seat_reserve: 1 },
-          { seat_no: 21, seat_cinema_no: 1, seat_name: 'B1', seat_reserve: 1 },
-          { seat_no: 22, seat_cinema_no: 1, seat_name: 'B2', seat_reserve: 1 },
-          { seat_no: 23, seat_cinema_no: 1, seat_name: 'B3', seat_reserve: 1 },
-          { seat_no: 24, seat_cinema_no: 1, seat_name: 'B4', seat_reserve: 1 },
-          { seat_no: 25, seat_cinema_no: 1, seat_name: 'B5', seat_reserve: 1 },
-          { seat_no: 26, seat_cinema_no: 1, seat_name: 'B6', seat_reserve: 1 },
-          { seat_no: 27, seat_cinema_no: 1, seat_name: 'B7', seat_reserve: 1 },
-          { seat_no: 28, seat_cinema_no: 1, seat_name: 'B8', seat_reserve: 1 },
-          { seat_no: 29, seat_cinema_no: 1, seat_name: 'B9', seat_reserve: 1 },
-          { seat_no: 30, seat_cinema_no: 1, seat_name: 'B10', seat_reserve: 1 },
-        //   { seat_no: 31, seat_cinema_no: 2, seat_name: 'B11', seat_reserve: 1 },
-        //   { seat_no: 32, seat_cinema_no: 2, seat_name: 'B12', seat_reserve: 1 },
-        //   { seat_no: 33, seat_cinema_no: 2, seat_name: 'B13', seat_reserve: 1 },
-        //   { seat_no: 34, seat_cinema_no: 2, seat_name: 'B14', seat_reserve: 1 },
-        //   { seat_no: 35, seat_cinema_no: 2, seat_name: 'B15', seat_reserve: 1 },
-        //   { seat_no: 36, seat_cinema_no: 2, seat_name: 'B16', seat_reserve: 1 },
-        //   { seat_no: 37, seat_cinema_no: 2, seat_name: 'B17', seat_reserve: 1 },
-        //   { seat_no: 38, seat_cinema_no: 2, seat_name: 'B18', seat_reserve: 1 },
-        //   { seat_no: 39, seat_cinema_no: 2, seat_name: 'B19', seat_reserve: 1 },
-        //   { seat_no: 40, seat_cinema_no: 2, seat_name: 'B20', seat_reserve: 1 },
-          { seat_no: 31, seat_cinema_no: 2, seat_name: 'B1', seat_reserve: 1 },
-          { seat_no: 32, seat_cinema_no: 2, seat_name: 'B2', seat_reserve: 1 },
-          { seat_no: 33, seat_cinema_no: 2, seat_name: 'B3', seat_reserve: 1 },
-          { seat_no: 34, seat_cinema_no: 2, seat_name: 'B4', seat_reserve: 1 },
-          { seat_no: 35, seat_cinema_no: 2, seat_name: 'B5', seat_reserve: 1 },
-          { seat_no: 36, seat_cinema_no: 2, seat_name: 'B6', seat_reserve: 1 },
-          { seat_no: 37, seat_cinema_no: 2, seat_name: 'B7', seat_reserve: 1 },
-          { seat_no: 38, seat_cinema_no: 2, seat_name: 'B8', seat_reserve: 1 },
-          { seat_no: 39, seat_cinema_no: 2, seat_name: 'B9', seat_reserve: 1 },
-          { seat_no: 40, seat_cinema_no: 2, seat_name: 'B10', seat_reserve: 1 },
-          // 더 많은 좌석 데이터B1
-        ],
+        movie_no: this.$route.params.movie_no,
+        cinema_no: this.$route.params.cinema_no,
+        date: this.$route.params.date,
+        time: this.$route.params.time,
+        seat: [],
         seatRows: [],
         selectedSeats: [],
         numSeats: 1,
@@ -113,30 +57,30 @@
       this.processSeats();
     },
     methods: {
-        async fetchSeats() {
-            try {
-                const response = await fetch(`/seats?movie_no=${this.movie_no}&cinema_no=${this.cinema_no}&date=${this.date}&time=${this.time}`);
-                this.seats = await response.json();
-                this.processSeats();
-            } catch (error) {
-                console.error('시트 선택 에러', error);
-            }
-        },
-        processSeats() {
-            const rows = {};
-    
-            this.seats.forEach(seat => {
-            const rowLabel = seat.seat_name.charAt(0);
-            if (!rows[rowLabel]) {
-                rows[rowLabel] = {
-                label: rowLabel,
-                seats: [],
-                };
-            }
-            rows[rowLabel].seats.push(seat);
+        // selectSeat() {
+        //     axios ({
+        //         url: `http://localhost:3000/movie/selectseats`,
+        //         method: "POST"
+        //     }).then(results => {
+        //         console.error({ error: '좌석 목록 조회 에러' });
+        //         return this.seat = results.data;
+        //     })
+        // },
+        fetchSeats() {
+            axios.post('http://localhost:3000/movie/seats', {
+                movie_no: this.movie_no,
+                cinema_no: this.cinema_no,
+                date: this.formatDate(this.date),
+                time: this.time
+            }).then(results => {
+                this.seats = results.data;
+            }).catch(error => {
+                console.error('좌석 정보를 불러오는 중 오류가 발생했습니다.', error);
             });
-    
-            this.seatRows = Object.values(rows).sort((a, b) => a.label.localeCompare(b.label));
+        },
+        formatDate(date) {
+            const d = new Date(date);
+            return d.toISOString().split('T')[0];
         },
         selectSeat(seat) {
             if (seat.seat_reserve && this.selectedSeats.length < this.numSeats) {
@@ -159,14 +103,43 @@
             alert(`선택된 좌석의 수가 인원수와 맞지 않습니다.`);
             return;
             }
-    
-            this.selectedSeats.forEach(seat => {
-            seat.seat_reserve = 0; // 좌석 예약
-            });
-    
-            alert('좌석 예약이 완료되었습니다.');
-            this.selectedSeats = []; // 선택된 좌석 초기화
+            const seatNumbers = this.selectedSeats.map(seat => seat.seat_no);
+            fetch(`/reserve`, {
+                method: "POST",
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ seatNumbers }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                alert('좌석 예약이 완료되었습니다.');
+                this.selectedSeats = [];
+                this.fetchSeats();
+                })
+                .catch(error => {
+                    console.error('좌석 예약 에러', error);
+                });
         },
+        confirmBooking() {
+            // 예약 완료 로직
+            const bookingDetails = {
+                movie_no: this.movie_no,
+                cinema_no: this.cinema_no,
+                date: this.formatDate(this.date),
+                time: this.time,
+                seats: this.selectedSeats
+            };
+
+            axios.post (`http://localhost:3000/movie/book`, bookingDetails)
+            .then (results => {
+                alert('예약이 완료되었습니다.');
+            })
+            .catch (error => {
+                console.error('예약 중 오류가 발생', error);
+                alert('예약 중 오류가 발생함');
+            });
+        }
     },
 };
   </script>

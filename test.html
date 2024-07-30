@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>제품 등록</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container_goods_add {
+            display: inline-block;
+            width: 80%;
+            min-width: 80%;
+            margin-top: 50px;
+            padding: 0 10% 0 5%;
+            display: inline-block;
+            vertical-align: top;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            box-sizing: border-box;
+            margin-bottom: 150px;
+        }
+        .inputRadio .btn-group-toggle .btn {
+            margin-bottom: 10px;
+        }
+        .inputRadio .btn-group-toggle .btn input[type="radio"] {
+            position: absolute;
+            clip: rect(0, 0, 0, 0);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container_goods_add">
+        <h2 class="text-center" style="margin: 30px">제품 등록</h2>
+
+        <div class="mb-3 row">
+            <label class="col-md-3 col-form-label">제품명 *</label>
+            <div class="col-md-9">
+                <input type="text" class="form-control" id="goods_nm">
+            </div>
+        </div>
+        
+        <div class="mb-3 row">
+            <label class="col-md-3 col-form-label">카테고리 *</label>
+            <div class="col-md-9 inputRadio">
+                <div class="form-radio ms-4">
+                    <input class="form-radio-input" type="radio" name="goods_category" value="1" id="cate1">
+                    <label class="form-check-label" for="cate1">유아식기</label>
+                </div>
+                <div class="form-radio ms-4">
+                    <input class="form-radio-input" type="radio" name="goods_category" value="2" id="cate2">
+                    <label class="form-check-label" for="cate2">욕실용품</label>
+                </div>
+                <div class="form-check ms-1">
+                    <input class="form-radio-input" type="radio" name="goods_category" value="3" id="cate3">
+                    <label class="form-check-label" for="cate3">외출용품</label>
+                </div>
+                <div class="form-check ms-1">
+                    <input class="form-radio-input" type="radio" name="goods_category" value="4" id="cate4">
+                    <label class="form-check-label" for="cate4">유아도서</label>
+                </div>
+                <div class="form-check ms-1">
+                    <input class="form-radio-input" type="radio" name="goods_category" value="5" id="cate5">
+                    <label class="form-check-label" for="cate5">위생용품</label>
+                </div>
+                <div class="form-check ms-1">
+                    <input class="form-radio-input" type="radio" name="goods_category" value="6" id="cate6">
+                    <label class="form-check-label" for="cate6">장난감</label>
+                </div>
+                <div class="form-check ms-1">
+                    <input class="form-radio-input" type="radio" name="goods_category" value="7" id="cate7">
+                    <label class="form-check-label" for="cate7">이벤트</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-md-3 col-form-label">제품 가격 *</label>
+            <div class="col-md-9">
+                <div class="input-group mb-3">
+                    <input type="number" class="form-control" id="goods_price">
+                    <span class="input-group-text">원</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-md-3 col-form-label">재고 *</label>
+            <div class="col-md-9">
+                <div class="input-group mb-3">
+                    <input type="number" class="form-control" id="goods_cnt">
+                    <span class="input-group-text">개</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-md-3 col-form-label">메인 이미지 *</label>
+            <div class="col-md-9">
+                <div class="row"></div>
+                <input type="file" class="form-control" accept="image/png,image/jpeg" id="main_img">
+                <div class="alert alert-secondary" role="alert">
+                    <ul>
+                        <li>이미지 사이즈 : 700*700</li>
+                        <li>파일 사이즈 : 1M 이하</li>
+                        <li>파일 확장자 : png, jpg만 가능</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-md-3 col-form-label">설명 이미지 *</label>
+            <div class="col-md-9">
+                <input type="file" class="form-control" accept="image/png,image/jpeg" id="content_img">
+                <div class="alert alert-secondary" role="alert">
+                    <ul>
+                        <li>파일 사이즈 : 5M 이하</li>
+                        <li>파일 확장자 : png, jpg만 가능</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-6 d-grid p-1">
+                <button type="button" class="btn btn-lg btn-light" onclick="goToList()">취소하기</button>
+            </div>
+            <div class="col-6 d-grid p-1">
+                <button type="button" class="btn btn-lg btn-danger" onclick="goodsInsert()">저장하기</button>
+            </div>
+        </div> 
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function uploadFile(files, type){
+            let name = "";
+
+            if(files.length > 0){
+                name = files[0].name;
+            }
+            else{
+                return;
+            }
+            const formData = new FormData();
+            formData.append('img', files[0]);
+
+            for (let key of formData.keys()){
+                console.log(key, ":", formData.get(key));
+            }
+            axios({
+                url: `http://localhost:3000/goods/upload_img`,
+                method: 'POST',
+                headers: {'Content-Type' : 'multipart/form-data'},
+                data: formData
+            })
+            .then((res) => {
+                if(res.data.message == 'success'){
+                    alert("이미지 등록 성공")
+                    if(type == 0){
+                        document.getElementById('main_img').dataset.filename = name;
+                    }
+                    else if(type == 1){
+                        document.getElementById('content_img').dataset.filename = name;
+                    }
+                }
+            })
+            .catch(e => {
+                console.log(e);
+            })
+        }
+
+        function goodsInsert(){
+            const goods_nm = document.getElementById('goods_nm').value;
+            const goods_category = document.querySelector('input[name="goods_category"]:checked').value;
+            const goods_price = document.getElementById('goods_price').value;
+            const goods_cnt = document.getElementById('goods_cnt').value;
+            const goods_img = document.getElementById('main_img').dataset.filename;
+            const goods_content = document.getElementById('content_img').dataset.filename;
+
+            if(!Check(goods_nm, goods_category, goods_price, goods_cnt, goods_img, goods_content)){
+                return;
+            }
+
+            axios({
+                url: "http://localhost:3000/goods/addGoods",
+                method: "POST",
+                data: {
+                    goods_nm: goods_nm,
+                    goods_category: goods_category,
+                    goods_price: goods_price,
+                    goods_cnt: goods_cnt,
+                    goods_img: goods_img,
+                    goods_content: goods_content,
+                },
+            })
+            .then((res) => {
+                if(res.data.message == 'success'){
+                    alert("완료");
+                    window.location.href = "http://localhost:8080/admin/goods";
+                }else if(res.data.message == '실패'){
+                    alert("sql 쿼리문 오류");
+                }else{
+                    alert("제품 등록 실패");
+                }
+            })
+            .catch(() => {
+                alert("오류 발생");
+            })
+        }
+
+        function Check(goods_nm, goods_category, goods_price, goods_cnt, goods_img, goods_content){
+            if (goods_nm == ""){
+                alert("제품명은 필수 입력값입니다.");
+                return false;
+            }
+            if (goods_price == "" || goods_price == 0){
+                alert("제품 가격을 입력하세요.");
+                return false;
+            }
+            if (goods_img == ""){
+                alert("제품 메인 이미지를 등록해주세요.");
+                return false;
+            }
+            if (goods_content == ""){
+                alert("제품 상세 이미지를 등록해주세요.");
+                return false;
+            }
+            return true;
+        }
+
+        function goToList() {
+            if (confirm('제품 등록을 취소하겠습니까?')) {
+                window.location.href = "/admin/goods";
+            }
+        }
+    </script>
+</body>
+</html>

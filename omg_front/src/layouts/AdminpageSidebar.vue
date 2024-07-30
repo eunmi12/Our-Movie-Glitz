@@ -67,7 +67,7 @@ export default {
         },
         goToMovie() {
             this.$router.push({
-                path: '/admin/'
+                path: '/admin/movie'
             })
         },
         goToTicket() {

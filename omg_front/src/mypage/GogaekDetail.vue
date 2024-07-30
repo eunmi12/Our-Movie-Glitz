@@ -6,13 +6,15 @@
         <div class="mypagebox">
           <div class="qna_box">
           <p class="text1">MY 문의내역</p>
-          <div v-for="qna in helpcenter" :key="qna.qna_title" class="user_qna">
-            <div class="qna_info">
-              <span class="qna_title">{{ qna.qna_title }}</span>
-              <span class="qna_date">{{ qna.qna_date }}</span>
+            <div v-if="helpcenter.length > 0">
+              <div v-for="qna in helpcenter" :key="qna.qna_title" class="user_qna">
+                <div class="qna_info">
+                  <span class="qna_title">{{ qna.qna_title }}</span>
+                  <span class="qna_date">{{ qna.qna_date }}</span>
+                </div>
+              </div>
             </div>
-            <button class="delqna" @click="delqna(qna.qna_no)">삭제하기</button>
-          </div>
+          <div v-else>문희내역이 없습니다</div>
         </div>
         </div>
       </div>
@@ -44,14 +46,6 @@
           console.error("문희내역 에러 발생", error);
         }
       },
-      async delqna(qna_no) {
-      try {
-        await axios.post('http://localhost:3000/user/delqna', { qna_no });
-        this.userqna();  // 삭제 후 문의내역을 다시 가져옵니다.
-      } catch (error) {
-        console.error("qna 삭제 도중 에러 발생", error);
-      }
-    },
     },
     mounted() {
       this.userqna();
@@ -98,9 +92,9 @@
     margin-bottom: 10px;
   }
   .user_qna {
-    margin-bottom: 20px;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
 }
 .qna_info {
   display: flex;
@@ -112,15 +106,6 @@
 }
 .qna_date {
   color: #888;
-}
-.delqna {
-  margin-left: 800px;
-  margin-top: 10px;
-  border: 1px solid pink;
-  background-color: pink;
-  color: rgb(123, 122, 122);
-  width: 80px;
-  height: 30px;
 }
   </style>
   

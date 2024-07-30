@@ -6,40 +6,49 @@
       <div class="mypagebox">
         <div class="rev_box">
           <p class="text1">MY 예매내역</p>
-          <div v-for="rev in reservations" :key="rev.movie_title" class="user_rev">
-            <div class="rev_info">
-              <span class="rev_title">{{ rev.movie_title }}</span>
-              <span class="rev_date">{{ rev.ticket_date }}</span>
-            </div>
-            <div class="rev_details">
-              <span class="rev_cnt">{{ rev.ticket_cnt }}명</span>
-              <span class="rev_seat">{{ rev.ticket_seat }}</span>
-              <span class="rev_price">{{ rev.ticket_total_price }}원</span>
+          <div v-if="reservations.length > 0">
+            <div v-for="rev in reservations" :key="rev.movie_title" class="user_rev">
+              <div class="rev_info">
+                <span class="rev_title">{{ rev.movie_title }}</span>
+                <span class="rev_date">{{ rev.ticket_date }}</span>
+              </div>
+              <div class="rev_details">
+                <span class="rev_cnt">{{ rev.ticket_cnt }}명</span>
+                <span class="rev_seat">{{ rev.ticket_seat }}</span>
+                <span class="rev_price">{{ rev.ticket_total_price }}원</span>
+              </div>
             </div>
           </div>
+          <p v-else>예매내역이 없습니다</p>
         </div>
         <div class="qna_box">
           <p class="text1">MY 문의내역</p>
-          <div v-for="qna in helpcenter" :key="qna.qna_title" class="user_qna">
-            <div class="qna_info">
-              <span class="qna_title">{{ qna.qna_title }}</span>
-              <span class="qna_date">{{ qna.qna_date }}</span>
+          <div v-if="helpcenter.length > 0">
+            <div v-for="qna in helpcenter" :key="qna.qna_title" class="user_qna">
+              <div class="qna_info">
+                <span class="qna_title" @click="gotomunhee">{{ qna.qna_title }}</span>
+                <span class="qna_date">{{ qna.qna_date }}</span>
+              </div>
             </div>
           </div>
+          <p v-else>문의내역이 없습니다</p>
         </div>
         <div class="rev_box">
           <p class="text1">MY 리뷰 내역</p>
-          <div v-for="reviews in review" :key="reviews.movie_title" class="user_review">
-            <div class="review_info">
-              <span class="review_title">{{ reviews.movie_title }}</span>
-              <span class="review_date">{{ reviews.review_date }}</span>
-            </div>
-            <div class="review_details">
-              <span class="review_comment">{{ reviews.review_comment }}</span>
-              <span class="review_like">좋아요: {{ reviews.review_like }}</span>
-              <span class="review_rate">평점: {{ reviews.review_rate }}</span>
+          <div v-if="review.length > 0">
+            <div v-for="reviews in review" :key="reviews.movie_title" class="user_review">
+              <div class="review_info">
+                <span class="review_title">{{ reviews.movie_title }}</span>
+                <span class="review_date">{{ reviews.review_date }}</span>
+              </div>
+              <div class="review_details">
+                <span class="review_comment">{{ reviews.review_comment }}</span>
+                <span class="review_like">좋아요: {{ reviews.review_like }}</span>
+                <span class="review_rate">평점: {{ reviews.review_rate }}</span>
+              </div>
             </div>
           </div>
+          <p v-else>리뷰내역이 없습니다</p>
         </div>
       </div>
     </div>
@@ -64,6 +73,10 @@ export default {
     };
   },
   methods: {
+    gotomunhee() {
+      const user_no = this.$route.params.user_no; // user_no를 $route.params에서 가져오기
+      this.$router.push(`/gogaekdetail/${user_no}`)
+    },
     async userrev() {
       const user_no = this.$route.params.user_no;
       try {
@@ -79,7 +92,7 @@ export default {
         const response = await axios.post(`http://localhost:3000/user/gogaek/${user_no}`);
         this.helpcenter = response.data;
       } catch (error) {
-        console.error("문희내역 에러 발생", error);
+        console.error("문의내역 에러 발생", error);
       }
     },
     async userreview() {
@@ -160,7 +173,9 @@ export default {
 .rev_title, .qna_title, .review_title {
   font-weight: bold;
 }
-
+.qna_title {
+  cursor: pointer;
+}
 .rev_date, .qna_date, .review_date {
   color: #888;
 }
