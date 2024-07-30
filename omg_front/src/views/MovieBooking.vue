@@ -82,6 +82,7 @@ export default {
     data() {
         return {
             // activeStep: 1, // 현재 활성화된 단계 (1: 영화, 2: 날짜, 3: 상영관, 4: 시간, 5: 좌석)
+            movie_no: null,
             limit: 10,
             offset: 0,
             loading: false,
@@ -103,6 +104,13 @@ export default {
 
     created() {
         this.fetchMovies();
+        // 컴포넌트가 생성될 때 movie_no 값을 설정
+        this.movie_no = this.$route.params.movie_no || null;
+
+        //movie_no가 설정되면 fetchAvailableDates 함수 호출
+        if(this.movie_no) {
+            this.fetchAvailableDates();
+        }
     },
 
     computed: {
@@ -146,6 +154,14 @@ export default {
             });
         },
         handleScroll(event) {
+            if (!this.selectedMovie) {
+                console.error('선택된 영화가 없습니다.');
+                return;
+            }
+            if (!this.movie_no) {
+                console.error('무비넘버가 스크롤 될 때 찾을 수 없음');
+                return;
+            }
             const container = event.target;
             if (container.scrollHeight - container.scrollTop <= container.clientHeight + 10) {
                 this.fetchMovies();
@@ -154,8 +170,9 @@ export default {
         },
         selectMovie(movie) {
             this.selectedMovie = movie;
+            this.movie_no = movie.movie_no;
             this.fetchCinemas();
-            this.currentStep = 2;
+            // this.currentStep = 2;
             },
         fetchCinemas() {
             axios.get(`http://localhost:3000/movie/cinemas`)
@@ -178,6 +195,11 @@ export default {
             this.currentStep = 3;
         },
         fetchAvailableDates() {
+            const movieNo = this.movie_no;
+            if (!movieNo) {
+                console.error('무비넘버 언디파인드');
+                return;
+            }
             axios.post(`http://localhost:3000/movie/availableDates`, {
                 movie_no: this.selectedMovie.movie_no,
                 cinema_no: this.selectedCinema.cinema_no
@@ -228,16 +250,30 @@ export default {
         },
 
         goToSeatSelection() {
-            axios({
-                url: `http://localhost:3000/movie/seats`,
-                method: "POST",
-                data: {
-                    movie_no: this.selectedMovie.movie_no,
-                    cinema_no: this.selectedCinema.cinema_no,
-                    date: this.selectedDate.toString().split('T')[0],
-                    time: this.selectedTime,
-                }
-            });
+            if (this.selectedMovie && this.selectedCinema && this.selectedDate && this.selectedTime) {
+                axios({
+                    url: `http://localhost:3000/movie/saveinfo`,
+                    method: "POST",
+                    data: {
+                        movie_no: this.selectedMovie.movie_no,
+                        cinema_no: this.selectedCinema.cinema_no,
+                        date: this.selectedDate.toString().split('T')[0],
+                        time: this.selectedTime
+                    }
+                }).then(results => {
+                    console.log('예매 정보 저장 완료');
+                })
+            }
+            // axios({
+            //     url: `http://localhost:3000/movie/seats`,
+            //     method: "POST",
+            //     data: {
+            //         movie_no: this.selectedMovie.movie_no,
+            //         cinema_no: this.selectedCinema.cinema_no,
+            //         date: this.selectedDate.toString().split('T')[0],
+            //         time: this.selectedTime,
+            //     }
+            // });
             this.$router.push({
                 name: 'SeatSelection',
                 // params: {
@@ -274,6 +310,7 @@ export default {
         // nextStep() {
         //     this.currentStep++;
         // },
+        
         bookTickets() {
             const bookingDetails = {
                 movie_no: this.selectedMovie.movie_no,
