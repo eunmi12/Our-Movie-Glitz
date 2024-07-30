@@ -77,7 +77,7 @@ export default {
         },
         goToHelp() {
             this.$router.push({
-                path: '/admin/'
+                path: '/admin/notice'
             })
         },
         goToEvent() {
