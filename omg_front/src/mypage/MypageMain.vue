@@ -70,7 +70,7 @@ export default {
         const response = await axios.post(`http://localhost:3000/user/rev/${user_no}`);
         this.reservations = response.data;
       } catch (error) {
-        console.error("마이페이지 에러 발생", error);
+        console.error("예약내역 에러 발생", error);
       }
     },
     async userqna() {
@@ -79,7 +79,7 @@ export default {
         const response = await axios.post(`http://localhost:3000/user/gogaek/${user_no}`);
         this.helpcenter = response.data;
       } catch (error) {
-        console.error("마이페이지 에러 발생", error);
+        console.error("문희내역 에러 발생", error);
       }
     },
     async userreview() {
@@ -88,7 +88,7 @@ export default {
         const response = await axios.post(`http://localhost:3000/user/review/${user_no}`);
         this.review = response.data;
       } catch (error) {
-        console.error("마이페이지 에러 발생", error);
+        console.error("리뷰내역 에러 발생", error);
       }
     },
   },

@@ -82,7 +82,7 @@ router.post('/rev/:user_no', function(request, response, next){
 router.post('/gogaek/:user_no', function(request, response, next){
     const user_no = request.params.user_no;
 
-    db.query(`select qna_no, qna_title, DATE_FORMAT(qna_date, "%Y-%m-%d-%h-%i") AS qna_date from qna where qna_user_no = ?;`,
+    db.query(`select qna_no, qna_title, DATE_FORMAT(qna_date, "%Y-%m-%d-%h:%i") AS qna_date from qna where qna_user_no = ?;`,
         [user_no],
         function(error, result, field){
         if (error) {
