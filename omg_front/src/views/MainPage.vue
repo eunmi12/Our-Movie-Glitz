@@ -13,38 +13,16 @@
        <div class="contents">
         <h3>MOVIE</h3>
          <ul class="menu_list">
-           <li>
+            <li>
              <dl class="type">
-                    <dt><span>영화</span><a href="" class="btn_more">더보기</a></dt>
-                  <dd>
+                    <dt><span>액션</span><a href="" class="btn_more">더보기</a></dt>
+                  <dd v-for="movie in movielist" :key="movie.movie_no">
                      <a href="">
                          <div class="img_wrap" data-scale="false">
-                             <img src="../images/mainpage/영화1.png" alt="액션 영화 1 제목입니다">
+                             <img :src="require(`../images/mainpage/${movie.movie_img0}`)" alt="액션 영화 1 제목입니다">
                          </div>
                          <div class="img_wrapinfo">
-                            <span>영화</span>
-                            <strong>영화 평점입니다</strong>
-                         </div>
-                      </a>
-                  </dd>
-                  <dd>
-                     <a href="">
-                         <div class="img_wrap" data-scale="false">
-                             <img src="../images/mainpage/영화1.png" alt="액션 영화 1 제목입니다">
-                         </div>
-                         <div class="img_wrapinfo">
-                            <span>영화 제목입니다</span>
-                            <strong>영화 평점입니다</strong>
-                         </div>
-                      </a>
-                  </dd>
-                  <dd>
-                     <a href="">
-                         <div class="img_wrap" data-scale="false">
-                             <img src="../images/mainpage/영화1.png" alt="액션 영화 1 제목입니다">
-                         </div>
-                         <div class="img_wrapinfo">
-                            <span>영화 제목입니다</span>
+                            <span>{{ movie.movie_title }}</span>
                             <strong>영화 평점입니다</strong>
                          </div>
                       </a>
@@ -191,28 +169,31 @@
 <script>
 import axios from 'axios';
   
-  export default {
-    data() {
-        return{
-            movielist:[],
-        };
-    },
-    created() {
-    this.fetchMovielist();
+export default {
+  data() {
+    return {
+      movielist: [],
+    };
   },
-  methods: {
-    fetchMovielist() {
-      axios.get('http://localhost:3000/movielist')
+  created() {
+    this.fetchMovielist('액션');
+  },
+//   mounted() {
+//         this.fetchMovielist('액션'); // 컴포넌트가 마운트 될 때, 영화 목록을 가져옴
+//     },
+methods: {
+    fetchMovielist(tag) {
+      axios.get(`http://localhost:3000/movie/movielist/${tag}`)
         .then(response => {
+          console.log('Movies fetched:', response.data);
           this.movielist = response.data;
         })
         .catch(error => {
-          console.error('Error fetching movies:', error);
+          console.error('Error fetching movielist:', error);
         });
     },
   },
 };
-        
 
 </script>
   
