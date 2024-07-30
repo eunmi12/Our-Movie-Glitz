@@ -6,6 +6,31 @@ const multer = require('multer');
 const path = require("path");
 
 //승호작성
+router.get(`/moviecreate`,(req,res)=>{
+
+    const data = {
+        mv_startdate : req.body.q,
+        mv_enddate : req.body.w,
+        mv_tag : req.body.e,
+        mv_comment : req.body.r,
+        mv_title : req.body.t,
+        mv_price : req.body.y,
+        mv_director : req.body.u,
+        mv_img : req.body.i,
+        mv_age : req.body.o
+    };
+
+    const sql = `INSERT INTO movie (movie_startdate,movie_enddate,movie_tag,movie_comment,movie_title,movie_price,movie_director,movie_img0,movie_age)
+     values('?','?','?','?','?',?,'?','?','?');`
+     db.query(sql,[data],(err,results)=>{
+        if (err) {
+            res.status(500).send(err);
+          } else {
+            res.json(results);
+          }
+
+     })
+})
 
 //승호작성 완
 
