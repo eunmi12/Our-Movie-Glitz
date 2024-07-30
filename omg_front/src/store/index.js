@@ -8,13 +8,23 @@ const store = createStore({
                 user_id: '',
                 user_no: '',
                 user_auth:'',
+            },
+            movie_r:{
+                movie_no : '',
+                cinema_no : '',
+                date : '',
+                time : '',
             }
         }
     },
     mutations: {
         setUser(state, data){
             state.user = data;
+        },
+        setMovie_r(state, data){
+            state.movie_r = data;
         }
+        
     },
     actions: {
         updateUserEmail({ commit }, user_id) {
