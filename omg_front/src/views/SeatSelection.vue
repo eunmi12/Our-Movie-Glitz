@@ -19,11 +19,8 @@
         <div v-for="(row, rowIndex) in seatRows" :key="rowIndex" class="seat-row">
           <span class="seat-label">{{ row.label }}</span>
           <span
-            v-for="seat in row.seat"
-            :key="seat.seat_no"
-            :class="['seat', { 'selected': seat.selected, 'reserved': !seat.seat_reserve }]"
-            @click="selectSeat(seat)"
-          >
+            v-for="(seat, i) in row.seat" :key="i" @click="selectSeat(seat)"
+            :class="['seat', { 'selected': seat.selected, 'reserved': !seat.seat_reserve }]">
             {{ seat.seat_name }}
           </span>
         </div>
@@ -35,15 +32,15 @@
   </template>
   
   <script>
-import axiot from 'axios';
+import axios from 'axios';
 
   export default {
     data() {
       return {
-        movie_no: this.$route.params.movie_no,
-        cinema_no: this.$route.params.cinema_no,
-        date: this.$route.params.date,
-        time: this.$route.params.time,
+        // movie_no: this.$route.params.movie_no,
+        // cinema_no: this.$route.params.cinema_no,
+        // date: this.$route.params.date,
+        // time: this.$route.params.time,
         seat: [],
         seatRows: [],
         selectedSeats: [],
@@ -66,6 +63,10 @@ import axiot from 'axios';
         //         return this.seat = results.data;
         //     })
         // },
+        formatDate(date) {
+            const d = new Date(date);
+            return d.toISOString().split('T')[0];
+        },
         fetchSeats() {
             axios.post('http://localhost:3000/movie/seats', {
                 movie_no: this.movie_no,
@@ -77,10 +78,6 @@ import axiot from 'axios';
             }).catch(error => {
                 console.error('좌석 정보를 불러오는 중 오류가 발생했습니다.', error);
             });
-        },
-        formatDate(date) {
-            const d = new Date(date);
-            return d.toISOString().split('T')[0];
         },
         selectSeat(seat) {
             if (seat.seat_reserve && this.selectedSeats.length < this.numSeats) {
@@ -124,21 +121,39 @@ import axiot from 'axios';
         confirmBooking() {
             // 예약 완료 로직
             const bookingDetails = {
-                movie_no: this.movie_no,
-                cinema_no: this.cinema_no,
                 date: this.formatDate(this.date),
                 time: this.time,
-                seats: this.selectedSeats
+                seats: this.selectedSeats,
+                movie_no: this.selectedMovie.movie_no,
+                cinema_no: this.selectedCinema.cinema_no,
+                // date: this.selectedDate.toString().split('T')[0],
+                user_no: this.$store.state.user.user_no,
+                // time: this.selectedTime,
+                // seate: this.selectedSeats.map(seat => seat.seat_no),
+                total_price: this.selectedMovie.movie_price * this.selectedSeats.length,
             };
-
-            axios.post (`http://localhost:3000/movie/book`, bookingDetails)
-            .then (results => {
+            axios ({
+                url: `http://localhost:3000/movie/book`,
+                method: "POST",
+                data: {
+                    bookingDetails
+                }
+            }).then (results => {
                 alert('예약이 완료되었습니다.');
             })
             .catch (error => {
-                console.error('예약 중 오류가 발생', error);
-                alert('예약 중 오류가 발생함');
-            });
+                console.error('예약 중 오류 발생', error);
+                alert('예약 중 오류가 발생했습니다.');
+            })
+
+            // axios.post (`http://localhost:3000/movie/book`, bookingDetails)
+            // .then (results => {
+            //     alert('예약이 완료되었습니다.');
+            // })
+            // .catch (error => {
+            //     console.error('예약 중 오류가 발생', error);
+            //     alert('예약 중 오류가 발생함');
+            // });
         }
     },
 };
