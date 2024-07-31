@@ -57,7 +57,7 @@
             <div class="menu_wrap">
                 <ul class="menu_list">
                     <li><a href="">영화</a></li>
-                    <li><a href="http://localhost:8081/moviebooking">예매</a></li>
+                    <li><a  href="http://localhost:8081/moviebooking">예매</a></li>
                     <li><a href="">이벤트</a></li>
                 </ul>
                 <ul>
