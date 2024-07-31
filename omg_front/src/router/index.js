@@ -19,6 +19,7 @@ import Admin from '../admin/adminmain.vue'
 import AdminCreateFaq from '../admin/CreateFaq.vue'
 import AdminNotice from '../admin/notice.vue'
 import moviecreate from '../admin/createmovie.vue'
+import admincinemalist from '../admin/admincinemalist.vue'
 import userseat from '../views/test.vue'
 //은미작성완
 
@@ -114,6 +115,11 @@ const routes = [
   path: "/admin/movie",
   name: "moviecreate",
   component: moviecreate // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
+},
+{
+  path: "/admin/cinema",
+  name: "admincinemalist",
+  component: admincinemalist // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
 },
 {
   path: "/user/seat",

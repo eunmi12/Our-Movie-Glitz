@@ -130,6 +130,19 @@ router.post('/createfaq',(req,res) =>{
         res.json(result);
     });
 });
+
+//상영리스트 뽑기
+router.post('/cinemalist',(req,res)=>{
+    db.query((`select * from cinema`),(err,result)=>{
+        if(err){
+            console.log("CINEMA 리스트 중 오류 발생");
+            return res.status(500).json({ err:'error'});
+        }
+        res.json(result);
+        console.log("data",result);
+    })
+})
+
 router.get('/user/seats', (req, res) => {
     let sql = 'SELECT seat_no, seat_cinema_no, seat_name,seat_reserve FROM seat WHERE seat_cinema_no = 1';
     db.query(sql, (err, results) => {
