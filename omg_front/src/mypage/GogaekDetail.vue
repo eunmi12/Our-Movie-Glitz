@@ -6,15 +6,14 @@
         <div class="mypagebox">
           <div class="qna_box">
           <p class="text1">MY 문의내역</p>
-            <div v-if="helpcenter.length > 0">
-              <div v-for="qna in helpcenter" :key="qna.qna_title" class="user_qna">
+              <div v-for="qna in helpdetail" :key="qna" class="user_qna_detail">
                 <div class="qna_info">
+                  <span class="nans" v-if="!qna.qna_answer">답변 대기</span>
+                  <span class="ans" v-else>답변 완료</span>
                   <span class="qna_title">{{ qna.qna_title }}</span>
-                  <span class="qna_date">{{ qna.qna_date }}</span>
+                  <span class="qna_date">등록일 {{ qna.qna_date }}</span>
                 </div>
               </div>
-            </div>
-          <div v-else>문희내역이 없습니다</div>
         </div>
         </div>
       </div>
@@ -106,6 +105,32 @@
 }
 .qna_date {
   color: #888;
+}
+.ans {
+  margin-top: 30px;
+  border: 1px solid rgb(245, 110, 110);
+  background-color: rgb(245, 110, 110);
+  color: white;
+  padding: 3px 3px 3px 3px;
+  border-radius: 5px; /* 버튼의 모서리를 둥글게 */
+}
+.nans {
+  margin-top: 30px;
+  border: 1px solid skyblue;
+  background-color: skyblue;
+  color: white;
+  padding: 3px 3px 3px 3px;
+  border-radius: 5px; /* 버튼의 모서리를 둥글게 */
+}
+/* 호버 상태 */
+.nans:hover {
+  background-color: deepskyblue;
+  border: 1px solid deepskyblue;
+}
+/* 호버 상태 */
+.ans:hover {
+  background-color: rgb(225, 90, 90);
+  border: 1px solid rgb(225, 90, 90);
 }
   </style>
   

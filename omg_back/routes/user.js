@@ -93,7 +93,7 @@ router.post('/rev/:user_no', function(request, response, next){
 router.post('/gogaek/:user_no', function(request, response, next){
     const user_no = request.params.user_no;
 
-    db.query(`select qna_no, qna_comment, qna_title, DATE_FORMAT(qna_date, "%Y-%m-%d-%h:%i") AS qna_date from qna where qna_user_no = ?;`,
+    db.query(`select qna_answer, qna_no, qna_comment, qna_type, qna_title, DATE_FORMAT(qna_date, "%Y-%m-%d-%h:%i") AS qna_date from qna where qna_user_no = ?;`,
         [user_no],
         function(error, result, field){
         if (error) {
@@ -171,8 +171,42 @@ router.post('/delqna', function(request, response, next){
         console.log(result);
     });
 });
-//회창작성 완
+// 찜한 영화 리스트
+router.post('/wish/:user_no', function(request, response, next){
+    const user_no = request.params.user_no;
 
+    db.query(`select m.movie_no, m.movie_title,m.movie_img0, DATE_FORMAT(m.movie_startdate, "%Y-%m-%d") AS movie_startdate, DATE_FORMAT(m.movie_enddate, "%Y-%m-%d") AS movie_enddate, m.movie_tag, m.movie_director
+                from wish w
+                join movie m on m.movie_no = w.wish_movie_no
+                join user u on  u.user_no = w.wish_user_no
+                where w.wish_user_no = ?;`,
+        [user_no],
+        function(error, result, field){
+        if (error) {
+            console.error(error);
+            return response.status(500).json({ error: '찜한 영화 리스트 에러' });
+        }
+        response.json(result);
+        console.log(result);
+    });
+});
+//qna 상세페이지
+
+// //회창작성 완
+// router.post('/gogaekdetail/:user_no', function(request, response, next){
+//     const user_no = request.params.user_no;
+
+//     db.query(`select qna_no, qna_comment, qna_title, DATE_FORMAT(qna_date, "%Y-%m-%d-%h:%i") AS qna_date from qna where qna_user_no = ?;`,
+//         [user_no],
+//         function(error, result, field){
+//         if (error) {
+//             console.error(error);
+//             return response.status(500).json({ error: '문희내역 에러' });
+//         }
+//         response.json(result);
+//         console.log(result);
+//     });
+// });
 
 
 

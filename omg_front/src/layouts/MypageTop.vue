@@ -38,7 +38,7 @@ export default {
   },
   methods: {
       gotopagewish() {
-          this.$router.push('./user/wish');
+          this.$router.push(`/wish/${this.$route.params.user_no}`);
       },
       async userinfo() {
           const user_no = this.$route.params.user_no;
