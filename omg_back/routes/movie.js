@@ -4,8 +4,61 @@ const db = require('../db.js');
 const fs = require('fs');
 const multer = require('multer');
 const path = require("path");
+const app = express();
+
+
 
 //승호작성
+
+// const upload = multer({
+//     storage: multer.diskStorage({
+//       	filename(req, file, done) {
+//           	console.log(file);
+// 			done(null, file.originalname);
+//         },
+// 		destination(req, file, done) {
+//       		console.log(file);
+// 		    done(null, path.join(__dirname, "public"));
+// 	    },
+//     }),
+//   	// 추가된 속성
+// 	limits: { fileSize: 0 },
+// });
+
+// const uploadMiddleware = upload.array("images");
+// app.post("/upload", uploadMiddleware, (req, res) => {
+//   console.log(req.files);
+//   res.status(200).send("uploaded");
+// });
+
+router.post('/createMovie',(req,res)=>{
+
+    // console.log('req.body : ', req.body);
+
+    
+    const data = {
+        movie_startdate : req.body.startdate,
+        movie_enddate : req.body.enddate,
+        movie_tag : req.body.genre,
+        movie_comment : req.body.detail,
+        movie_title : req.body.title,
+        movie_director : req.body.director,
+        movie_img0 : req.body.poster,
+        movie_age : req.body.age
+    };
+    console.log('data : ', data);
+
+    const sql = `INSERT INTO movie (movie_startdate,movie_enddate,movie_tag,movie_comment,movie_title,movie_director,movie_img0,movie_age) values (?,?,?,?,?,?,?,?);`
+     db.query(sql,[data.movie_startdate,data.movie_enddate,data.movie_tag,data.movie_comment,data.movie_title,data.movie_director,data.movie_img0,data.movie_age],(err,results)=>{
+        if (err) {
+            res.status(500).send(err);
+            console.log(err);
+          } else {
+            res.json(results);
+          }
+
+     })
+})
 
 //승호작성 완
 
@@ -59,7 +112,7 @@ router.get('/movies/page', (req, res) => {
     const offset = parseInt(req.query.offset, 10) || 0;
 
     const query = `select * from movie limit ? offset ?`;
-    db.query(query, [limit, offset], (error, results) => {
+    db.query(query, q [limit, offset], (error, results) => {
         if (error) {
             console.log('영화를 조회할 수 없습니다.');
             return res.status(500).json({ error: 'error' });
