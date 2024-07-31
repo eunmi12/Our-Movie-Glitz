@@ -39,6 +39,7 @@ import UserMypage from '../mypage/UserMypage.vue'
 import UserOut from '../mypage/UserOut.vue'
 import Review from '../mypage/Review.vue'
 import GogaekDetail from '../mypage/GogaekDetail.vue'
+import Wish from '../mypage/Wish.vue'
 //회창작성완
 
 //아름작성
@@ -188,6 +189,11 @@ const routes = [
   path: '/gogaekdetail/:user_no',
   name: 'GogaekDetail',
   component: GogaekDetail
+},
+{
+  path: '/wish/:user_no',
+  name: 'Wish',
+  component: Wish
 },
 //회창작성완
 

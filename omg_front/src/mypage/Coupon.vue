@@ -7,7 +7,7 @@
         <div class="rev_box">
           <p class="text1">MY 쿠폰</p>
             <div v-if="coupon.length > 0">
-              <div v-for="cp in coupon" :key="cp.coupon_title" class="user_coupon">
+              <div v-for="cp in coupon" :key="cp" class="user_coupon">
                 <div class="coupon_info">
                   <span class="coupon_title">{{ cp.coupon_title }}</span>
                 </div>

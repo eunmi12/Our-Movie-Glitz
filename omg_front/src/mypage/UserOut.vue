@@ -11,7 +11,7 @@
                         <div class="id">
                             <p>
                                 <strong class="str_id">아이디</strong>
-                                <span>ghlckd1999</span>
+                                <span>{{ user.user_id }}</span>
                             </p>
                         </div>
                         <div class="pw">
@@ -28,14 +28,22 @@
             <button class="ok" @click="deleteuser(user.user_no)">탈퇴하기</button>
             <button class="no" @click="gotomainpage">탈퇴취소</button>
         </div>
-    </div>    
+    </div>
 </template>
 
 <script>
 import MypageSideBar from '../layouts/MypageSideBar.vue';
 import MypageTop from '../layouts/MypageTop.vue';
+import axios from 'axios';
 
 export default {
+    data() {
+        return {
+            user: {
+                user_id: '',
+            }
+        }
+    },
     components: {
         MypageTop,
         MypageSideBar,
@@ -49,7 +57,19 @@ export default {
         gotomainpage() {
             // 메인 페이지로 이동하는 로직 추가
             this.$router.push(`/mypagemain/${this.users.user_no}`);
-        }
+        },
+        async userinfor() {
+          const user_no = this.$route.params.user_no;
+          try {
+              const response = await axios.post(`http://localhost:3000/user/mypage/${user_no}`);
+              this.user = response.data[0];
+          } catch (error) {
+              console.error("마이페이지 에러 발생", error);
+          }
+      },
+    },
+    mounted() {
+        this.userinfor();
     }
 }
 </script>

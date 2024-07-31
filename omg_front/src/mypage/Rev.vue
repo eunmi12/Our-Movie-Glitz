@@ -7,7 +7,7 @@
         <div class="rev_box">
           <p class="text1">MY 예매내역</p>
           <div v-if="reservations.length > 0">
-            <div v-for="(rev, index) in reservations" :key="rev.movie_title" class="user_rev">
+            <div v-for="(rev, index) in reservations" :key="rev" class="user_rev">
               <div class="rev_info" @click="revtoggle(index)">
                 <span class="rev_title">{{ rev.movie_title }}</span>
                 <span class="rev_date">{{ rev.ticket_date }}</span>

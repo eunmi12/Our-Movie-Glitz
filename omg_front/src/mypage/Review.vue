@@ -7,7 +7,7 @@
         <div class="rev_box">
           <p class="text1">MY 리뷰 내역</p>
             <div v-if="review.length > 0">
-              <div v-for="reviews in review" :key="reviews.movie_title" class="user_review">
+              <div v-for="reviews in review" :key="reviews" class="user_review">
                 <div class="review_info">
                   <span class="review_title">{{ reviews.movie_title }}</span>
                   <span class="review_date">{{ reviews.review_date }}</span>

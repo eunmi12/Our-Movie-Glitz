@@ -7,7 +7,7 @@
         <div class="rev_box">
           <p class="text1">MY 예매내역</p>
           <div v-if="reservations.length > 0">
-            <div v-for="rev in reservations" :key="rev.movie_title" class="user_rev">
+            <div v-for="rev in reservations" :key="rev" class="user_rev">
               <div class="rev_info">
                 <span class="rev_title">{{ rev.movie_title }}</span>
                 <span class="rev_date">{{ rev.ticket_date }}</span>
@@ -24,7 +24,7 @@
         <div class="qna_box">
           <p class="text1">MY 문의내역</p>
           <div v-if="helpcenter.length > 0">
-            <div v-for="qna in helpcenter" :key="qna.qna_title" class="user_qna">
+            <div v-for="qna in helpcenter" :key="qna" class="user_qna">
               <div class="qna_info">
                 <span class="qna_title" @click="gotomunhee">{{ qna.qna_title }}</span>
                 <span class="qna_date">{{ qna.qna_date }}</span>
@@ -36,7 +36,7 @@
         <div class="rev_box">
           <p class="text1">MY 리뷰 내역</p>
           <div v-if="review.length > 0">
-            <div v-for="reviews in review" :key="reviews.movie_title" class="user_review">
+            <div v-for="reviews in review" :key="reviews" class="user_review">
               <div class="review_info">
                 <span class="review_title">{{ reviews.movie_title }}</span>
                 <span class="review_date">{{ reviews.review_date }}</span>
