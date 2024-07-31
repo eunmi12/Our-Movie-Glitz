@@ -22,7 +22,18 @@ const path = require("path");
 //은미작성 완
 
 //재영작성
-
+router.get('/eventlist', (req, res) => {
+    const sql = `
+        select event_no event_img1, event_title, event_startdate, event_enddate from event order by event_no asc;
+    `;
+    db.query(sql, (err, results) => {
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        res.json(results);
+      }
+    });
+});
 //재영작성 완
 
 //아름작성
