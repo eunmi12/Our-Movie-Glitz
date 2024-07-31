@@ -28,13 +28,23 @@ export default {
         { id: 2, name: '• FAQ', link: '/help/faq' },
         { id: 3, name: '• 1:1문의', link: '/help/qna' }
       ],
-      selectedMenu: null
+      selectedMenu: null,
     };
+  },
+  computed: {
+    user(){
+      return this.$store.state.user;
+    }
   },
   methods: {
     selectMenu(id, link) {
+      if (id === 3 && (!this.user.user_id || !this.user.user_auth)) {
+        this.$swal('로그인이 필요합니다');
+        this.$router.push('/login');
+      } else {
       this.selectedMenu = id;
       this.$router.push(link);
+      }
     },
      setSelectedMenuFromRoute(route) {
       const routeLinkToIdMap = {
@@ -64,7 +74,7 @@ export default {
     width:80%;
     text-align:left;
     margin:auto;
-    padding:80px 0px 30px 0px;
+    padding:30px 0px 20px 0px;
 }
 
 .helpsidebar {

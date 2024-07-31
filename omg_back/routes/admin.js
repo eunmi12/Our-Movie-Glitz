@@ -52,6 +52,22 @@ router.get('/faqlist',(req, res) => {
     });
 });
 
+//1:1문의 등록
+router.post('/registqna',(req,res) =>{
+    const qna_title = req.body.qna_title;
+    const qna_comment = req.body.qna_comment;
+    const qna_type = req.body.qna_type;
+    const qna_user_no = req.body.qna_user_no;    
+    console.log('qna_title >>',qna_title,"qna_comment >>",qna_comment,"qna_type >>",qna_type,"qna_user_no >>",qna_user_no);
+    db.query(`insert into qna (qna_title,qna_comment,qna_type,qna_user_no) values (?,?,?,?)`,[qna_title,qna_comment,qna_type,qna_user_no], (err, results) =>{
+        if(err){
+            console.log("1:1문의 등록 중 오류 발생");
+            return res.status(500).json({ error: err });
+        }
+        res.json(results);
+    });
+});
+
 //치혁작성 완
 
 //은미작성
