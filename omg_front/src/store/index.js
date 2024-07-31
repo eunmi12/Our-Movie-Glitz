@@ -32,6 +32,7 @@ const store = createStore({
         }
     },
     getters: {
+        user_no: state => state.user.user_no,
         user_id: state => state.user.user_id
     },
 
