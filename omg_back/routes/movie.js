@@ -68,8 +68,17 @@ router.get('/movies/page', (req, res) => {
     });
 });
 // 영화 예매 - 상영관 선택
-router.get('/cinemas', (req, res) => {
-    db.query(`select * from cinema;`, (error, results) => {
+router.post('/cinemas', (req, res) => {
+    const { movie_no } = req.body
+    // db.query(`select cinema_name from cinema c
+    //         join screen s on s.sc_cinema_no = c.cinema_no
+    //         where sc_available = 1
+    //         GROUP BY cinema_no, movie_no;`, (error, results) => {
+        db.query(`select distinct cinema_no, cinema_name, movie_no
+                from screen
+                join cinema on cinema_no = sc_cinema_no
+                join movie on movie_no = sc_movie_no
+                where  movie_no = ?`, [movie_no], (error, results) => {
         if (error) {
             return res.status(500).json({ error: '상영관 목록을 불러올 수 없습니다.' });
         }
@@ -143,7 +152,7 @@ router.post('/saveinfo', (req, res) => {
         if (error) {
             return res.status(500).json({ error: '저장 error' });
         }
-        return res.json({ message: '저장이 완료되었습니다.' });
+        return res.status(200).json({ message: '저장이 완료되었습니다.' });
     })
 })
 // router.post('/selectseats', (req, res) => {
@@ -156,13 +165,15 @@ router.post('/saveinfo', (req, res) => {
 //      });
 // });
 router.post('/seats', (req, res) => {
+    // console.log('뭐가문제', req.body);
     const { movie_no, cinema_no, date, time } = req.body;
 
-    const query = `select s.seat_no, s.seat_name, s.seat_reserve
+    const query = `select distinct s.seat_no, s.seat_name, s.seat_reserve
                     from seat s
                     join reservation r on r.cinema_no = s.seat_cinema_no
                     join screen sc on sc.sc_cinema_no = s.seat_cinema_no
                     and r.movie_no = ? and r.cinema_no = ? and r.date = ? and r.time = ?`
+    // const query = `select seat_no, seat_name, seat_reserve from seat where movie_no = ? and cinema_no = ? and date = ? and time = ?`
     db.query(query, [movie_no, cinema_no, date, time], (error, results) => {
         if (error) {
             console.error('에러 시트 목록 조회', error);
@@ -195,18 +206,22 @@ router.post('/seats', (req, res) => {
 //     });
 // });
 // 좌석 예약 상태 업데이트
-router.post('/reserve', async(req, res) => {
-        const { seatNumbers } = req.body;
-        const placeholders = seatNumbers.map(() => '?').join(',');
-        const query = `UPDATE seat SET seat_reserve = 0 WHERE seat_no IN (${placeholders})`;
+router.post('/reserve', (req, res) => {
+        const { bookingDetails } = req.body;
+        console.log('외않되', req.body);
+        const seatNumbersString = bookingDetails.join(',');
+        // const placeholders = seatNumbersS.join(',')
+        // console.log('플홀', placeholders);
+        const query = `UPDATE seat SET seat_reserve = 0 WHERE seat_no = ?`;
 
-        db.query(query, seatNumbers, (error, results) => {
+        db.query(query, [seatNumbersString], (error, results) => {
+            console.log(seatNumbersString);
             if(error) {
                 console.error('좌석 선택 에러', error);
                 res.status(500).json({ message: error.message });
             } else if (results.affectedRouws > 0) {
-                const selectQuery = `select * from seat where seat_no in (${placeholders})`;
-                db.query(selectQuery, seatNumbers, (selectError, selectResults) => {
+                const selectQuery = `select seat_name from seat`;
+                db.query(selectQuery, [seatNumbersString], (selectError, selectResults) => {
                     if (selectError) {
                         console.error('좌석 상태 업데이트 후 조회 에러', selectError);
                         res.status(500).json({ message: selectError.message });
@@ -221,31 +236,22 @@ router.post('/reserve', async(req, res) => {
 });
 // 영화 예매 - 예매 완료
 router.post('/book', (req, res) => {
-    const bookingDetails = {
-        date: this.formatDate(this.date),
-        time: this.time,
-        seats: this.selectedSeats,
-        movie_no: this.selectedMovie.movie_no,
-        cinema_no: this.selectedCinema.cinema_no,
-        // date: this.selectedDate.toString().split('T')[0],
-        user_no: this.$store.state.user.user_no,
-        time: this.selectedTime,
-        // seate: this.selectedSeats.map(seat => seat.seat_no),
-        total_price: this.selectedMovie.movie_price * this.selectedSeats.length,
-    };
-    const { date, time, seats, movie_no, cinema_no, user_no, total_price } = req.body;
-    const reservationsql = `select * from reservation;`
-    db.query(reservationsql, (error, results) => {
-        if(error) {
-            return res.status(500).json({ error: '가져오기 error' });
-        } return res.json({ message: '정보 가져옴' });
-    });
-
-    const query = `insert into ticket (ticket_total_price, ticket_date, ticket_user_no, ticket_movie_no, ti_se_cinema_no)
+    const { date, time, seatNumbers, movie_no, cinema_no, user_no, total_price } = req.body;
+    console.log(req.body);
+    //const values = seatNumbers.map(seat_no => [total_price, date+' '+time, user_no, movie_no, seats, cinema_no]);
+    //console.log('va', values);
+    // const reservationsql = `select * from reservation where user_no = ? and movie_no = ?;`
+    // db.query(reservationsql, (error, results) => {
+    //     if(error) {
+    //         return res.status(500).json({ error: '가져오기 error' });
+    //     } return res.status(200).json({ message: '정보 가져옴' });
+    // });
+    const seatNumbersString = seatNumbers.join(',');
+    const query = `insert into ticket (ticket_total_price, ticket_date, ticket_user_no, ticket_movie_no, ticket_seat, ti_se_cinema_no)
                     values (?, ?, ?, ?, ?, ?)`;
     // const values = seats.map(seat_no => [movie_no, cinema_no, date, time, seat_no]);
 
-    db.query(query, [date, time, seats, movie_no, cinema_no, user_no, total_price], (error, results) => {
+    db.query(query, [total_price, date+' '+time, user_no, movie_no, seatNumbersString, cinema_no], (error, results) => {
         if (error) {
             return res.status(500).json({ error: '예매 error' });
         }
