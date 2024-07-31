@@ -1,7 +1,8 @@
 <template>
-    <div>
+    <div class="good">
       <div class="carousel">
         <img src="../images/mainpage/액션1.png" alt="">
+        <!-- <video src="../videos/영화1.mp4" autoplay muted loop><a href=""></a></video> -->
         <!-- <video src="../videos/영화1.mp4"><a href=""></a></video> -->
         <strong class="main_name">파일럿</strong>
         <span class="main_sname">파일럿의 상세내용 입니다.<br>asdsadsadasdsadsa</span>
@@ -25,7 +26,7 @@
                     </div>
                     <div class="img_wrapinfo">
                       <span>{{ movie.movie_title }}</span>
-                      <strong>{{ movie.review_rate ? movie.review_rate : '평점 정보 없음' }}</strong>
+                      <strong >{{ movie.review_rate ? movie.review_rate +'점': '평점 정보 없음' }}</strong>
                     </div>
                   </a>
                 </dd>
@@ -43,14 +44,16 @@
           </div>
           <div class="event_title">
             <div class="event_box1">
-              <div class="event_box2">
+              <div v-for="event in eventlists" :key="event.event_no" class="event_box2">
                 <div class="event_box3">
                     <a href="">
                         <div class="img_wrap1">
-                            <img src="../images/mainpage/영화1.png" alt="이벤트 이미지당">
+                            <img :src="getImagePath(event.event_img1)" alt="이벤트 이미지당">
                         </div>
-                        <strong>이벤트 제목</strong>
-                        <span>이벤트 기간</span>
+                        <div class="event_info">
+                        <strong>{{event.event_title}}</strong>
+                        <span>{{ event.event_startdate }} ~ {{ event.event_enddate }}</span>
+                        </div>
                     </a>
                 </div>
               </div>
@@ -67,14 +70,16 @@
   export default {
     data() {
       return {
-        tags: ['액션', '가족', '로맨스', '공포'], // 태그 배열
-        movielists: [[], [], [], []], // 태그별 영화 목록 배열
+        tags: ['액션', '가족', '로맨스', '공포', '코미디'], // 태그 배열
+        movielists: [[], [], [], [], []], // 태그별 영화 목록 배열
+        eventlists: [],
       };
     },
     created() {
       this.tags.forEach((tag, index) => {
         this.fetchMovielist(tag, index);
-      });
+      }),
+      this.fechEventlist();
     },
     methods: {
       fetchMovielist(tag, index) {
@@ -87,8 +92,21 @@
             console.error(`Error fetching movielist for tag ${tag}:`, error);
           });
       },
+      fechEventlist() {
+        axios.get(`http://localhost:3000/user/eventlist`)
+        .then(response => {
+          console.log('Events feched forasdas:', response.data);
+          this.eventlists = response.data;
+        })
+        .catch(error => {
+            console.error('Error fetching movielist for tag :', error);
+          });
+      },
       getImagePath(imageName) {
-        return require(`../images/mainpage/tag/${imageName}`);
+        return(`https://image.tmdb.org/t/p/w500/${imageName}`);
+      },
+      getImagePath2(imageName) {
+        return require(`../images/mainpage/${imageName}`);
       }
     },
   };
@@ -165,12 +183,16 @@
     margin: 0 auto;
 }
 .contents h3{
-    margin-left: 160px;
+  display: flex;
+  justify-content: flex-start;
+  margin-left: 160px;
 }
 .menu_list{
     display: flex;
-    justify-content: center;
-    margin-top:50px ;
+    justify-content: flex-start;
+    margin-top: 50px;
+    padding: 0;
+    margin-left: 160px;
 }
 .menu_list li{
     width: 270px;
@@ -285,38 +307,75 @@
     border-radius: 15px;
     box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
 }
-.events .event_title {
-    overflow: visible;
-    position: relative;
+.event_title {
+  margin-top: 50px;
+}
+
+.event_box1 {
+  width: 400px;
+  height: 400px;
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 50px;
+  padding: 0;
+  margin-left: 160px;
+  
+}
+
+.event_box2 {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0px 10px 50px 0px ; /*상 우 하 좌 */
+  width: 100%;
+  height: 65%;
+  border-radius: 10px;
+}
+
+.event_box3 {
+  height: 100%;
+  border-radius: 10px;
+}
+
+.event_box3 a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  /* padding:0px 30px ; */
+}
+
+.img_wrap1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.img_wrap1 img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
 
 }
 
-.img_wrap1 img{
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    transform: translate(0, -50%);
+.event_info {
+  text-align: left;
+  margin-top: 10px;
 }
-.event_box1{
-    width: 270px;
-  margin: 100px 100px;
-    border: 1px solid #e4e4e4;
-    border-radius: 10px;
+
+.event_info strong {
+  display: block;
+  font-size: 1.2em;
 }
-.event_box2{
-    width: 270px;
-    padding: 20px 19px 30px;
-    border: 1px solid #e4e4e4;
-    border-radius: 10px;
-}
-.event_box3{
-    width: 270px;
-    padding: 20px 19px 30px;
-    border: 1px solid #e4e4e4;
-    border-radius: 10px;
+
+.event_info span {
+  display: block;
+  margin-top: 5px;
+  font-size: 1em;
+  color: #666;
 }
 </style>
   
