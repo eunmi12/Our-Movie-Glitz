@@ -6,13 +6,21 @@
         <div class="mypagebox">
           <div class="qna_box">
           <p class="text1">MY 문의내역</p>
-              <div v-for="qna in helpdetail" :key="qna" class="user_qna_detail">
-                <div class="qna_info">
+              <div class="user_qna_detail" v-for="(qna, i) in helpdetail" :key="i">
+                <div class="qna_detail_title">
                   <span class="nans" v-if="!qna.qna_answer">답변 대기</span>
                   <span class="ans" v-else>답변 완료</span>
                   <span class="qna_title">{{ qna.qna_title }}</span>
                   <span class="qna_date">등록일 {{ qna.qna_date }}</span>
                 </div>
+                <div class="qna_info">
+                  <span class="qna_type">{{ qna.qna_type }}</span>
+                  <span class="qna_type">{{ qna.user_phone }}</span>
+                  <span class="qna_type">{{ qna.user_id }}</span>
+                </div>
+                <div class="commentbox">{{ qna.qna_comment }}</div>
+                <div class="ans_title">{{ qna.qna_answer_date }}</div>
+                <div class="ans_box">{{ qna.qna_answer }}</div>
               </div>
         </div>
         </div>
@@ -32,22 +40,30 @@
     },
     data() {
       return {
-        helpcenter: [],
+        helpdetail: [],
       };
     },
     methods: {
-      async userqna() {
+      async userqnadetail() {
         const user_no = this.$route.params.user_no;
+        const qna_no = this.$route.query.qna_no;
         try {
-          const response = await axios.post(`http://localhost:3000/user/gogaek/${user_no}`);
-          this.helpcenter = response.data;
+          const response = await axios.post(
+          `http://localhost:3000/user/gogaekdetail/${user_no}`, // URL
+          null, // 본문 데이터 (여기서는 필요 없어서 null)
+          {
+            params: { qna_no: qna_no } // 쿼리 매개변수
+          }
+        );
+          this.helpdetail = response.data;
+          console.log("this.userqnadetail",this.helpdetail);
         } catch (error) {
           console.error("문희내역 에러 발생", error);
         }
       },
     },
-    mounted() {
-      this.userqna();
+    created() {
+      this.userqnadetail();
     }
   }
   </script>
@@ -95,7 +111,7 @@
   border-bottom: 1px solid #ddd;
   padding-bottom: 10px;
 }
-.qna_info {
+.qna_detail_title {
   display: flex;
   justify-content: space-between;
   font-weight: bold;
