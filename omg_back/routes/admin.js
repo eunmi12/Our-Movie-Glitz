@@ -28,6 +28,19 @@ router.get('/noticelist',(req, res) => {
     });
 });
 
+//공지사항 조회수 증가
+router.post('/incrementnoticecnt', (req, res) => {
+    const notice_no = req.body.notice_no;
+
+    db.query(`update notice set notice_cnt = notice_cnt + 1 where notice_no = ?;`, [notice_no], function (err, results){
+        if(err) {
+            console.log('조회수 증가 중 오류가 발생했습니다.');
+            return res.status(500).json({ error: err });
+        }
+        return res.json(results);
+    });
+});
+
 //공지사항페이지
 router.get('/notice/:notice_no' , (req , res ) => {
     const notice_no = req.params.notice_no;
@@ -67,6 +80,30 @@ router.post('/registqna',(req,res) =>{
         res.json(results);
     });
 });
+
+//관리자 1:1문의 관리
+router.post('/qnalist', (req, res) => {   
+    db.query(`select q.qna_no,q.qna_type,q.qna_title,u.user_name,q.qna_date,q.qna_answer from qna q join user u on q.qna_user_no = u.user_no order by q.qna_no desc;`, (err, results, fields) => {
+        if(err){
+            console.log('1:1문의 리스트를 불러올 수 없습니다.');
+            return res.status(500).json({ error : err })
+        }
+        res.json(results);
+    })
+})
+
+//관리자 1:1문의 답변 삭제
+router.post('/deleteqna' , (req, res) => {
+    const qna_no = req.body.qna_no;
+    console.log(qna_no);
+    db.query(`update qna set qna_answer = null where qna_no = ?;`, [qna_no], function(err, results){
+        if(err){
+            console.log(err);
+            return res.status(500).json({ error: err });
+        }
+        res.json(results);
+    })
+})
 
 //치혁작성 완
 

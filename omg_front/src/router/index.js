@@ -58,6 +58,8 @@ import Faq from '../views/Faq.vue';
 import Noticelist from '../views/Noticelist.vue';
 import Notice from '../views/Notice.vue';
 import Qna from '../views/Qna.vue';
+import Qnalist from '../admin/Qnalist.vue';
+import Createqna from '../admin/Createqna.vue';
 
 
 //치혁작성완
@@ -250,7 +252,16 @@ const routes = [
   component: Qna,
 }
   ]
+},
+{
+  path: '/admin/qnalist',
+  component: Qnalist,
+},
+{
+  path: '/admin/createqna/:qna_no',
+  component: Createqna,
 }
+
 //치혁작성완
 
 ]

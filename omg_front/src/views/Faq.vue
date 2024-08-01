@@ -5,11 +5,11 @@
       <div class="faq-none" v-if="faqlist.length === 0">준비중입니다.</div>
       <div v-else>
           <div v-for="(faq, i) in faqlist" :key="i">
-          <div class="faq-list"><img class="question-mark" src="../images/faq.png"><span>{{ faq.faq_q }}</span><img @click="toggleAnswer(faq.faq_no)" class="toggle-btn" src="../images/down.png"></div>
+          <div class="faq-list"><img class="question-mark" src="../images/faq.png"><span class="text">{{ faq.faq_q }}</span><img @click="toggleAnswer(faq.faq_no)" class="toggle-btn" src="../images/down.png"></div>
             <!-- <div class="faq-toggle"><img @click="toggleAnswer(faq.faq_no)" class="toggle-btn" src="../images/down.png"></div> -->
           <div :class="['faq_answer_container', 'faq_answer_container'+faq.faq_no, showAnswer ? 'show' : '']">
-            <div colspan="2" class="faq-answer" v-if="faq.faq_a == null">▶ 답변 준비중입니다.</div>
-            <div colspan="2" class="faq-answer" v-else>▶ {{ faq.faq_a }}</div>
+            <div colspan="2" class="faq-answer" v-if="faq.faq_a == null"><span class="text">▶ 답변 준비중입니다.</span></div>
+            <div colspan="2" class="faq-answer" v-else><span class="text">▶ {{ faq.faq_a }}</span></div>
           </div>
           </div>
         </div>
@@ -75,6 +75,7 @@ h6 {
 }
 
 .faq-list {  
+  width: 1250px;
   font-weight: bold;
   text-align: left;
     border-bottom: 1px solid #d4cdcd;
@@ -94,8 +95,12 @@ img {
   height: 30px;
 }
 
-span {
+.text { 
   margin-left: 15px;
+  overflow: hidden;
+  /* white-space: nowrap; */
+  text-overflow: ellipsis;
+  vertical-align: middle;
 }
 
 .faq_answer_container { 
@@ -103,6 +108,7 @@ span {
 }
 .faq_answer_container.show {
     display: block;
+    width: 1250px;
 }
 
 .toggle-btn {
@@ -115,13 +121,16 @@ span {
 }
 
 .faq-answer {
+  width: 100%;
   text-align: left;
     border-bottom: 1px solid #d4cdcd;
-    height: 50px;
+    height: auto;
     font-size: large;
     color: #292828;
     background-color: #ffffff;
-    padding: 10px 0px 30px 60px;
+    padding: 30px 0px 30px 60px;
+    overflow-wrap: break-word;
+    word-wrap: break-word; 
 }
 
 </style>
