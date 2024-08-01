@@ -1,4 +1,5 @@
 <template>
+
   <div class="select">
       <div class="seat-selection">
       <h1>좌석 선택</h1>
@@ -225,6 +226,7 @@ export default {
       //         alert('예약 중 오류가 발생했습니다.');
       //     })
 
+
           // axios.post (`http://localhost:3000/movie/book`, bookingDetails)
           // .then (results => {
           //     alert('예약이 완료되었습니다.');
@@ -241,7 +243,6 @@ export default {
 .select {
   width: 100%;
 }
-
 .seat-selection {
   text-align: center;
   padding: 20px;
@@ -307,6 +308,7 @@ export default {
 
   .available {
       background-color: #ccc; /* 선택 가능 상태 색상 */
+
   }
 
   .unavailable {

@@ -66,7 +66,7 @@
             </div>
             <div class="button_wrap">
                 <button type="button" class="insertbtn" @click="CreateMovie()">등록</button>
-                <button type="button" class="exit">취소</button>
+                <button type="button" class="exit" @click="exit">취소</button>
             </div>
         </form>
         </div>
@@ -199,6 +199,9 @@ export default {
             catch(error){
                 console.error("영화 등록 실패");
             }
+        },
+        exit(){
+            this.$router.push(`/admin`);
         },
        
     }

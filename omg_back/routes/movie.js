@@ -112,8 +112,10 @@ router.get('/movies/page', (req, res) => {
     const offset = parseInt(req.query.offset, 10) || 0;
 
     const query = `select * from movie limit ? offset ?`;
+  
     db.query(query, [limit, offset], (error, results) => {
-        if (error) {
+      
+      if (error) {
             console.log('영화를 조회할 수 없습니다.');
             return res.status(500).json({ error: 'error' });
         }
@@ -140,6 +142,7 @@ router.post('/cinemas', (req, res) => {
 });
 // 영화 예매 - 예매 날짜 조회
 router.post('/availableDates', (req, res) => {
+
     console.log("req.body: --->",req.body);
     const sc_movie_no = req.body.movie_no;
     const sc_cinema_no = req.body.cinema_no;
@@ -151,6 +154,7 @@ router.post('/availableDates', (req, res) => {
     // const tomorrowString = tomorrow.toISOString().split('T')[0];
     const query = `select distinct screen_date from screen where sc_movie_no = ? and sc_cinema_no = ?`;
     db.query(query, [sc_movie_no, sc_cinema_no], (error, results) => {
+
         if(error) {
             return res.status(500).json({ error: '예매 가능한 날짜를 불러올 수 없습니다.' });
         }
@@ -302,8 +306,10 @@ router.post('/book', (req, res) => {
             return res.status(500).json({ error: '예매 error' });
         }
         return res.status(200).json({ message: '예매가 완료되었습니다.' });
+
     });
 });
+
 router.post('/reserve', (req, res) => {
     console.log(req.body.seatNumbers);
     db.query(`update seat set seat_reserve = 0 where seat_name in (?)`, [req.body.seatNumbers], (error, results) => { // 쿼리에서 in (?) : 여러개의 값을 넣을 수 있음
@@ -312,6 +318,20 @@ router.post('/reserve', (req, res) => {
         } return res.status(200).json({ message: '좌석 저장 완료' });
     });
 });
+
+
+// 예매완료 - 결제
+router.get('/payment/:ticket_no', (req, res, next) => {
+    const ticket_no = req.params.ticket_no;
+    db.query(`select ticket_no, ticket_total_price, ticket_date, ticket_cnt, ticket_movie_no, ticket_seat, ti_se_cinema_no , ticket_user_no from ticket`, [ticket_no], (error, results, fields) => {
+        if(error) {
+            console.log(error);
+            return res.status(500).json({ error: "예매 정보 불러오기 실패" });
+        }
+        return res.status(200).json(results);
+    });
+});
+
 
 //아름작성 완
 
