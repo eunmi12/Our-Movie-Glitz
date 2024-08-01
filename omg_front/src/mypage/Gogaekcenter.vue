@@ -6,7 +6,7 @@
       <div class="mypagebox">
         <div class="qna_box">
           <p class="text1">MY 문의내역</p>
-          <div v-for="qna in helpcenter" :key="qna.qna_no" class="user_qna" @click="gotoheldetail">
+          <div v-for="qna in helpcenter" :key="qna.qna_no" class="user_qna" @click="gotoheldetail(qna.qna_no)">
             <div class="qna_info">
               <span class="qna_type">{{ getQnaType(qna.qna_type) }}</span>
               <span class="qna_title">{{ qna.qna_title }}</span>
@@ -39,8 +39,11 @@ export default {
     };
   },
   methods: {
-    gotoheldetail() {
-      this.$router.push(`/gogaekdetail/${this.user.user_no}`);
+    gotoheldetail(qna_no) {
+      this.$router.push({
+        path:`/gogaekdetail/${this.user.user_no}`,
+        query:{qna_no:qna_no}
+      });
     },
     async userqna() {
       const user_no = this.$route.params.user_no;

@@ -24,7 +24,7 @@ const path = require("path");
 //재영작성
 router.get('/eventlist', (req, res) => {
     const sql = `
-        select event_no event_img1, event_title, event_startdate, event_enddate from event order by event_no asc;
+        select event_no, event_img1, event_title, date_format(event_startdate, '%y-%m-%d') as event_startdate, date_format(event_enddate, '%y-%m-%d') as event_enddate from event order by event_no desc;
     `;
     db.query(sql, (err, results) => {
       if (err) {
@@ -41,6 +41,7 @@ router.get('/eventlist', (req, res) => {
 //아름작성 완
 
 //회창작성
+
 //유저 정보 불러오기
 router.post('/mypage/:user_no', function(request, response, next){
     const user_no = request.params.user_no;
@@ -191,22 +192,40 @@ router.post('/wish/:user_no', function(request, response, next){
     });
 });
 //qna 상세페이지
+router.post('/gogaekdetail/:user_no', function(request, response, next){
+    const user_no = request.params.user_no;
+    const qna_no = request.query.qna_no;
 
-// //회창작성 완
-// router.post('/gogaekdetail/:user_no', function(request, response, next){
-//     const user_no = request.params.user_no;
+    db.query(`select qna_no, qna_answer, qna_title, DATE_FORMAT(qna_date, "%Y-%m-%d") AS qna_date, qna_type, user_phone, user_id, qna_comment, DATE_FORMAT(qna_answer_date, "%Y-%m-%d") AS qna_answer_date
+                from qna q
+                join user u on q.qna_user_no = u.user_no
+                where qna_user_no = ? and qna_no = ?`,
+        [user_no,qna_no],
+        function(error, result, field){
+        if (error) {
+            console.error(error);
+            return response.status(500).json({ error: '문희내역 에러' });
+        }
+        response.json(result);
+        console.log(result);
+    });
+});
+//회원탈퇴하기
+router.post('/deluser', function(request, response, next){
+    const user_no = request.body.user_no;
 
-//     db.query(`select qna_no, qna_comment, qna_title, DATE_FORMAT(qna_date, "%Y-%m-%d-%h:%i") AS qna_date from qna where qna_user_no = ?;`,
-//         [user_no],
-//         function(error, result, field){
-//         if (error) {
-//             console.error(error);
-//             return response.status(500).json({ error: '문희내역 에러' });
-//         }
-//         response.json(result);
-//         console.log(result);
-//     });
-// });
+    db.query(`update user set user_del = 0 where user_no=?;`,
+        [user_no],
+        function(error, result, field){
+        if (error) {
+            console.error(error);
+            return response.status(500).json({ error: '문희내역 삭제 중 에러 발생' });
+        }
+        response.json(result);
+        console.log(result);
+    });
+});
+//회창작성 완
 
 
 

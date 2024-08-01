@@ -20,12 +20,15 @@ import AdminCreateFaq from '../admin/CreateFaq.vue'
 import AdminNotice from '../admin/notice.vue'
 import moviecreate from '../admin/createmovie.vue'
 import admincinemalist from '../admin/admincinemalist.vue'
+import AdminCreateCinema from '../admin/CreateCinema.vue'
+import AdminCreateNotice from '../admin/createNotice.vue'
 import userseat from '../views/test.vue'
 //은미작성완
 
 
 //재영작성
 import MainPage from '../views/MainPage.vue'
+import EventList from '../admin/eventList.vue'
 //재영작성완
 
 //회창작성
@@ -47,7 +50,8 @@ import Wish from '../mypage/Wish.vue'
 import AdminpageSidebar from '../layouts/AdminpageSidebar.vue';
 import UserList from '../admin/UserList.vue';
 import MovieBooking from '../views/MovieBooking.vue';
-import SeatSelection from '../views/SeatSelection.vue'
+import SeatSelection from '../views/SeatSelection.vue';
+import Payment from '../views/Payment.vue';
 
 //아름작성완
 
@@ -125,6 +129,16 @@ const routes = [
   component: admincinemalist // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
 },
 {
+  path: "/admin/CreateCinema",
+  name: "AdminCreateCinema",
+  component: AdminCreateCinema // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
+},
+{
+  path: "/admin/createNotice",
+  name: "AdminCreateNotice",
+  component: AdminCreateNotice // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
+},
+{
   path: "/user/seat",
   name: "userseat",
   component: userseat // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
@@ -138,6 +152,11 @@ const routes = [
   path: '/',
   name: 'MainPage',
   component: MainPage
+},
+{
+  path: '/admin/eventlist',
+  name: 'EventList',
+  component: EventList
 },
 //재영작성완
 
@@ -225,6 +244,11 @@ const routes = [
   path: "/seatselection",
   name: "SeatSelection",
   component: SeatSelection,
+},
+{
+  path: "/payment",
+  name: "Payment",
+  component: Payment,
 },
 
 //아름작성완

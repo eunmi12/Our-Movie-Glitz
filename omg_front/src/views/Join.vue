@@ -15,6 +15,7 @@
                                 <input type="text" id="user_id" v-model="user_id" minlength="6" maxlength="20" placeholder="아이디 입력(6~20자)">
                                 <button class="id_check" type="button" @click="id_check">중복 확인</button>
                             </div>
+                            <div v-if="errors.user_id" class="error" hidden>{{ errors.user_id }}</div>
                         </div>
                         <div class="user_pwd">
                             <div class="pwd_title">
@@ -23,6 +24,7 @@
                             <div class="pwd_input">
                                 <input type="password" id="user_pwd" v-model="user_pwd" minlength="8" maxlength="20" placeholder="비밀번호 입력(문자, 숫자, 특수문자 포함 8~20자)">
                             </div>
+                            <div v-if="errors.user_pwd" class="error" hidden>{{ errors.user_pwd }}</div>
                         </div>
                         <div class="user_pwd">
                             <div class="pwd_title">
@@ -32,6 +34,7 @@
                                 <input type="password" id="user_pwd2" v-model="user_pwd2" minlength="8" maxlength="20"  placeholder="비밀번호 재입력">
                                 <button class="pwd_check" type="button" @click="pwd_check">중복 확인</button>
                             </div>
+                            <div v-if="errors.user_pwd2" class="error" hidden>{{ errors.user_pwd2 }}</div>
                         </div>
                         <div class="user_name">
                             <div class="name_title">
@@ -40,6 +43,7 @@
                             <div class="name_input">
                                 <input type="text" id="user_name" v-model="user_name" placeholder="이름">
                             </div>
+                            <div v-if="errors.user_name" class="error" hidden>{{ errors.user_name }}</div>
                         </div>
                         <div class="user_phone">
                             <div class="phone_title">
@@ -56,6 +60,7 @@
                                 <span style="font-size: 20px;"> - </span>
                                 <input type="text" name="number3" v-model="number3" id="number3" maxlength="4">
                             </div>
+                            <div v-if="errors.phone" class="error" hidden>{{ errors.phone }}</div>
                         </div>
                         <div class="user_gender">
                             <div class="gender_title">
@@ -69,6 +74,7 @@
                                     <input type="radio" v-model="gender" id="women" name="gender" value="F">여자
                                 </label>
                             </div>
+                            <div v-if="errors.gender" class="error" hidden>{{ errors.gender }}</div>  
                         </div>
                         <div class="user_age">
                             <div class="age_title">
@@ -77,6 +83,7 @@
                             <div class="age_input">
                                 <input type="date" v-model="user_age" id="age_name">
                             </div>
+                            <div v-if="errors.user_age" class="error" hidden>{{ errors.user_age }}</div>  
                         </div>
                     </div>
                 <div class="join_btn">
@@ -104,10 +111,86 @@ export default {
             number3: '',
             gender: '',
             user_age: '',
+            errors : {},
 
         };
     },
     methods: {
+        validateForm() {
+            this.errors = {};
+
+            //아이디 유효성 검사
+            if(!this.user_id) {
+                this.errors.email = '아이디를 입력해 주세요';
+                this.$swal(this.errors.email);
+                return false;
+            } else if(this.user_id.length < 6 || this.user_id.length > 20){
+                this.errors.user_id = '아이디는 6~20자 사이여야 합니다.';
+                this.$swal(this.errors.user_id);
+                return false;
+            }
+
+            //비밀번호 유효성 검사
+            if(!this.user_pwd){
+                this.errors.user_pwd = '비밀번호를 입력해 주세요';
+                this.$swal(this.errors.user_pwd);
+                return false;
+            } else {
+                const user_pwd = this.user_pwd;
+                if(user_pwd.length < 8 || user_pwd.length > 20){
+                    this.$swal(this.errors.user_pwd);
+                    return false;
+                }
+                const hasUpperCase = /[A-Z]/.test(user_pwd);
+                const hasLowerCase = /[a-z]/.test(user_pwd);
+                const hasNumbers = /\d/.test(user_pwd);
+                const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(user_pwd);
+                const typesCount = [hasUpperCase, hasLowerCase, hasNumbers, hasSpecial].filter(Boolean).length;
+                if (typesCount < 3) {
+                    this.errors.user_pwd = '비밀번호는 영문 대소문자, 숫자, 특수문자 중 세 가지 이상을 포함해야 합니다.';
+                    this.$swal(this.errors.user_pwd);
+                    return false;
+                }
+            }
+
+             // 비밀번호 확인 유효성 검사
+             if (this.user_pwd !== this.user_pwd2) {
+                this.errors.user_pwd2 = '비밀번호가 일치하지 않습니다.';
+                this.$swal(this.errors.user_pwd2);
+                return false;
+            }
+
+            // 이름 유효성 검사
+            if (!this.user_name) {
+                this.errors.user_name = '이름을 입력해 주세요.';
+                this.$swal(this.errors.user_name);
+                return false;
+            }
+
+            // 전화번호 유효성 검사
+            if (!this.number2 || !this.number3) {
+                this.errors.phone = '휴대전화번호를 입력해 주세요.';
+                this.$swal(this.errors.phone);
+                return false;
+            }
+
+            // 성별 유효성 검사
+            if (!this.gender) {
+                this.errors.gender = '성별을 선택해 주세요.';
+                this.$swal(this.errors.gender);
+                return false;
+            }
+
+            // 생년월일 유효성 검사
+            if (!this.user_age) {
+                this.errors.user_age = '생년월일을 입력해 주세요.';
+                vthis.$swal(this.errors.user_age);
+                return false;
+            }
+
+            return true;
+
+        },  
         async id_check(){
             if(this.user_id.length < 6 || this.user_id.length > 20){
                 this.$swal("아이디는 6~20자 사이여야 합니다.");
@@ -157,6 +240,9 @@ export default {
             this.$swal('비밀번호가 일치합니다.');
         },
         async onsubmitForm(){
+            if (!this.validateForm()) {
+                return;
+            }
 
             const data = {
                 user_id: this.user_id,

@@ -186,15 +186,73 @@ router.post('/createfaq',(req,res) =>{
 
 //상영리스트 뽑기
 router.post('/cinemalist',(req,res)=>{
-    db.query((`select * from cinema`),(err,result)=>{
+    db.query((`select screen_no, movie_title, cinema_no, cinema_name, concat(screen_starttime,'~',screen_endtime) as cinema_time,
+        date_format(screen_date, '%y-%m-%d') as screen_date 
+        from screen s
+        join movie m on s.sc_movie_no = m.movie_no
+        join cinema c on s.sc_cinema_no = c.cinema_no;`),(err,result)=>{
         if(err){
             console.log("CINEMA 리스트 중 오류 발생");
             return res.status(500).json({ err:'error'});
         }
         res.json(result);
         console.log("data",result);
-    })
-})
+    });
+});
+
+//상영할 영화 리스트 불러오기
+router.post('/scmovielist',(req,res)=>{
+    db.query(`select movie_no, movie_title, date_format(movie_startdate, '%y-%m-%d') as movie_startdate, 
+        date_format(movie_enddate, '%y-%m-%d') as movie_enddate from movie`, (err,result)=>{
+        if(err){
+            console.log("cinema에서 영화리스트 불러오는 도중 오류 발생");
+            return res.status(500).json({ err: 'error'});
+        }
+        res.json(result);
+        console.log("moviedata",result);
+    });
+});
+//상영할 상영관 리스트 불러오기
+router.post('/sccinemalist', (req,res) => {
+    db.query(`select cinema_no, cinema_name from cinema`, (err,result) => {
+        if(err){
+            console.log("cinema에서 상영관 리스트 불러오기");
+            return res.status(500).json({ err: 'error'});
+        }
+        res.json(result);
+    });
+});
+
+//상영할 정보 등록하기
+router.post('/insertscreen', (req,res) => {
+    const data = {
+        screen_starttime : req.body.screen_starttime,
+        screen_endtime : req.body.screen_endtime,
+        sc_movie_no : req.body.sc_movie_no,
+        sc_cinema_no : req.body.sc_cinema_no,
+        screen_date : req.body.screen_date,
+    }
+    db.query(`insert into screen (screen_starttime,screen_endtime,sc_movie_no,sc_cinema_no,screen_date) 
+        values (?,?,?,?,?)`,[data.screen_starttime,data.screen_endtime,data.sc_movie_no,data.sc_cinema_no,data.screen_date], (err,result)=>{
+            if(err){
+                console.log('상영 정보 등록 중 오류 발생');
+                return res.status(500).json({ err: 'error'});
+            }
+            res.json(result);
+        });
+});
+
+//상영된 정보 삭제하기
+router.post('/deletescreen', (req,res) => {
+    const screen_no = req.body.screen_no;
+    db.query(`DELETE FROM screen WHERE screen_no = ?`,[screen_no], (err,result)=>{
+        if(err){
+            console.log('상영 삭제 중 오류 발생');
+            return res.status(500).json({ err: 'error'});
+        }
+        res.json(result);
+    });
+});
 
 router.get('/user/seats', (req, res) => {
     let sql = 'SELECT seat_no, seat_cinema_no, seat_name,seat_reserve FROM seat WHERE seat_cinema_no = 1';
