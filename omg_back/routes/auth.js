@@ -88,7 +88,7 @@ router.post("/login", async(req, res) => {
   const user_id = req.body.user_id;
   const user_pwd = req.body.user_pwd;
 
-  db.query("select user_no, user_id, user_pwd, user_name, user_phone, user_auth from user where user_id = ?",
+  db.query("select user_no, user_id, user_pwd, user_name, user_phone, user_auth, user_del from user where user_id = ?",
     [user_id, user_pwd],
     (err, results, fields) => {
       if(err){
@@ -108,23 +108,31 @@ router.post("/login", async(req, res) => {
           console.log(user.user_auth);
           console.log(user.user_no);
 
-          if(user.user_pwd === user_pwd){
+          if(user.user_del === 1){
+            if(user.user_pwd === user_pwd){
+              res.send({
+                //login success
+                code : 200,
+                message : "로그인 성공",
+                user_no : user.user_no,
+                user_id: user.user_id,
+                user_pwd: user.user_pwd,
+                user_auth: user.user_auth,
+                user_name: user.user_name,
+              })
+            } else{
+              res.send({
+                //비밀번호 불일치 시
+                code: 401,
+                message: "비밀번호가 일치하지 않습니다."
+              })
+            }
+          } else {
             res.send({
-              //login success
-              code : 200,
-              message : "로그인 성공",
-              user_no : user.user_no,
-              user_id: user.user_id,
-              user_pwd: user.user_pwd,
-              user_auth: user.user_auth,
-              user_name: user.user_name,
-            })
-          } else{
-            res.send({
-              //비밀번호 불일치 시
-              code: 401,
-              message: "비밀번호가 일치하지 않습니다."
-            })
+              // 비밀번호 불일치 시
+              code: 402,
+              message: "정지되었습니다 관리자에게 문의하시기 바랍니다.",
+            });
           }
         } else{
           res.send({

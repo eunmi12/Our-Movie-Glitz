@@ -8,6 +8,7 @@ const store = createStore({
                 user_id: '',
                 user_no: '',
                 user_auth:'',
+                user_del: '',
             },
             movie_r:{
                 movie_no : '',

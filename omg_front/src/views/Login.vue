@@ -69,6 +69,7 @@ export default {
                             user_no: res.data.user_no,
                             user_auth: res.data.user_auth,
                             user_name: res.data.user_name,
+                            user_del : res.data.user_del
                         };
                         this.$store.commit('setUser', userPayload);
                         // window.location.href = '/';
@@ -95,6 +96,9 @@ export default {
                 } else if(res.data.code === 404){
                     //존재하지 않은 아이디일 때
                     this.$swal(res.data.message)
+                } else if (res.data.code === 402) {
+                    // 존재하지 않는 이메일일 때
+                    this.$swal(res.data.message);
                 }
             } catch (error){
                 this.$swal(error);
