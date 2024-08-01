@@ -23,6 +23,7 @@
                     </tbody>
                 </table>
             </div>
+                <button class="insertbtn" @click="insertNotice">공지사항 작성</button>
         </div>
     </div>
 </template>
@@ -55,6 +56,9 @@ export default {
                 this.noticeList = results.data;
             });
         },
+        insertNotice(){
+            this.$router.push('/admin/createnotice');
+        }
 
     }
 
