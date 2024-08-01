@@ -47,7 +47,8 @@ import Wish from '../mypage/Wish.vue'
 import AdminpageSidebar from '../layouts/AdminpageSidebar.vue';
 import UserList from '../admin/UserList.vue';
 import MovieBooking from '../views/MovieBooking.vue';
-import SeatSelection from '../views/SeatSelection.vue'
+import SeatSelection from '../views/SeatSelection.vue';
+import Payment from '../views/Payment.vue';
 
 //아름작성완
 
@@ -223,6 +224,11 @@ const routes = [
   path: "/seatselection",
   name: "SeatSelection",
   component: SeatSelection,
+},
+{
+  path: "/payment",
+  name: "Payment",
+  component: Payment,
 },
 
 //아름작성완

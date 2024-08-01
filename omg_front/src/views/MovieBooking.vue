@@ -353,7 +353,7 @@ export default {
 .movie-booking {
  width: 80%;
  margin: 0 auto;
- font-size: medium;;
+ font-size: medium;
 }
 
 .movie-booking h1 {

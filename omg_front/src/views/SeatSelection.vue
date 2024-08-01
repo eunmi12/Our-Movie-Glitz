@@ -15,6 +15,14 @@
             </span>
             </div>
         </div>
+        <div class="seat-status seat_ab" style="font-size: 12px; justify-content: center;">
+            <div class="status-box available"></div>
+            <span>좌석선택 가능</span>
+        </div>
+        <div class="seat-status seat_un" style="font-size: 12px; justify-content: center;">
+            <div class="status-box unavailable"></div>
+            <span>좌석선택 불가능</span>
+        </div>
         <div class="screen">SCREEN</div>
         <div class="seats">
             <div v-for="(row, rowIndex) in seatRows" :key="rowIndex" class="seat-row">
@@ -60,7 +68,8 @@ import axios from 'axios';
         }, 
         movie_r(){
           return this.$steor.state.movie_r;
-        }       
+        },
+               
     }, // store에 저장된 값을 불러옴
 
     methods: {
@@ -134,17 +143,17 @@ import axios from 'axios';
                     this.selectedSeats.push(seat);
                 }
             }
-            const seatNumbers = this.selectedSeats.map(seat => seat.seat_name);
-            const seatNo = this.selectedSeats.map(seat => seat.seat_no);
-            const bookingDetails = {
-                seatNumbers: seatNumbers,
-                seatNo: seatNo
-            };
-            axios.post (`http://localhost:3000/movie/reserve`, bookingDetails)
-            .then(results => {
-                alert('좌석 예약이 완료되었습니다.');
-                this.selectedSeats = [];
-            })
+            // const seatNumbers = this.selectedSeats.map(seat => seat.seat_name);
+            // const seatNo = this.selectedSeats.map(seat => seat.seat_no);
+            // const bookingDetails = {
+            //     seatNumbers: seatNumbers,
+            //     seatNo: seatNo
+            // };
+            // axios.post (`http://localhost:3000/movie/reserve`, bookingDetails)
+            // .then(results => {
+            //     alert('좌석 예약이 완료되었습니다.');
+            //     this.selectedSeats = [];
+            // })
         },
         selectNumSeats(num) {
             this.numSeats = num;
@@ -158,6 +167,7 @@ import axios from 'axios';
             return;
             }
             const seatNumbers = this.selectedSeats.map(seat => seat.seat_name);
+            console.log(seatNumbers);
             const bookingDetails = {
                 user_no: this.$store.state.user.user_no,
                 movie_no: this.$store.state.movie_r.movie_no,
@@ -173,9 +183,18 @@ import axios from 'axios';
                 alert('좌석 예약이 완료되었습니다.');
                 this.selectedSeats = [];
                 this.fetchSeats();
+                // window.location.href =`http://localhost:8081/payment`
             })
             .catch(error => {
                 console.error('좌석 예약 에러', error);
+            });
+
+            axios.post(`http://localhost:3000/movie/reserve`, bookingDetails)
+            .then(results => {
+                console.log('좌석 저장 완료');
+            })
+            .catch(error => {
+                console.error('좌석 저장 에러', error);
             });
         },
         // confirmBooking() {
@@ -233,7 +252,7 @@ import axios from 'axios';
   }
   
   .people-selection {
-    margin-bottom: 20px;
+    margin-bottom: 12px;
   }
   
   .people-buttons {
@@ -273,6 +292,31 @@ import axios from 'axios';
     margin: 0 auto;
   }
   
+  .seat-status {
+    display: flex; /* 가로 방향으로 정렬 */
+    align-items: center; /* 수직 정렬 */
+    margin-bottom: 10px; /* 항목 간 간격 */
+    text-align: center;
+    }
+    /* 네모칸의 스타일 */
+    .status-box {
+        width: 20px; /* 네모칸의 너비 */
+        height: 20px; /* 네모칸의 높이 */
+        margin-right: 10px; /* 네모칸과 텍스트 사이의 간격 */
+    }
+
+    .available {
+        background-color: #ccc; /* 선택 가능 상태 색상 */
+    }
+
+    .unavailable {
+        background-color: rgb(179, 141, 141); /* 선택 불가능 상태 색상 */
+    }
+
+    .seat_un {
+        margin-bottom: 70px;
+    }
+
   .seats {
     display: inline-block;
     text-align: left;
@@ -292,14 +336,16 @@ import axios from 'axios';
   }
   
   .seat {
-    display: inline-block;
-    width: 30px;
-    height: 30px;
+    display: flex;
+    width: 37px;
+    height: 37px;
     line-height: 30px;
     margin: 2px;
-    text-align: center;
+    align-items: center;
     background-color: #ccc;
     cursor: pointer;
+    /* vertical-align: middle; */
+    justify-content: center;
   }
   
   .seat.selected {
@@ -307,12 +353,13 @@ import axios from 'axios';
   }
   
   .seat.reserved {
-    background-color: #f66;
+    background-color: rgb(179, 141, 141);
     cursor: not-allowed;
   }
   
   .confirm-seats {
     margin-top: 20px;
+    text-align: center;
   }
   
   .confirm-seats button {
