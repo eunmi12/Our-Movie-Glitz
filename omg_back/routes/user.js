@@ -24,7 +24,7 @@ const path = require("path");
 //재영작성
 router.get('/eventlist', (req, res) => {
     const sql = `
-        select event_no event_img1, event_title, event_startdate, event_enddate from event order by event_no asc;
+        select event_no, event_img1, event_title, date_format(event_startdate, '%y-%m-%d') as event_startdate, date_format(event_enddate, '%y-%m-%d') as event_enddate from event order by event_no desc;
     `;
     db.query(sql, (err, results) => {
       if (err) {

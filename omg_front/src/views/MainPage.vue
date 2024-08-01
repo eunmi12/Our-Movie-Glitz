@@ -1,7 +1,7 @@
 <template>
     <div class="good">
       <div class="carousel">
-        <img src="../images/mainpage/액션1.png" alt="">
+        <img src="../images/mainpage/movie/액션1.png" alt="">
         <!-- <video src="../videos/영화1.mp4" autoplay muted loop><a href=""></a></video> -->
         <!-- <video src="../videos/영화1.mp4"><a href=""></a></video> -->
         <strong class="main_name">파일럿</strong>
@@ -20,6 +20,7 @@
                   <a href="" class="btn_more">더보기</a>
                 </dt>
                 <dd v-for="movie in movielists[index]" :key="movie.movie_no">
+                  
                   <a href="">
                     <div class="img_wrap" data-scale="false">
                       <img :src="getImagePath(movie.movie_img0)" alt="영화 이미지">
@@ -43,12 +44,14 @@
             <a href="" class="event_all">더보기</a>
           </div>
           <div class="event_title">
-            <div class="event_box1">
-              <div v-for="event in eventlists" :key="event.event_no" class="event_box2">
+            <div  v-for="event in limitedEventlists" :key="event.event_no"  class="event_box1" >
+
+              <div class="event_box2">
                 <div class="event_box3">
                     <a href="">
                         <div class="img_wrap1">
-                            <img :src="getImagePath(event.event_img1)" alt="이벤트 이미지당">
+                            <img :src="getImagePath2(event.event_img1)" alt="이벤트 이미지당">
+                            <!-- <img :src="require(`../images/mainpage/${event.event_img1}`)" > -->
                         </div>
                         <div class="event_info">
                         <strong>{{event.event_title}}</strong>
@@ -81,6 +84,11 @@
       }),
       this.fechEventlist();
     },
+    computed: {
+    limitedEventlists() {
+      return this.eventlists.slice(0, 4); // 최대 4개의 요소만 반환
+    }
+  },
     methods: {
       fetchMovielist(tag, index) {
         axios.get(`http://localhost:3000/movie/movielist/${tag}`)
@@ -106,8 +114,8 @@
         return(`https://image.tmdb.org/t/p/w500/${imageName}`);
       },
       getImagePath2(imageName) {
-        return require(`../images/mainpage/${imageName}`);
-      }
+        return require(`../images/mainpage/events/${imageName}`);
+      },
     },
   };
   </script>
@@ -283,7 +291,7 @@
 .events{
     overflow: hidden;
     position: relative;
-    padding: 60px 0 6px;
+    padding: 60px 0 100px;
 }
 .event_name {
     display: flex;
@@ -308,27 +316,35 @@
     box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
 }
 .event_title {
-  margin-top: 50px;
+  margin-top: 20px;
+  display: flex;
 }
 
-.event_box1 {
+.event_box1{
   width: 400px;
-  height: 400px;
+  height: 280px;
   display: flex;
   justify-content: flex-start;
-  margin-top: 50px;
-  padding: 0;
+  /* margin-top: 50px; */
+  /* padding: 0px 20px 0px 20px; */
   margin-left: 160px;
+  /* border: 1px solid #000; 테두리 스타일 추가 */
+  box-sizing: border-box; /* 테두리 포함 */
+  border-radius: 5px;
   
 }
-
+.event_box1:not(:first-child) {
+  margin-left: 10px; /* 첫 번째 이외의 요소들 */
+  /* border: 1px solid #000; 테두리 스타일 추가 */
+/* padding: 10px; */
+}
 .event_box2 {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
-  padding: 0px 10px 50px 0px ; /*상 우 하 좌 */
+  /* padding: 0px 10px 50px 0px ; 상 우 하 좌 */
   width: 100%;
-  height: 65%;
+  height: 100%;
   border-radius: 10px;
 }
 

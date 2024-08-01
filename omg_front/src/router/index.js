@@ -28,6 +28,7 @@ import userseat from '../views/test.vue'
 
 //재영작성
 import MainPage from '../views/MainPage.vue'
+import EventList from '../admin/eventList.vue'
 //재영작성완
 
 //회창작성
@@ -149,6 +150,11 @@ const routes = [
   path: '/',
   name: 'MainPage',
   component: MainPage
+},
+{
+  path: '/admin/eventlist',
+  name: 'EventList',
+  component: EventList
 },
 //재영작성완
 

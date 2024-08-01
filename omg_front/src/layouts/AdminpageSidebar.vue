@@ -82,7 +82,7 @@ export default {
         },
         goToEvent() {
             this.$router.push({
-                path: '/admin/'
+                path: '/admin/eventList'
             })
         },
         goToFAQ() {
