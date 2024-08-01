@@ -18,7 +18,7 @@
               </div>
               <div v-if="selectedRevIndex === index" class="toggle ticket">
                 <div class="ticket-container">
-                  <img src="../images/mainpage/영화1.png" class="ticket-image">
+                  <img src="../images/mainpage/movie/영화1.png" class="ticket-image">
                   <div class="ticket-content">
                     <div class="ticket-header">
                       <div class="ticket-from">
