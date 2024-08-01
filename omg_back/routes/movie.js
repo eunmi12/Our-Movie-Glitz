@@ -112,10 +112,10 @@ router.get('/movies/page', (req, res) => {
     const offset = parseInt(req.query.offset, 10) || 0;
 
     const query = `select * from movie limit ? offset ?`;
-  
+
     db.query(query, [limit, offset], (error, results) => {
-      
-      if (error) {
+        if (error) {
+
             console.log('영화를 조회할 수 없습니다.');
             return res.status(500).json({ error: 'error' });
         }
