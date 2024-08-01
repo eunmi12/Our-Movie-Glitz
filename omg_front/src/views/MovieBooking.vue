@@ -33,7 +33,7 @@
                 <ul>
                     <!-- date를 시작일과 종료일로 계산해서 넣어야 됨 -->
                     <!-- dates 배열에 각 날짜에 대한 리스트 아이템을 생성 -->
-                    <li v-for="date in dates" :key="date" @click="selectDate(date)" :class="{ selected: selectedDate === date }">{{ new Date(date).toISOString().split('T')[0] }}</li>
+                    <li v-for="date in availableDates" :key="date" @click="selectDate(date)" :class="{ selected: selectedDate === date }">{{ date.screen_date.toString().split('T')[0] }}</li>
                 </ul>
             </div>
          </div>
@@ -53,32 +53,15 @@
             <button @click="goToSeatSelection" :disabled="!selectedMovie || !selectedDate || !selectedTime">좌석 선택으로 이동</button>
              <!-- <button @click="goToSeatSelection()">좌석 선택으로 이동</button> -->
            </div>
-          <!-- Step 5: 좌석 선택 -->
-           <!-- <div class="select-seat" v-if="currentStep === 5">
-            <h2>좌석 선택</h2>
-            <div class="seats"> -->
-                <!-- seats 배열의 각 좌석에 대해 div 요소를 생성 -->
-                <!-- <div v-for="seat in seats" :key="seat.seat_no" @click="selectSeat(seat)" :class="{ selected: selectedSeats.includes(seat.seat_no) }">{{ seat.seat_name }}</div>
-            </div>
-        </div> -->
-        <!-- 이전 단계로 돌아가기 버튼 (1단계 이후부터 보임) -->
-         <!-- <div v-if="currentStep > 1">
-            <button @click="previousStep">이전</button>
-         </div>
-         <div v-if="currentStep < 5">
-            <button @click="nextStep">다음</button>
-         </div>
-         <div v-if="currentStep === 5">
-            <button @click="confirmBooking">예매 완료</button>
-         </div> -->
+          
         </div>
     </div>
-</template>
-
-<script>
-import axios from 'axios';
-
-export default {
+  </template>
+  
+  <script>
+  import axios from 'axios';
+  
+  export default {
     data() {
         return {
             // activeStep: 1, // 현재 활성화된 단계 (1: 영화, 2: 날짜, 3: 상영관, 4: 시간, 5: 좌석)
@@ -88,7 +71,7 @@ export default {
             loading: false,
             movies: [], // 영화 목록
             cinemas: [], // 상영관 목록
-            availableDates: [], // 상영가능 날짜 목록
+            availableDates: '', // 상영가능 날짜 목록
             times: [], // 상영가능 시간 목록
             // seats: [], // 좌석 목록
             selectedMovie: null, // 선택된 영화
@@ -96,27 +79,27 @@ export default {
             selectedDate: null, // 선택된 날짜
             selectedTime: null, // 선택된 시간
             // selectedSeats: [], // 선택된 좌석 목록
-            today: new Date().toISOString().split('T')[0],
-            tomorrow: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0],
-            currentHour: new Date().getHours(), // 현재 시간 (24시간제)
+            // today: new Date().toISOString().split('T')[0],
+            // tomorrow: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0],
+            // currentHour: new Date().getHours(), // 현재 시간 (24시간제)
         };
     },
-
+  
     created() {
         this.fetchMovies();
         // 컴포넌트가 생성될 때 movie_no 값을 설정
         this.movie_no = this.$route.params.movie_no || null;
-
+  
         //movie_no가 설정되면 fetchAvailableDates 함수 호출
         if(this.movie_no) {
             this.fetchAvailableDates();
         }
     },
-
+  
     computed: {
-        dates() {
-            return this.availableDates.filter(date => new Date(date) >= new Date(this.tomorrow));
-        },
+        // dates() {
+        //     return this.availableDates.filter(date => new Date(date) >= new Date(this.tomorrow));
+        // },
         // validTimes() {
         //     if (this.selectedDate === this.today) {
         //         // const currentHour = new Date().getHours();
@@ -129,11 +112,11 @@ export default {
         //     return this.times;
         // },
     },
-
+  
     mounted() {
         this.fetchMovies(); // 컴포넌트가 마운트 될 때, 영화 목록을 가져옴
     },
-
+  
     methods: {
         fetchMovies() {
             if (this.loading) return;
@@ -232,10 +215,21 @@ export default {
             this.fetchAvailableTimes();
         },
         fetchAvailableTimes() {
+            console.log(this.selectedDate);
+
+            let dateValue;
+                if (typeof this.selectedDate === 'object' && this.selectedDate !== null) {
+                    // this.selectedDate가 객체일 경우, 해당 객체의 날짜 속성을 추출합니다.
+                    dateValue = this.selectedDate.screen_date ? this.selectedDate.screen_date.split('T')[0] : null;
+                } else {
+                    // this.selectedDate가 객체가 아닐 경우, 문자열로 처리합니다.
+                    dateValue = this.selectedDate.toString().split('T')[0];
+                }
+                console.log("dateValue:--------->",dateValue);
             axios.post(`http://localhost:3000/movie/availableTimes`, {
                 movie_no: this.selectedMovie.movie_no,
                 cinema_no: this.selectedCinema.cinema_no,
-                date: this.selectedDate.toString().split('T')[0] //this.selectedDate.date로 date 속성을 직접 전달하는 것이 아니라 selectedDate에서 가져와야 됨
+                date: dateValue //this.selectedDate.date로 date 속성을 직접 전달하는 것이 아니라 selectedDate에서 가져와야 됨
             }).then(results => {
                 console.log('rerererer', results);
                 this.times = results.data;
@@ -257,7 +251,7 @@ export default {
             // this.fetchSeats();
             // this.currentStep = 5;
         },
-
+  
         goToSeatSelection() {
             if (this.selectedMovie && this.selectedCinema && this.selectedDate && this.selectedTime) {
                 axios({
@@ -266,7 +260,7 @@ export default {
                     data: {
                         movie_no: this.selectedMovie.movie_no,
                         cinema_no: this.selectedCinema.cinema_no,
-                        date: this.selectedDate.toString().split('T')[0],
+                        date: this.selectedDate.screen_date ? this.selectedDate.screen_date.split('T')[0] : this.selectedDate.toString().split('T')[0],
                         time: this.selectedTime,
                         user_no: this.$store.state.user.user_no,
                     }
@@ -287,7 +281,7 @@ export default {
             const movie_data = {
                 movie_no: this.selectedMovie.movie_no,
                 cinema_no: this.selectedCinema.cinema_no,
-                date: this.selectedDate.toString().split('T')[0],
+                date: this.selectedDate.screen_date ? this.selectedDate.screen_date.split('T')[0] : this.selectedDate.toString().split('T')[0],
                 time: this.selectedTime,
             };
             this.$store.commit('setMovie_r', movie_data);
@@ -338,7 +332,7 @@ export default {
         //         // seate: this.selectedSeats.map(seat => seat.seat_no),
         //         total_price: this.selectedMovie.movie_price * this.selectedSeats.length,
         //     };
-
+  
         //     axios.post(`http://localhost:3000/movie/book`, bookingDetails).then((results) => {
         //         alert(results.data.message);
         //     }).catch(() => {
@@ -346,34 +340,35 @@ export default {
         //     });
         // },
     },
-};
-</script>
 
-<style scoped>
-.movie-booking {
- width: 80%;
- margin: 0 auto;
- font-size: medium;
-}
-
-.movie-booking h1 {
+  };
+  </script>
+  
+  <style scoped>
+  .movie-booking {
+  width: 80%;
+  margin: 0 auto;
+  font-size: medium;;
+  }
+  
+  .movie-booking h1 {
     text-align: left;
     padding: 3%;
     border-bottom: 1px solid #ccc;
     overflow-y: auto;
-}
-
-.steps {
+  }
+  
+  .steps {
     display: flex;
     justify-content: space-between;
-}
-
-.step {
+  }
+  
+  .step {
     width: 25%;
     border: 1px solid #312b2b
-}
-
-.step h2 {
+  }
+  
+  .step h2 {
     text-align: center;
     /* margin-top: 5%; */
     padding-top: 5%;
@@ -382,19 +377,19 @@ export default {
     border-bottom: 1px solid #4c4847;
     font-size: x-large;
     background-color: #ccc;
-}
-/* .movie-booking h2 {
+  }
+  /* .movie-booking h2 {
     text-align: center;
     margin-top: 3%;
     color: rgb(74, 73, 73);
-} */
-
-.selected {
+  } */
+  
+  .selected {
     background-color: #4c4847;
     color: white;
-}
-
-.movie-age {
+  }
+  
+  .movie-age {
     border: 1px solid #000000;
     width: 20px;
     height: 20px;
@@ -403,33 +398,33 @@ export default {
     border-radius: 3px;
     text-align: center;
     font-size: small;
-}
-
-.select-screen {
+  }
+  
+  .select-screen {
     text-align: center;
-}
-
-.select-time {
+  }
+  
+  .select-time {
     text-align: center;
-}
-
-ul {
+  }
+  
+  ul {
     list-style: none;
     padding: 0;
     /* border: 1px solid #312b2b */
-}
-
-li {
+  }
+  
+  li {
     padding: 10px;
     cursor: pointer;
-}
-
-.confirm-booking {
+  }
+  
+  .confirm-booking {
     text-align: center;
     /* margin-top: 20px; */
-}
-
-.confirm-booking button {
+  }
+  
+  .confirm-booking button {
     padding-top: 10px;
     background-color: #e5ab2d;
     color: white;
@@ -440,9 +435,9 @@ li {
     height: 250px;
     display: flex;
     justify-content: center;
-}
-
-.confirm-booking button:disabled {
+  }
+  
+  .confirm-booking button:disabled {
     padding-top: 10px;
     background-color: #ccc;
     cursor: not-allowed;
@@ -451,51 +446,51 @@ li {
     font-size: 19px;
     display: flex;
     justify-content: center;
-}
-
-.movie-list-container {
+  }
+  
+  .movie-list-container {
     max-height: 400px; /* Adjust as needed to ensure scrolling */
     overflow-y: scroll; /* 스크롤이 항상 표시되도록 */
-}
-
-.date { /* 클래스명 사이에 띄어쓰기로 그룹에서 또 다른 종류로 구분했을 경우, 뒤에 있는 클래스를 쓰면 됨 */
+  }
+  
+  .date { /* 클래스명 사이에 띄어쓰기로 그룹에서 또 다른 종류로 구분했을 경우, 뒤에 있는 클래스를 쓰면 됨 */
     text-align: center;
-}
-
-/* Always show scrollbar */
-.movie-list-container::-webkit-scrollbar {
+  }
+  
+  /* Always show scrollbar */
+  .movie-list-container::-webkit-scrollbar {
     width: 12px;
-}
-
-.movie-list-container::-webkit-scrollbar-track {
+  }
+  
+  .movie-list-container::-webkit-scrollbar-track {
     background: #f1f1f1;
-}
-
-.movie-list-container::-webkit-scrollbar-thumb {
+  }
+  
+  .movie-list-container::-webkit-scrollbar-thumb {
     background: #888;
-}
-
-.movie-list-container::-webkit-scrollbar-thumb:hover {
+  }
+  
+  .movie-list-container::-webkit-scrollbar-thumb:hover {
     background: #555;
-}
-
-/* .seats {
+  }
+  
+  /* .seats {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-}
-.seats div {
+  }
+  .seats div {
   padding: 10px;
   border: 1px solid #ccc;
   cursor: pointer;
-}
-.seats div.selected {
+  }
+  .seats div.selected {
   background-color: #4caf50;
   color: white;
-}
-
-.select-movie {
+  }
+  
+  .select-movie {
     cursor: pointer;
-} */
-
-</style>
+  } */
+  
+  </style>

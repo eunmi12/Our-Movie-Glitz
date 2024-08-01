@@ -112,10 +112,10 @@ router.get('/movies/page', (req, res) => {
     const offset = parseInt(req.query.offset, 10) || 0;
 
     const query = `select * from movie limit ? offset ?`;
-
+  
     db.query(query, [limit, offset], (error, results) => {
-
-        if (error) {
+      
+      if (error) {
             console.log('영화를 조회할 수 없습니다.');
             return res.status(500).json({ error: 'error' });
         }
@@ -143,19 +143,22 @@ router.post('/cinemas', (req, res) => {
 // 영화 예매 - 예매 날짜 조회
 router.post('/availableDates', (req, res) => {
 
-    const { movie_no } = req.body
+    console.log("req.body: --->",req.body);
+    const sc_movie_no = req.body.movie_no;
+    const sc_cinema_no = req.body.cinema_no;
+    // const { movie_no, cinema_no } = req.body;
+    // console.log(req.body);
+    // const today = new Date();
+    // const tomorrow = new Date(today);
+    // tomorrow.setDate(today.getDate() + 1);
+    // const tomorrowString = tomorrow.toISOString().split('T')[0];
+    const query = `select distinct screen_date from screen where sc_movie_no = ? and sc_cinema_no = ?`;
+    db.query(query, [sc_movie_no, sc_cinema_no], (error, results) => {
 
-    console.log('req.body : ',movie_no);
-
-    const query = `select distinct screen_startdate
-                    from screen s
-                        join movie m on s.sc_movie_no = m.movie_no
-                    where movie_no = ?;`;
-    db.query(query, [movie_no], (error, results) => {
         if(error) {
             return res.status(500).json({ error: '예매 가능한 날짜를 불러올 수 없습니다.' });
         }
-        return res.json(results.map(row => row.DT));
+        return res.status(200).json(results);
     });
 });
 // 예매 날짜 목록 페이지네이션
@@ -174,6 +177,7 @@ router.post('/availableDates/page', (req, res) => {
 });
 // 영화 예매 - 예매 가능한 시간 조회
 router.post('/availableTimes', (req, res) => {
+    console.log("/availableTimes",req.body);
     // const { movie_no, cinema_no, date } = req.body;
     // console.log('rerererere', req.body);
     // const now = new Date();
@@ -193,6 +197,7 @@ router.post('/availableTimes', (req, res) => {
 // 영화 예매 - 좌석 목록 조회
 // 앞단계 정보 저장
 router.post('/saveinfo', (req, res) => {
+    console.log("req.body:---->",req.body);
     db.query(`insert into reservation (movie_no, cinema_no, date, time, user_no) values (?, ?, ?, ?, ?)`, [req.body.movie_no, req.body.cinema_no, req.body.date, req.body.time, req.body.user_no], (error, results) => {
         if (error) {
             return res.status(500).json({ error: '저장 error' });
@@ -213,11 +218,11 @@ router.post('/seats', (req, res) => {
     // console.log('뭐가문제', req.body);
     const { movie_no, cinema_no, date, time } = req.body;
 
-    const query = `select distinct s.seat_no, s.seat_name, s.seat_reserve
+    const query = `select distinct s.seat_no, s.seat_name, s.seat_reserve, s.seat_screen_no
                     from seat s
                     join reservation r on r.cinema_no = s.seat_cinema_no
                     join screen sc on sc.sc_cinema_no = s.seat_cinema_no
-                    and r.movie_no = ? and r.cinema_no = ? and r.date = ? and r.time = ?`
+                    and r.movie_no = ? and r.cinema_no = ? and r.date = ? and screen_starttime = ?`
     // const query = `select seat_no, seat_name, seat_reserve from seat where movie_no = ? and cinema_no = ? and date = ? and time = ?`
     db.query(query, [movie_no, cinema_no, date, time], (error, results) => {
         if (error) {
@@ -301,8 +306,10 @@ router.post('/book', (req, res) => {
             return res.status(500).json({ error: '예매 error' });
         }
         return res.status(200).json({ message: '예매가 완료되었습니다.' });
+
     });
 });
+
 router.post('/reserve', (req, res) => {
     console.log(req.body.seatNumbers);
     db.query(`update seat set seat_reserve = 0 where seat_name in (?)`, [req.body.seatNumbers], (error, results) => { // 쿼리에서 in (?) : 여러개의 값을 넣을 수 있음
@@ -311,6 +318,7 @@ router.post('/reserve', (req, res) => {
         } return res.status(200).json({ message: '좌석 저장 완료' });
     });
 });
+
 
 // 예매완료 - 결제
 router.get('/payment/:ticket_no', (req, res, next) => {
@@ -323,6 +331,7 @@ router.get('/payment/:ticket_no', (req, res, next) => {
         return res.status(200).json(results);
     });
 });
+
 
 //아름작성 완
 
