@@ -22,6 +22,8 @@ import moviecreate from '../admin/createmovie.vue'
 import admincinemalist from '../admin/admincinemalist.vue'
 import AdminCreateCinema from '../admin/CreateCinema.vue'
 import AdminCreateNotice from '../admin/createNotice.vue'
+import AdminUpdateNotice from '../admin/updatenotice.vue'
+import MovieDetail from '../views/MovieDetail.vue'
 import userseat from '../views/test.vue'
 //은미작성완
 
@@ -137,6 +139,16 @@ const routes = [
   path: "/admin/createNotice",
   name: "AdminCreateNotice",
   component: AdminCreateNotice // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
+},
+{
+  path: "/admin/notice/:notice_no",
+  name: "AdminUpdateNotice",
+  component: AdminUpdateNotice // component이름과 위의 import 뒤에 오는 이름이 같아야 됨
+},
+{
+  path: "/moviedetail/:movie_no",
+  name: "MovieDetail",
+  component: MovieDetail
 },
 {
   path: "/user/seat",
