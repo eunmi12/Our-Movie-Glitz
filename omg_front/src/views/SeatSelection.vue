@@ -184,7 +184,7 @@ export default {
               alert('좌석 예약이 완료되었습니다.');
               this.selectedSeats = [];
               this.fetchSeats();
-              // window.location.href =`http://localhost:8081/payment`
+              window.location.href =`http://localhost:8081/payment`
           })
           .catch(error => {
               console.error('좌석 예약 에러', error);

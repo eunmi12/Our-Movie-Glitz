@@ -222,7 +222,7 @@ router.post('/seats', (req, res) => {
                     from seat s
                     join reservation r on r.cinema_no = s.seat_cinema_no
                     join screen sc on sc.sc_cinema_no = s.seat_cinema_no
-                    and r.movie_no = ? and r.cinema_no = ? and r.date = ? and screen_starttime = ?`
+                    where r.movie_no = ? and r.cinema_no = ? and r.date = ? and screen_starttime = ?`
     // const query = `select seat_no, seat_name, seat_reserve from seat where movie_no = ? and cinema_no = ? and date = ? and time = ?`
     db.query(query, [movie_no, cinema_no, date, time], (error, results) => {
         if (error) {
@@ -323,14 +323,37 @@ router.post('/reserve', (req, res) => {
 // 예매완료 - 결제
 router.get('/payment/:ticket_no', (req, res, next) => {
     const ticket_no = req.params.ticket_no;
-    db.query(`select ticket_no, ticket_total_price, ticket_date, ticket_cnt, ticket_movie_no, ticket_seat, ti_se_cinema_no , ticket_user_no from ticket`, [ticket_no], (error, results, fields) => {
+    db.query(`select t.ticket_no, t.ticket_total_price, t.ticket_date, t.ticket_cnt, t.ticket_movie_no, t.ticket_seat, t.ti_se_cinema_no , t.ticket_user_no, m.movie_title 
+                from ticket t
+                join movie m on m.movie_no = t.ticket_movie_no
+                where ticket_no = ?`, [ticket_no], (error, results, fields) => {
         if(error) {
             console.log(error);
             return res.status(500).json({ error: "예매 정보 불러오기 실패" });
         }
+        if (results.length === 0) {
+            return res.status(404).json({ error: "티켓 정보를 찾을 수 없습니다." });
+        }
         return res.status(200).json(results);
     });
 });
+router.get('/getTitle/:movie_no', (req, res, next) => {
+    const movie_no = req.params.movie_no;
+    console.log('영화넘버?', movie_no);
+
+    db.query(`select movie_title from movie where movie_no = ?`, [movie_no], (err, results) => {
+        if(err) {
+            console.error('에러?', err);
+            return res.status(500).json({ message: "영화이름 가져오기 실패" });
+        } console.log('결과?', results);
+        if (results.length === 0) {
+            return res.status(404).json({ message: "영화이름을 찾을 수 없습니다." });
+        } else {
+            return res.status(200).json(results);
+        }
+    });
+});
+
 
 
 //아름작성 완
