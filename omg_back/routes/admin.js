@@ -8,6 +8,23 @@ const { log } = require('console');
 
 //승호작성
 
+router.get('/reservationlist',(req,res)=>{
+
+    db.query(`select ticket_no,user_name,movie_title
+        from ticket t
+        join user u on t.ticket_user_no = u.user_no
+        join movie m on t.ticket_movie_no = m.movie_no;`,
+    (err, results)=>{
+        if(err) {
+            console.log('예매현황을 불러올 수 없습니다.');
+            return res.status(500).json({ error: err });
+        } 
+        return res.json(results);
+    })
+});
+
+
+
 //승호작성 완
 
 //진우작성

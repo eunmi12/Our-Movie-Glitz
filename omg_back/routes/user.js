@@ -22,7 +22,7 @@ const path = require("path");
 //은미작성 완
 
 //재영작성
-router.get('/eventlist', (req, res) => {
+router.post('/eventlist', (req, res) => {
     const sql = `
         select event_no, event_img1, event_title, date_format(event_startdate, '%y-%m-%d') as event_startdate, date_format(event_enddate, '%y-%m-%d') as event_enddate from event order by event_no desc;
     `;
