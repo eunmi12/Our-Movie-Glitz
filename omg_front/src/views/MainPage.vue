@@ -2,11 +2,11 @@
     <div class="good">
       <div class="carousel">
         <img src="../images/mainpage/movie/액션1.png" alt="">
-        <!-- <video src="../videos/영화1.mp4" autoplay muted loop><a href=""></a></video> -->
+        <!-- <video src="../videos/영화1.mp4" autoplay muted loop></video> -->
         <!-- <video src="../videos/영화1.mp4"><a href=""></a></video> -->
         <strong class="main_name">파일럿</strong>
         <span class="main_sname">파일럿의 상세내용 입니다.<br>asdsadsadasdsadsa</span>
-        <div class="main_select"><a href="" id="select">상세보기</a></div>
+        <!-- <div class="main_select"><a href="http://localhost:8081/MovieDetail/25" id="select">상세보기</a></div> -->
       </div>
   
       <div class="list">
@@ -21,7 +21,7 @@
                 </dt>
                 <dd v-for="movie in movielists[index]" :key="movie.movie_no">
                   
-                  <a href="">
+                  <router-link :to="`/MovieDetail/${movie.movie_no}`">
                     <div class="img_wrap" data-scale="false">
                       <img :src="getImagePath(movie.movie_img0)" alt="영화 이미지">
                     </div>
@@ -29,7 +29,7 @@
                       <span>{{ movie.movie_title }}</span>
                       <strong >{{ movie.review_rate ? movie.review_rate +'점': '평점 정보 없음' }}</strong>
                     </div>
-                  </a>
+                  </router-link>
                 </dd>
               </dl>
             </li>
@@ -101,7 +101,7 @@ export default {
         });
     },
     fechEventlist() {
-      axios.get(`http://localhost:3000/user/eventlist`)
+      axios.get(`http://localhost:3000/user/maineventlist`)
       .then(response => {
         console.log('Events feched forasdas:', response.data);
         this.eventlists = response.data;
@@ -194,6 +194,7 @@ export default {
 display: flex;
 justify-content: flex-start;
 margin-left: 160px;
+margin-right:160px ;
 }
 .menu_list{
   display: flex;
@@ -201,12 +202,14 @@ margin-left: 160px;
   margin-top: 50px;
   padding: 0;
   margin-left: 160px;
+  margin-right: 160px;
 }
 .menu_list li{
-  width: 270px;
+  width: 80%;
   padding: 20px 19px 30px;
   border: 1px solid #e4e4e4;
   border-radius: 10px;
+  margin-left:25px ;
 }
 .menu_list >li~li{
   margin-left: 25px;
