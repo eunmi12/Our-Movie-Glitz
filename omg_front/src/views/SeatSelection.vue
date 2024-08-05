@@ -167,19 +167,25 @@ export default {
           alert(`선택된 좌석의 수가 인원수와 맞지 않습니다.`);
           return;
           }
-          const seatNumbers = this.selectedSeats.map(seat => seat.seat_name);
-          console.log(seatNumbers);
+          const seatName = this.selectedSeats.map(seat => seat.seat_name);
+          const seatNumbers = this.selectedSeats.map(seat => seat.seat_no);
+          console.log("seatNumbers: ------------->",seatName);
+          console.log("seatNumbers: ------------->",seatNumbers);
           const bookingDetails = {
               user_no: this.$store.state.user.user_no,
               movie_no: this.$store.state.movie_r.movie_no,
               cinema_no: this.$store.state.movie_r.cinema_no,
               date: this.$store.state.movie_r.date,
               time: this.$store.state.movie_r.time,
+              seat_no: this.$route.params.seat_no,
+              seatName,
               seatNumbers,
               total_price: this.selectedSeats.length * 15000
           };
+          console.log("bookingDetails:--------->",bookingDetails.seat_no);
+          
           this.$store.commit('setMovie_r', bookingDetails);
-          axios.post (`http://localhost:3000/movie/book`, bookingDetails, seatNumbers)
+          axios.post (`http://localhost:3000/movie/book`, bookingDetails,seatName ,seatNumbers)
           .then(results => {
               alert('좌석 예약이 완료되었습니다.');
               this.selectedSeats = [];

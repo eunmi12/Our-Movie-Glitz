@@ -60,6 +60,7 @@
   
   <script>
   import axios from 'axios';
+  import moment from 'moment-timezone';
   
   export default {
     data() {
@@ -154,10 +155,18 @@
         selectMovie(movie) {
             this.selectedMovie = movie;
             this.movie_no = movie.movie_no;
+            console.log('Fetching cinemas for movie no:', this.movie_no);
+
+
             this.fetchCinemas();
+            this.resetSelections(['selectedCinema', 'selectedDate', 'selectedTime']);
             this.selectedCinema = null; // 영화 선택 시 상영관 초기화
             this.selectedDate = null;
             this.selectedTime = null;
+
+            console.log('Selected cinema after reset:', this.selectedCinema);
+            console.log('Selected date after reset:', this.selectedDate);
+            console.log('Selected time after reset:', this.selectedTime);
             // this.currentStep = 2;
             },
         fetchCinemas() {
@@ -179,6 +188,7 @@
         },
         selectCinema(cinema) {
             this.selectedCinema = cinema;
+            this.resetSelections(['selectedDate', 'selectedTime']);
             this.fetchAvailableDates();
             // this.currentStep = 3;
         },
@@ -197,13 +207,19 @@
                 cinema_no: this.selectedCinema.cinema_no
             }).then(results => {
                 // console.log('rerererer', results);
-                this.availableDates = results.data;
-                if (this.availableDates.length === 0) {
-                    alert('해당 영화의 상영 일정이 없습니다.');
-                    this.currentStep = 2;
-                } else {
-                    this.currentStep = 3;
-                }
+                this.availableDates = results.data.map(date => {
+                // 날짜를 Asia/Seoul 타임존으로 변환하여 사용
+                return {
+                    ...date,
+                    screen_date: moment.tz(date.screen_date, 'UTC').tz('Asia/Seoul').format('YYYY-MM-DD')
+                };
+            });
+            if (this.availableDates.length === 0) {
+                alert('해당 영화의 상영 일정이 없습니다.');
+                this.currentStep = 2;
+            } else {
+                this.currentStep = 3;
+            }
             }).catch(error => {
                 console.error('상영 날짜를 불러오는 중 오류가 발생했습니다.', error);
                 alert('상영 날짜를 불러오는 중 오류가 발생했습니다.');
@@ -296,6 +312,14 @@
             });
             this.currentStep = 5;
         },
+        resetSelections(fields) {
+            fields.forEach(field => {
+                this[field] = null;
+            });
+            this.$nextTick(() => {
+                this.$forceUpdate();
+            });
+        }
         // fetchSeats() {
         //     axios.post(`http://localhost:3000/seats`, {
         //         cinema_no: this.selectCinema.cinema_no

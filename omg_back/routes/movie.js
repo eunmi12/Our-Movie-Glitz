@@ -201,7 +201,7 @@ router.post('/cinemas', (req, res) => {
     //         join screen s on s.sc_cinema_no = c.cinema_no
     //         where sc_available = 1
     //         GROUP BY cinema_no, movie_no;`, (error, results) => {
-        db.query(`select distinct cinema_no, cinema_name, movie_no
+        db.query(`select distinct cinema_no, cinema_name, movie_no, screen_date
                 from screen
                 join cinema on cinema_no = sc_cinema_no
                 join movie on movie_no = sc_movie_no
@@ -212,7 +212,7 @@ router.post('/cinemas', (req, res) => {
         return res.json(results);
     });
 });
-// 영화 예매 - 예매 날짜 조회
+// 영화 예매 - 예매 날짜 조회 
 router.post('/availableDates', (req, res) => {
 
     console.log("req.body: --->",req.body);
@@ -290,11 +290,13 @@ router.post('/seats', (req, res) => {
     // console.log('뭐가문제', req.body);
     const { movie_no, cinema_no, date, time } = req.body;
 
-    const query = `select distinct s.seat_no, s.seat_name, s.seat_reserve, s.seat_screen_no
-                    from seat s
-                    join reservation r on r.cinema_no = s.seat_cinema_no
-                    join screen sc on sc.sc_cinema_no = s.seat_cinema_no
-                    where r.movie_no = ? and r.cinema_no = ? and r.date = ? and screen_starttime = ?`
+    const query = `select seat_no, seat_name, seat_reserve, seat_screen_no, screen_no
+                        from seat s
+                        join screen sc on sc.screen_no = s.seat_screen_no
+                        where screen_no =
+                            (select screen_no 
+                                from screen
+                                where sc_movie_no = ? and sc_cinema_no = ?  and screen_date = ? and  screen_starttime = ? )`
     // const query = `select seat_no, seat_name, seat_reserve from seat where movie_no = ? and cinema_no = ? and date = ? and time = ?`
     db.query(query, [movie_no, cinema_no, date, time], (error, results) => {
         if (error) {
@@ -358,8 +360,10 @@ router.post('/seats', (req, res) => {
 // });
 // 영화 예매 - 예매 완료
 router.post('/book', (req, res) => {
-    const { date, time, seatNumbers, movie_no, cinema_no, user_no, total_price } = req.body;
+    const { date, time, seatName, movie_no, cinema_no, user_no, total_price, seat_no } = req.body;
     console.log(req.body);
+    console.log(seat_no);
+    
     //const values = seatNumbers.map(seat_no => [total_price, date+' '+time, user_no, movie_no, seats, cinema_no]);
     //console.log('va', values);
     // const reservationsql = `select * from reservation where user_no = ? and movie_no = ?;`
@@ -368,7 +372,7 @@ router.post('/book', (req, res) => {
     //         return res.status(500).json({ error: '가져오기 error' });
     //     } return res.status(200).json({ message: '정보 가져옴' });
     // });
-    const seatNumbersString = seatNumbers.join(',');
+    const seatNumbersString = seatName.join(',');
     const query = `insert into ticket (ticket_total_price, ticket_date, ticket_user_no, ticket_movie_no, ticket_seat, ti_se_cinema_no)
                     values (?, ?, ?, ?, ?, ?)`;
     // const values = seats.map(seat_no => [movie_no, cinema_no, date, time, seat_no]);
@@ -384,7 +388,8 @@ router.post('/book', (req, res) => {
 
 router.post('/reserve', (req, res) => {
     console.log(req.body.seatNumbers);
-    db.query(`update seat set seat_reserve = 0 where seat_name in (?)`, [req.body.seatNumbers], (error, results) => { // 쿼리에서 in (?) : 여러개의 값을 넣을 수 있음
+    console.log("req.body:------->",req.body);
+    db.query(`update seat set seat_reserve = 0 where seat_no in (?)`, [req.body.seatNumbers], (error, results) => { // 쿼리에서 in (?) : 여러개의 값을 넣을 수 있음
         if(error) {
             return res.status(500).json({ error: '좌석저장 error' });
         } return res.status(200).json({ message: '좌석 저장 완료' });
