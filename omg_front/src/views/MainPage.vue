@@ -194,6 +194,7 @@ export default {
 display: flex;
 justify-content: flex-start;
 margin-left: 160px;
+margin-right:160px ;
 }
 .menu_list{
   display: flex;
@@ -201,12 +202,14 @@ margin-left: 160px;
   margin-top: 50px;
   padding: 0;
   margin-left: 160px;
+  margin-right: 160px;
 }
 .menu_list li{
-  width: 270px;
+  width: 80%;
   padding: 20px 19px 30px;
   border: 1px solid #e4e4e4;
   border-radius: 10px;
+  margin-left:25px ;
 }
 .menu_list >li~li{
   margin-left: 25px;
