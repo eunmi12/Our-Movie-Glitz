@@ -58,12 +58,12 @@ export default {
         selectType(i) {
             this.selectedType = i;
             this.qna_type = i;
-            console.log("Selected Type Index:", this.selectedType); // 디버깅
-            console.log("qna_type:", this.qna_type); // 디버깅
+            console.log("Selected Type Index:", this.selectedType);
+            console.log("qna_type:", this.qna_type);
             this.isDropdownOpen = false;
         },
         async regist(){
-            console.log("qna_user_no:", this.qna_user_no); // 디버깅
+            console.log("qna_user_no:", this.qna_user_no);
             try{
                 if(!this.qna_title){
                     this.$swal('제목을 입력하세요.');
@@ -207,6 +207,7 @@ h6 {
 }
 
 .regist {
+    border: 1px solid black;
     margin-right: 10px;
     border-radius: 5px;
     width: 50px;
@@ -215,6 +216,7 @@ h6 {
 }
 
 .cancel {
+    border: 1px solid black;
     margin-left: 10px;
     border-radius: 5px;
     width: 50px;

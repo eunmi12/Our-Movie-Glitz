@@ -31,7 +31,6 @@ router.get('/noticelist',(req, res) => {
 //공지사항 조회수 증가
 router.post('/incrementnoticecnt', (req, res) => {
     const notice_no = req.body.notice_no;
-
     db.query(`update notice set notice_cnt = notice_cnt + 1 where notice_no = ?;`, [notice_no], function (err, results){
         if(err) {
             console.log('조회수 증가 중 오류가 발생했습니다.');
@@ -45,7 +44,7 @@ router.post('/incrementnoticecnt', (req, res) => {
 router.get('/notice/:notice_no' , (req , res ) => {
     const notice_no = req.params.notice_no;
     console.log("notice_no ---->", notice_no);
-    db.query(`select notice_no,notice_title,notice_date,notice_coment,notice_cnt from notice where notice_no=?;`, [notice_no] , (err, results) => {
+    db.query(`select notice_no,notice_title,notice_date,notice_coment,notice_cnt from notice where notice_no=?;`, [notice_no], (err, results) => {
         if(err) {
             console.log('공지사항을 불러올 수 없습니다.');
             return res.status(500).json({ error : err })
@@ -77,20 +76,20 @@ router.post('/registqna',(req,res) =>{
             console.log("1:1문의 등록 중 오류 발생");
             return res.status(500).json({ error: err });
         }
-        res.json(results);
+        return res.json(results);
     });
 });
 
 //관리자 1:1문의 관리
-router.post('/qnalist', (req, res) => {   
+router.post('/qnalist', (req, res) => { 
     db.query(`select q.qna_no,q.qna_type,q.qna_title,u.user_name,q.qna_date,q.qna_answer from qna q join user u on q.qna_user_no = u.user_no order by q.qna_no desc;`, (err, results, fields) => {
         if(err){
             console.log('1:1문의 리스트를 불러올 수 없습니다.');
             return res.status(500).json({ error : err })
         }
-        res.json(results);
-    })
-})
+        return res.json(results);
+    });
+});
 
 //관리자 1:1문의 답변 삭제
 router.post('/deleteqna' , (req, res) => {
@@ -101,9 +100,36 @@ router.post('/deleteqna' , (req, res) => {
             console.log(err);
             return res.status(500).json({ error: err });
         }
-        res.json(results);
-    })
-})
+        return res.json(results);
+    });
+});
+
+//관리자 1:1문의 답변 시 문의내용
+router.post('/qna/:qna_no', (req, res) => {
+    const qna_no = req.params.qna_no;
+    console.log(qna_no);
+    db.query(`select q.qna_no,q.qna_type,q.qna_title,q.qna_comment,u.user_name,q.qna_date from qna q join user u on q.qna_user_no = u.user_no where qna_no=?`, [qna_no], (err, results) => {
+        if(err){
+            console.log('1:1문의 정보를 불러올 수 없습니다.');
+            return res.status(500).json({ error : err })
+        }
+        return res.status(200).json({ data: results });
+    });
+});
+
+//관리자 1:1문의 답변 등록
+router.post('/registqnaanswer',(req,res) =>{
+    const qna_answer = req.body.qna_answer; 
+    const qna_no = req.body.qna_no; 
+    console.log('qna_answer >>',qna_answer,'qna_no >>',qna_no);
+    db.query(`update qna set qna_answer = ? where qna_no = ?`,[qna_answer,qna_no], (err, results) =>{
+        if(err){
+            console.log("1:1문의 답변 등록 중 오류 발생");
+            return res.status(500).json({ error: err });
+        }
+        return res.json(results);
+    });
+});
 
 //치혁작성 완
 

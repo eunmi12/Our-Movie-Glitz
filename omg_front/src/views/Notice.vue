@@ -44,7 +44,8 @@ export default {
                 method: "GET",
             }).then((res) => {
                 if (res.data.data && res.data.data.length > 0) {
-                    this.notice = res.data.data[0];this.formattedDate = new Date(this.notice.notice_date).toLocaleDateString('ko-KR', {
+                    this.notice = res.data.data[0];
+                    this.formattedDate = new Date(this.notice.notice_date).toLocaleDateString('ko-KR', {
                     year: 'numeric',
                     month: '2-digit',
                     day: '2-digit'
@@ -103,12 +104,6 @@ h6 {
     text-align: center;
     padding: 40px 0px 20px 0px;
 }
-
-/* .notice-btn {
-    display: flex;
-    justify-content: flex-end;
-    padding: 10px;
-} */
 
 .notice-btn {
     float: right;

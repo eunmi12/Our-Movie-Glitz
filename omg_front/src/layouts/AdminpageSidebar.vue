@@ -22,7 +22,7 @@
                     <span @click="goToTicket">• 예매 관리</span>
                 </li>
                 <li>
-                    <span @click="goToNotice">• 공지사항 관리</span>
+                    <span @click="gotonotice">• 공지사항 관리</span>
                 </li>
                 <li>
                     <span @click="goToEvent">• 이벤트 관리</span>
@@ -75,7 +75,7 @@ export default {
                 path: '/admin/'
             });
         },
-        goToNotice() {
+        gotonotice() {
             this.$router.push({
                 path: '/admin/notice'
             })
