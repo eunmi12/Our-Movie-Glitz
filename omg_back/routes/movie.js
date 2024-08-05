@@ -43,13 +43,14 @@ router.post('/createMovie',(req,res)=>{
         movie_comment : req.body.detail,
         movie_title : req.body.title,
         movie_director : req.body.director,
+        movie_actor : req.body.actor,
         movie_img0 : req.body.poster,
         movie_age : req.body.age
     };
     console.log('data : ', data);
 
-    const sql = `INSERT INTO movie (movie_startdate,movie_enddate,movie_tag,movie_comment,movie_title,movie_director,movie_img0,movie_age) values (?,?,?,?,?,?,?,?);`
-     db.query(sql,[data.movie_startdate,data.movie_enddate,data.movie_tag,data.movie_comment,data.movie_title,data.movie_director,data.movie_img0,data.movie_age],(err,results)=>{
+    const sql = `INSERT INTO movie (movie_startdate,movie_enddate,movie_tag,movie_comment,movie_title,movie_director,movie_actor,movie_img0,movie_age) values (?,?,?,?,?,?,?,?,?);`
+     db.query(sql,[data.movie_startdate,data.movie_enddate,data.movie_tag,data.movie_comment,data.movie_title,data.movie_director,data.movie_actor,data.movie_img0,data.movie_age],(err,results)=>{
         if (err) {
             res.status(500).send(err);
             console.log(err);
@@ -71,6 +72,77 @@ router.post('/createMovie',(req,res)=>{
 //치혁작성 완
 
 //은미작성
+//영화 상세페이지
+router.post('/movie/:movie_no', (req,res) => {
+    const movie_no = req.params.movie_no;
+
+    db.query(`select movie_no, date_format(movie_startdate, '%y-%m-%d') as movie_startdate, 
+        movie_tag, movie_comment, movie_title, movie_director, movie_actor, 
+        movie_img0, movie_img1, movie_img2, movie_img3, movie_img4, movie_img5, movie_age 
+        from movie  where movie_no =?`,[movie_no], (error,result) =>{
+        if(error){
+            console.log("영화 정보 불러오는 도중 에러 발생");
+            return res.status(500).json({ error: 'error'});
+        }
+        return res.json(result);
+    })
+    
+    
+});
+//영화 상세-리뷰보기
+router.post('/getmoviereview', (req,res) => {
+    const movie_no = req.body.movie_no;
+    
+    //리뷰 좋아요누를때 유저넘버 필요해서 re_user_no 추가
+    db.query(`select re_user_no, review_no, review_comment, review_rate,review_like,review_rate,user_name, 
+            date_format(review_date, '%y-%m-%d') as review_date from review r
+            left join user u on r.re_user_no = u.user_no
+            left join movie m on r.re_movie_no = m.movie_no
+            where movie_no = ?`, [movie_no], (err,result)=>{
+                if(err){
+                    console.log('영화 리뷰 불러오는 중 에러 발생');                    
+                    return res.status(500).json({ err:'error'});
+                }
+                return res.json(result);
+            })
+});
+
+//리뷰 좋아요 증가
+router.post('/incrementreviewlike', (req,res)=>{
+    const review_no = req.body.review_no;
+    
+    db.query(`update review set review_like = review_like + 1 where review_no = ?`, [review_no], (err,result) =>{
+        if(err){
+            console.log('리뷰 좋아요 증가 중 에러 발생');
+            return res.status(500).json({ err:'error'});
+        }
+        return res.json(result);
+    });
+});
+
+//영화 위시리스트 추가
+router.post('/insertwish', (req,res) => {
+    const wish_movie_no = req.body.wish_movie_no;
+    const wish_user_no = req.body.wish_user_no;
+    console.log("movie_no", wish_movie_no);
+    console.log("user_no", wish_user_no);
+    
+    
+
+    db.query(`select wish_no from wish where wish_movie_no = ? and wish_user_no = ?`,[wish_movie_no, wish_user_no], (err, result) => {
+        if(result.length <= 0){
+            db.query(`insert into wish (wish_movie_no,wish_user_no) values (?,?)`, [wish_movie_no, wish_user_no], (err, results) =>{
+                if(err){
+                    console.log('위시리스트 추가 중 에러 발생');
+                    return res.status(500).json({ err:'error'});
+                    
+                } return res.json({ message: '위시리스트에 추가되었습니다.',results});
+            });
+        } else{
+            return res.json({ message: ' 이미 위시리스트에 존재합니다. '});
+        }
+    });
+});
 
 //은미작성 완
 
@@ -328,14 +400,37 @@ router.post('/reserve', (req, res) => {
 // 예매완료 - 결제
 router.get('/payment/:ticket_no', (req, res, next) => {
     const ticket_no = req.params.ticket_no;
-    db.query(`select ticket_no, ticket_total_price, ticket_date, ticket_cnt, ticket_movie_no, ticket_seat, ti_se_cinema_no , ticket_user_no from ticket`, [ticket_no], (error, results, fields) => {
+    db.query(`select t.ticket_no, t.ticket_total_price, t.ticket_date, t.ticket_cnt, t.ticket_movie_no, t.ticket_seat, t.ti_se_cinema_no , t.ticket_user_no, m.movie_title 
+                from ticket t
+                join movie m on m.movie_no = t.ticket_movie_no
+                where ticket_no = ?`, [ticket_no], (error, results, fields) => {
         if(error) {
             console.log(error);
             return res.status(500).json({ error: "예매 정보 불러오기 실패" });
         }
+        if (results.length === 0) {
+            return res.status(404).json({ error: "티켓 정보를 찾을 수 없습니다." });
+        }
         return res.status(200).json(results);
     });
 });
+router.get('/getTitle/:movie_no', (req, res, next) => {
+    const movie_no = req.params.movie_no;
+    console.log('영화넘버?', movie_no);
+
+    db.query(`select movie_title from movie where movie_no = ?`, [movie_no], (err, results) => {
+        if(err) {
+            console.error('에러?', err);
+            return res.status(500).json({ message: "영화이름 가져오기 실패" });
+        } console.log('결과?', results);
+        if (results.length === 0) {
+            return res.status(404).json({ message: "영화이름을 찾을 수 없습니다." });
+        } else {
+            return res.status(200).json(results);
+        }
+    });
+});
+
 
 
 //아름작성 완

@@ -13,7 +13,7 @@
               </div>
               <div class="wish_details">
                 <div class="img_box">
-                  <img :src="`../images/mainpage/${item.movie_img0}`" class="movie_img">
+                  <img :src="getImagePath(item.movie_img0)" class="movie_img">
                 </div>
                 <div class="info">
                   <span class="movie_startdate">{{ item.movie_startdate }}</span>
@@ -60,6 +60,9 @@ export default {
         console.error("찜한영화 리스트 에러 발생", error);
       }
     },
+    getImagePath(image){
+            return (`https://image.tmdb.org/t/p/w500/${image}`);
+        },
   },
   mounted() {
     this.userwish();
@@ -140,8 +143,8 @@ export default {
 }
 
 .movie_img {
-  width: 200px;
-  height: 200px;
+  width: 250px;
+  /* height: 200px; */
   object-fit: cover;
 }
 

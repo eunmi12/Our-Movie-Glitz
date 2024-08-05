@@ -8,19 +8,19 @@
                 <div class="information">
                     <h3>예매정보</h3>
                     <ul>
-                        <li>영화 제목: </li>
-                        <li>상영 날짜: </li>
-                        <li>상영 시간: </li>
-                        <li>상영관: </li>
-                        <li>인원 수: </li>
-                        <li>좌석번호: </li>
+                        <li>영화 제목: {{ this.movie_title }}</li>
+                        <li>상영 날짜 / 시간: {{ this.ticket_date }}</li>
+                        <!-- <li>상영 시간: {{ this.screen_starttime }}</li> -->
+                        <li>상영관: {{ this.screen_cinema_no }}</li>
+                        <li>인원 수: {{ this.ticket_cnt }}</li>
+                        <li>좌석번호: {{ this.ticket_seat }}</li>
                     </ul>
                 </div>
                 <div class="discount">
                     <h3>할인쿠폰</h3>
                     <span class="discount-coupon">할인쿠폰 적용</span>
                     <select id="select-coupon">
-                        <option>{{ mycoupon }}</option>
+                        <option>{{ this.coupon }}</option>
                     </select>
                 </div>
                 <div class="select-pay">
@@ -41,27 +41,59 @@
 
 <script>
 import axios from 'axios';
+
 export default {
     data() {
         return {
             how: null,
+            movie_title: {},
         };
     },
 
     created() {
         this.getTicket();
+        // this.getTitle();
     },
+
 
     methods: {
         async getTicket() {
             try {
-                const tiket_no = this.$route.params.ticket_no;
-                const results = await axios.get(
-                    `http://localhost:3000/movie/payment/${ticket_no}`
-                );
-                this.ticket = results.data[0];
+                const ticket_no = this.$route.params.ticket_no;
+                console.log('티켓넘버 보냄?', ticket_no);
+                const response = await axios.get(`http://localhost:3000/movie/payment/${ticket_no}`);
+                console.log('티켓데이터 보냄?', response.data);
+
+                this.ticket = response.data[0].ticket_no;
+                console.log('response.data:', response.data[0].ticket_no);
+
+                if (response.data && response.data.length > 0) {
+                    this.ticket_no = response.data[0].ticket_no;
+                    // 영화 번호도 저장
+                    this.movie_no = response.data[0].ticket_movie_no;
+                } else {
+                    alert ('티켓정보를 불러올 수 없습니다.');
+                }
             } catch (error) {
-                console.error(error);
+                console.error('티켓 정보 오류:', error);
+            }
+        },
+
+        async getTitle() {
+            try {
+                const movie_no = this.$store.state.moive_r.movie_no;
+
+                // 티켓 정보를 통해 moive_no 가져옴
+                // const movie_no = this.movie_no;
+                console.log('movie_no:', movie_no);
+                const response = await axios.get(`http://localhost:3000/movie/getTitle/${movie_no}`);
+                console.log('영화이름 데이터 받나?', response.data);
+
+                this.movie_title = response.data[0].movie_title;
+                // console.log('response.data:', response.data[0].movie_title);
+                console.log('영화제목:', this.movie_title);
+            } catch (error) {
+                console.error('영화이름 오류:', error);
             }
         },
     },

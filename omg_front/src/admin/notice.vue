@@ -11,19 +11,31 @@
                             <th class="user-gender">공지 제목</th>
                             <th class="user-gender">공지 작성일</th>
                             <th class="user-gender">공지 조회수</th>
+                            <th class="user-gender">수 정</th>
                         </tr>
                     </thead>
                     <tbody v-if="noticeList.length > 0">
-                        <tr class="user-all-list" v-for="(notice, i) in noticeList" :key="i">
-                            <th class="user-number value">{{ notice.notice_no }}</th>
-                            <th class="user-gender value">{{ notice.notice_title }}</th>
+                        <tr class="user-all-list" v-for="(notice, i) in pagingData" :key="i">
+                            <th class="user-number value">{{ i + 1 + (currentPage - 1) * itemsPerPage}}</th>
+                            <th class="user-gender value" @click="updateNotice(notice.notice_no)">{{ notice.notice_title }}</th>
                             <th class="user-gender value">{{ new Date(notice.notice_date).toISOString().split('T')[0] }}</th>
                             <th class="user-gender value">{{ notice.notice_cnt }}</th>
+                            <th><button class="update" @click="updateNotice(notice.notice_no)">수 정</button></th>
                         </tr>
                     </tbody>
                 </table>
             </div>
+            <div class="pagination">
+                <ul class="number_box">
+                    <li @click="prevPageGroup" :class="{disabled: currentPageGroup === 1}"><img src="../images/prev.png"/></li>
+                    <li v-for="page in currentGroupPages" :key="page" @click="changePage(page)" :class="{active: page === currentPage}">
+                    {{ page }}</li>
+                    <li @click="nextPageGroup" :class="{disabled: currentPageGroup === pageGroups.length}"><img src="../images/next.png"/></li>
+                </ul>
+            </div>
+            <div class="btn_container">
                 <button class="insertbtn" @click="insertNotice">공지사항 작성</button>
+            </div>
         </div>
     </div>
 </template>
@@ -39,7 +51,39 @@ export default {
     data() {
         return {
             noticeList:[],
+            //페이징용
+            currentPage:1,
+            itemsPerPage:5,
+            currentPageGroup: 1,
         };
+    },
+    computed:{
+        //페이징
+        pagingData(){
+            const start = (this.currentPage -1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            return this.noticeList.slice(start,end);
+        },
+        totalPages(){
+            return Math.ceil(this.noticeList.length / this.itemsPerPage);
+        },
+        pageGroups(){
+            const groups = [];
+            for (let i = 1; i<=this.totalPages; i +=10){
+                groups.push({
+                    start: i,
+                    end: Math.min(i+9, this.totalPages),
+                });
+            }
+            return groups;
+        },
+        currentGroupPages(){
+            const group = this.pageGroups[this.currentPageGroup - 1];
+            if(group){
+                return Array.from({ length: group.end - group.start + 1}, (_, i) => group.start + i);
+            }
+            return[];
+        }
     },
 
     mounted() {
@@ -58,8 +102,45 @@ export default {
         },
         insertNotice(){
             this.$router.push('/admin/createnotice');
-        }
-
+        },
+        updateNotice(notice_no){
+            axios({
+                url: `http://localhost:3000/admin/notice/${notice_no}`,
+                method: 'post',
+                data: {notice_no : notice_no}
+            }).then((result) => {
+                this.notice_no = result.data;
+            })
+            this.$router.push(`/admin/notice/${notice_no}`);
+        },
+        //페이징
+        changePage(page){
+            if(page > 0 && page <= this.totalPages){
+                this.currentPage = page;
+            }
+        },
+        prevPage(){
+            if(this.currentPage > 1 ){
+                this.changePage(this.currentPage - 1);
+            }
+        },
+        nextPage(){
+            if(this.currentPage < this.totalPages) {
+                this.changePage(this.currentPage + 1);
+            }
+        },
+        prevPageGroup(){
+            if(this.currentPageGroup > 1){
+                this.currentPageGroup--;
+                this.changePage(this.pageGroups[this.currentPageGroup - 1 ].start);
+            }
+        },
+        nextPageGroup(){
+            if(this.currentPageGroup < this.pageGroups.length){
+                this.currentPageGroup ++;
+                this.changePage(this.pageGroups[this.currentPageGroup - 1].start)
+            }
+        },
     }
 
 }
@@ -144,5 +225,86 @@ export default {
     padding: 7px 0;
     font-weight: 600;
     font-size: medium;
+}
+.update{
+    font-size: 16px;
+    width: 60px;
+    height: 30px;
+    border: none;
+    color: white;
+    background-color: #8d8d8d;
+    border-radius: 5px;
+    cursor: pointer;
+    /* margin-right: 10px; */
+}
+.update:hover{
+    font-size: 16px;
+    width: 60px;
+    height: 30px;
+    border: none;
+    color: #ffffff;
+    background-color: #000000;
+    border-radius: 5px;
+    cursor: pointer;
+    /* margin-right: 10px; */
+}
+.btn_container{
+     display: flex;
+    justify-content: flex-end;
+    padding-top: 20px; /* 추가 */
+}
+.insertbtn{
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 10px;
+    background-color: #f0eeda;
+    color: black;
+    border: 1px solid #f0eeda;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    margin-left:auto;
+}
+.insertbtn:hover{
+   background-color: #ffffff;
+    color: #32851e;
+    box-shadow: 0 4px 8px rgba(23, 88, 42, 0.5);
+    margin-left:auto;
+}
+
+/*페이징 */
+.pagination {
+    width: 100%;
+    text-align: center;
+    padding-top: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination .number_box {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.number_box li {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.number_box li.active {
+    background-color: #f0eeda;
+    border-radius: 5px;
+    color: black;
+}
+
+.number_box img {
+    width: 15px;
+    padding-bottom: 5px;
 }
 </style>
