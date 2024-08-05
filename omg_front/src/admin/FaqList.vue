@@ -215,6 +215,7 @@ export default {
 }
 </script><style scoped>
 .adminfaq {
+    width:95%;
     display: flex;
     align-items: center;
 }

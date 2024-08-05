@@ -254,6 +254,70 @@ router.post('/deletescreen', (req,res) => {
     });
 });
 
+//공지사항 작성
+router.post('/insertnotice', (req,res)=>{
+    const notice_title = req.body.notice_title;
+    const notice_date = req.body.notice_date;
+    const notice_comment = req.body.notice_comment;
+    console.log("notice_title:",notice_title,"notice_date",notice_date,"notice_comment",notice_comment);
+
+    db.query(`insert into notice (notice_title,notice_date,notice_coment) values (?,?,?)`,
+        [notice_title,notice_date,notice_comment], (error, result) => {
+            if(error){
+                console.log("공지사항 작성 중 오류 발생");
+                return res.status(500).json({error: 'error'});
+            }
+            res.json(result);
+        }
+    );
+});
+
+//공지사항 상세보기
+router.post('/notice/:notice_no',(req,res)=>{
+    const notice_no = req.params.notice_no;
+    db.query(`select notice_no, notice_title, date_format(notice_date, '%Y-%m-%d') as notice_date, notice_coment from notice where notice_no =?`, [notice_no], (err,result)=>{
+        if(err){
+            console.log("공지사항 상세보기로 넘어가는 중 오류 발생");
+            return res.status(500).json({ err:'error'});
+        }
+        res.json(result);
+    });
+});
+//공지사항 업데이트
+router.post('/updatenotice', (req,res) => {
+    const notice_no = req.body.notice_no;
+    const notice_title = req.body.notice_title;
+    const notice_coment = req.body.notice_coment;
+    const notice_date = req.body.notice_date;
+
+    // console.log("notice_no:",notice_no);
+    // console.log("notice_title:",notice_title);
+    // console.log("notice_coment:",notice_coment);
+    // console.log("notice_date:",notice_date);
+
+    db.query(`update notice set notice_title =?, notice_date = ?, notice_coment=? where notice_no = ?`,
+        [notice_title,notice_date, notice_coment, notice_no], (error, result) => {
+            if(error){
+                console.log('공지사항 수정 중 오류 발생');
+                return res.status(500).json({ error:'error'});
+            }
+            res.json(result);
+        }
+    );
+});
+//공지사항 삭제
+router.post('/deletenotice', (req,res) => {
+    const notice_no = req.body.notice_no;
+
+    db.query(`delete from notice where notice_no = ?`,[notice_no], (error,result) => {
+        if(error){
+            console.log('공지사항 삭제 중 오류 발생');
+            return res.status(500).json({ error: 'error'});
+        }
+        res.json(result);
+    });
+});
+
 router.get('/user/seats', (req, res) => {
     let sql = 'SELECT seat_no, seat_cinema_no, seat_name,seat_reserve FROM seat WHERE seat_cinema_no = 1';
     db.query(sql, (err, results) => {

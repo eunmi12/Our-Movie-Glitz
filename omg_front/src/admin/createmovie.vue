@@ -8,12 +8,12 @@
             <div class="movie_content">
                 <div class="movie_list_left">
                     <div class="movie_img0">
-                        <img :src="fullImgUrl" v-if="fullImgUrl" alt="영화 메인이미지"/>
-                        <!-- <img src="../images/mainpage/영화1.png" v-else-if="!fullImgUrl" alt="영화 메인이미지"/> -->
+                        <img :src="fullImgUrl" v-if="poster" alt="영화 메인이미지"/>
+                        <img src="../images/mainpage/noimg.jpg" v-else alt="영화 메인이미지"/>
                         <!-- <img src="../images/mainpage/영화1.png" alt="영화 메인이미지"/> -->
                         <!-- <img :src="imgData.img_path ? require(`../../../bodytrue_back/uploads/user/${imgData.img_path}`) : '/goodsempty2.jpg'" alt="Profile Picture"> -->
                         
-                        <input type="file" />
+                        <!-- <input type="file" /> -->
                     </div>
                 </div>
                 <div class="movie_list_right">
@@ -34,6 +34,12 @@
                         <div class="movie_detail_title">
                             <div class="title_wrap"><span>영화 감독:</span></div>
                                 <input type="text" id="movie_director" v-model="director">                      
+                        </div>
+                    </div>  
+                    <div class="movie_detail">
+                        <div class="movie_detail_title">
+                            <div class="title_wrap"><span>출연 배우:</span></div>
+                                <span v-for="actor in actor" :key="actor">{{actor}},</span>                  
                         </div>
                     </div>  
                     <div class="movie_detail">
@@ -78,6 +84,27 @@ import LoginVue from '../views/Login.vue';
 import axios from 'axios';
 
 const Base_Img_Url = 'https://image.tmdb.org/t/p/w500';
+const genreMap = {
+  28: "액션",
+  12: "모험",
+  16: "애니메이션",
+  35: "코미디",
+  80: "범죄",
+  99: "다큐멘터리",
+  18: "드라마",
+  10751: "가족",
+  14: "판타지",
+  36: "역사",
+  27: "공포",
+  10402: "음악",
+  9648: "미스터리",
+  10749: "로맨스",
+  878: "SF",
+  10770: "TV 영화",
+  53: "스릴러",
+  10752: "전쟁",
+  37: "서부"
+};
 
 export default {
     data(){
@@ -88,15 +115,18 @@ export default {
             poster:"",
             genre:"",
             director:"",
+            // actor:'',
             startdate:"",
             enddate:"",
             age:"",
+            actor:[],
             
         }
     },
     computed:{
         fullImgUrl(){
-            return this.poster ? `${Base_Img_Url}${this.poster}` : `../images/mainpage/noimg.jpg`;
+            console.log("this.poster",this.poster);
+            return this.poster ? `${Base_Img_Url}${this.poster}` : `/images/mainpage/noimg.jpg`;
         }
     },
     
@@ -137,15 +167,38 @@ export default {
                 //         this.detail = json.results[i].overview;
                 //             }
                 // }
-
                 this.title = json.results[0].title;
                 this.poster = json.results[0].poster_path;
                 this.detail = json.results[0].overview;
-
+                this.startdate = json.results[0].release_date; //개봉시작일
+                const movie = json.results[0];
+                const genreNames = movie.genre_ids.map(id => genreMap[id]).join(", ");
+                this.genre = genreNames; //장르 맵핑해서 만듦
                 // console.log('title : ' , title);
                 // console.log('poster : ' , poster);
                 // console.log('detail : ' , detail);
+            const fetch = require('node-fetch');
+            const movieId = movie.id;
+            const url = `https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR`;
+            const options = {
+            method: 'GET',
+            headers: {
+                accept: 'application/json',
+                Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MWEzZmYxYTQ2Yzk2MWM4MWY1NWU4MjNjMGY4NzVlZiIsIm5iZiI6MTcyMjY2NjQ0Mi4zOTExMzgsInN1YiI6IjY2YTgzZTVkNjlmZjQwOGJjNmUwYjNhZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Mk1EKHLVQcQyhAI0gSHNq760Ts0syZPKiwltKcfaWDQ'
+            }
+            };
 
+            fetch(url, options)
+            .then(res => res.json())
+            .then(json => 
+            {   
+                console.log(json)
+                this.director = json.crew[0].name;
+                this.actor = json.cast.slice(0,5).map(member => member.name);
+                console.log("this.actor",this.actor);
+                
+            })
+            .catch(err => console.error('error:' + err));
 
         })
             .catch(err => console.error('error:' + err))
@@ -164,6 +217,9 @@ export default {
                     return;
                 }else if(!this.director){
                     this.$swal('감독님의 이름을 입력해주세요.');
+                    return;
+                }else if(!this.actor){
+                    this.$swal('출연배우를 입력해주세요.');
                     return;
                 }else if(!this.startdate){
                     this.$swal('시작일을 지정해 주세요.');
@@ -187,6 +243,7 @@ export default {
                         poster:this.poster,
                         genre:this.genre,
                         director:this.director,
+                        actor:this.actor.join(","),//쉼표까지 같이보내서 data도 같이보내줘야됨;
                         startdate:this.startdate,
                         enddate:this.enddate,
                         age:this.age
@@ -263,7 +320,7 @@ export default {
     margin-top:10px;
 }
 .movie_list_left img{
-    width:150px;
+    width:80%;
     height: auto;
     border:1px solid #ccc;
     border-radius: 10px;
@@ -291,6 +348,12 @@ export default {
     display: inline-block;
 }
 
+input[type="text"]{
+    margin-right: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
 .searchbtn{
     margin-left: 10px;
     border:none;
@@ -305,8 +368,16 @@ export default {
 }
 #movie_startdate{
     margin-right: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
-
+#movie_enddate{
+    margin-right: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
 /*movie_comment*/
 .comment_title{
     border-top:1px solid #ccc;
@@ -317,7 +388,12 @@ export default {
     width:100%;
     resize: none;
 }
-
+#movie_comment{
+    margin-right: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
 /*button*/
 .button_wrap{
     text-align: center;

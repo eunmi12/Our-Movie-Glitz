@@ -258,24 +258,24 @@ export default {
 }
 .insert{
     font-size: 16px;
-    width: 60px;
+    width: 80px;
     height: 30px;
     border: none;
-    color: white;
-    background-color: #58aeff;
     border-radius: 5px;
+    background-color: #f0eeda;
+    color: black;
+    border: 1px solid #f0eeda;
     cursor: pointer;
-    /* margin-right: 10px; */
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
 }
 .insert:hover{
     font-size: 16px;
-    width: 60px;
+    width: 80px;
     height: 30px;
     border: none;
-    color: #ffffff;
-    background-color: #2294ff;
-    border-radius: 5px;
-    cursor: pointer;
+    background-color: #ffffff;
+    color: #32851e;
+    box-shadow: 0 4px 8px rgba(23, 88, 42, 0.5);
     /* margin-right: 10px; */
 }
 
