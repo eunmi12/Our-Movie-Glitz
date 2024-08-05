@@ -3,12 +3,13 @@
     <div class="sidebartop" @click="goToAboutPage1">MY OMG HOME</div>
     <div class="sidebarmain">
       <div class="text" @click="goToAboutPage2">&bull; 나의 예매내역</div>
-      <div class="text" @click="goToAboutPage3">&bull; 포인트 적립내역</div>
+      <!-- <div class="text" @click="goToAboutPage3">&bull; 포인트 적립내역</div> -->
       <div class="text" @click="goToAboutPage4">&bull; 나의 쿠폰</div>
       <div class="text" @click="toggleVisibility">&bull; 회원 정보</div>
       <div v-if="isVisible" class="toggle">
         <div class="sub-text" @click="goToAboutPage5">&bull; 개인정보 변경</div>
         <div class="sub-text" @click="goToAboutPage6">&bull; 회원탈퇴</div>
+        <div class="sub-text" @click="gotoganpyun">&bull; 간편 로그인</div>
       </div>
       <div class="text" @click="goToAboutPage8">&bull; 나의 리뷰내역</div>
       <div class="text" @click="goToAboutPage7">&bull; 나문희내역</div>
@@ -39,9 +40,9 @@ export default {
     goToAboutPage2() {
       this.$router.push(`/rev/${this.user.user_no}`);
     },
-    goToAboutPage3() {
-      this.$router.push(`/point/${this.user.user_no}`);
-    },
+    // goToAboutPage3() {
+    //   this.$router.push(`/point/${this.user.user_no}`);
+    // },
     goToAboutPage4() {
       this.$router.push(`/coupon/${this.user.user_no}`);
     },
@@ -57,6 +58,9 @@ export default {
     goToAboutPage8() {
       this.$router.push(`/review/${this.user.user_no}`);
     },
+    gotoganpyun() {
+      this.$router.push(`/ganpyun`)
+    }
   },
 };
 </script>

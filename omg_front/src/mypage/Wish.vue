@@ -21,6 +21,9 @@
                   <span class="movie_tag">{{ item.movie_tag }}</span>
                   <span class="movie_director">{{ item.movie_director }}</span>
                   <button class="wish_btn" @click="gotorev">예매하기</button>
+                  <div>
+                  <button class="wish_btn" @click="delwish">위시리스트 삭제</button>
+                  </div>
                 </div>
               </div>
             </div>

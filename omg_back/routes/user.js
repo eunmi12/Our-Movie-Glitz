@@ -46,7 +46,7 @@ router.post('/eventlist', (req, res) => {
 router.post('/mypage/:user_no', function(request, response, next){
     const user_no = request.params.user_no;
     
-    db.query(`SELECT user_gender, DATE_FORMAT(user_age, "%Y년 %m월 %d일") AS user_age, user_id, user_name, user_grade, user_point FROM user WHERE user_no = ?`,
+    db.query(`SELECT user_phone, user_gender, DATE_FORMAT(user_age, "%Y년 %m월 %d일") AS user_age, user_id, user_name, user_grade, user_point FROM user WHERE user_no = ?`,
         [user_no],
         function(error, result, field){
         if(error){
@@ -79,7 +79,7 @@ router.post('/getcoupon', function(request, response, next){
 router.post('/rev/:user_no', function(request, response, next){
     const user_no = request.params.user_no;
 
-    db.query(`select m.movie_title, DATE_FORMAT(ticket_date, "%Y-%m-%d-%h시") AS ticket_date, ticket_total_price,ticket_cnt,ticket_seat from ticket t join user u on t.ticket_user_no = u.user_no join movie m on t.ticket_movie_no = m.movie_no where user_no = ?;`,
+    db.query(`select movie_img0, m.movie_title, DATE_FORMAT(ticket_date, "%Y-%m-%d-%h시") AS ticket_date, ticket_total_price,ticket_cnt,ticket_seat from ticket t join user u on t.ticket_user_no = u.user_no join movie m on t.ticket_movie_no = m.movie_no where user_no = ?;`,
         [user_no],
         function(error, result, field){
         if (error) {
@@ -210,20 +210,61 @@ router.post('/gogaekdetail/:user_no', function(request, response, next){
         console.log(result);
     });
 });
-//회원탈퇴하기
-router.post('/deluser', function(request, response, next){
-    const user_no = request.body.user_no;
+// 비밀번호 확인 API
+router.post('/verify-password', function(request, response, next) {
+    const { user_no, user_pwd } = request.body;
 
-    db.query(`update user set user_del = 0 where user_no=?;`,
-        [user_no],
-        function(error, result, field){
+    // 사용자 번호에 해당하는 사용자 정보 조회
+    db.query('SELECT user_pwd FROM user WHERE user_no = ?', [user_no], function(error, result) {
         if (error) {
             console.error(error);
-            return response.status(500).json({ error: '문희내역 삭제 중 에러 발생' });
+            return response.status(500).json({ error: '서버 에러' });
         }
-        response.json(result);
+
+        // 비밀번호가 일치하는지 확인
+        if (result.length === 0) {
+            return response.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        }
+
+        // 결과에서 저장된 비밀번호 가져오기
+        const storedPassword = result[0].user_pwd;
+
+        // 입력된 비밀번호와 저장된 비밀번호 비교
+        if (storedPassword === user_pwd) {
+            response.json({ success: true });
+        } else {
+            response.status(401).json({ success: false, message: '비밀번호가 일치하지 않습니다.' });
+        }
+    });
+});
+// 사용자 삭제 API
+router.post('/delete-user', function(request, response, next) {
+    const { user_no } = request.body;
+
+    db.query('UPDATE user SET user_del = 0 WHERE user_no = ?', [user_no], function(error, result) {
+        if (error) {
+            console.error(error);
+            return response.status(500).json({ error: '사용자 삭제 중 에러 발생' });
+        }
+        response.json({ success: true });
         console.log(result);
     });
+});
+// 개인 정보 수정
+router.post('/update', function(request, response, next){
+    const { user_no, user_pwd, user_phone } = request.body;
+
+    db.query(`UPDATE user SET user_phone = ?, user_pwd = ? WHERE user_no = ?;`,
+        [user_phone, user_pwd, user_no],
+        function(error, result) {
+            if (error) {
+                console.error(error);
+                return response.status(500).json({ error: '개인정보 수정 중 에러 발생' });
+            }
+            response.json({ success: true });
+            console.log(result);
+        }
+    );
 });
 //회창작성 완
 

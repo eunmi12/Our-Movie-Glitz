@@ -26,7 +26,7 @@
           <div v-if="helpcenter.length > 0">
             <div v-for="qna in helpcenter" :key="qna" class="user_qna">
               <div class="qna_info">
-                <span class="qna_title" @click="gotomunhee">{{ qna.qna_title }}</span>
+                <span class="qna_title" @click="gotoheldetail(qna.qna_no)">{{ qna.qna_title }}</span>
                 <span class="qna_date">{{ qna.qna_date }}</span>
               </div>
             </div>
@@ -73,9 +73,11 @@ export default {
     };
   },
   methods: {
-    gotomunhee() {
-      const user_no = this.$route.params.user_no; // user_no를 $route.params에서 가져오기
-      this.$router.push(`/gogaekdetail/${user_no}`)
+    gotoheldetail(qna_no) {
+      this.$router.push({
+        path:`/gogaekdetail/${this.user.user_no}`,
+        query:{qna_no:qna_no}
+      });
     },
     async userrev() {
       const user_no = this.$route.params.user_no;
@@ -109,6 +111,11 @@ export default {
     this.userrev();
     this.userqna();
     this.userreview();
+  },
+  computed: {
+    user() {
+      return this.$store.state.user;
+    }
   }
 }
 </script>

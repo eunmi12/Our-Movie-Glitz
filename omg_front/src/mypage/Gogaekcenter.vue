@@ -5,18 +5,23 @@
       <MypageSideBar />
       <div class="mypagebox">
         <div class="qna_box">
-          <p class="text1">MY 문의내역</p>
-          <div v-for="qna in helpcenter" :key="qna.qna_no" class="user_qna" @click="gotoheldetail(qna.qna_no)">
-            <div class="qna_info">
-              <span class="qna_type">{{ getQnaType(qna.qna_type) }}</span>
-              <span class="qna_title">{{ qna.qna_title }}</span>
-              <span class="qna_date">{{ qna.qna_date }}</span>
-            </div>
-            <!-- 답변 상태에 따른 조건부 렌더링 -->
-            <span class="nans" v-if="!qna.qna_answer">답변 대기</span>
-            <span class="ans" v-else>답변 완료</span>
-            <button class="delqna" @click.stop="delqna(qna.qna_no)">삭제하기</button>
+          <div>
+          <span class="text1">MY 문의 내역</span>
+          <button class="bt" @click="gotohelp">문의하기</button>
           </div>
+          <div v-if="helpcenter.length > 0">
+            <div v-for="qna in helpcenter" :key="qna.qna_no" class="user_qna" @click="gotoheldetail(qna.qna_no)">
+              <div class="qna_info">
+                <span class="qna_type">{{ getQnaType(qna.qna_type) }}</span>
+                <span class="qna_title">{{ qna.qna_title }}</span>
+                <span class="qna_date">{{ qna.qna_date }}</span>
+              </div>
+              <span class="nans" v-if="!qna.qna_answer">답변 대기</span>
+              <span class="ans" v-else>답변 완료</span>
+              <button class="delqna" @click.stop="delqna(qna.qna_no)">삭제하기</button>
+            </div>
+          </div>
+          <div class="line" v-else>문의내역이 없습니다</div>
         </div>
       </div>
     </div>
@@ -39,10 +44,13 @@ export default {
     };
   },
   methods: {
+    gotohelp() {
+      this.$router.push(`/help/qna`);
+    },
     gotoheldetail(qna_no) {
       this.$router.push({
-        path:`/gogaekdetail/${this.user.user_no}`,
-        query:{qna_no:qna_no}
+        path: `/gogaekdetail/${this.user.user_no}`,
+        query: { qna_no: qna_no }
       });
     },
     async userqna() {
@@ -64,9 +72,9 @@ export default {
     },
     getQnaType(qna_type) {
       const types = {
-        0: '문희유형 : 예매',
-        1: '문희유형 : 이벤트',
-        2: '문희유형 : 멤버쉽'
+        0: '문의유형 : 예매',
+        1: '문의유형 : 이벤트',
+        2: '문의유형 : 멤버쉽'
       };
       return types[qna_type] || '기타';
     }
@@ -76,7 +84,7 @@ export default {
   },
   computed: {
     user() {
-      return this.$store.state.user;
+      return this.$store.state.user || {}; // 상태가 정의되지 않았을 때 빈 객체 반환
     }
   }
 }
@@ -152,15 +160,12 @@ export default {
   height: 30px;
   border-radius: 5px; /* 버튼의 모서리를 둥글게 */
   cursor: pointer;
-
 }
 
-/* 버튼 호버 상태 */
 .delqna:hover {
   background-color: #e0b0b0;
 }
 
-/* 버튼 클릭 상태 */
 .delqna:active {
   background-color: #d09b9b;
 }
@@ -173,6 +178,7 @@ export default {
   padding: 3px 3px 3px 3px;
   border-radius: 5px; /* 버튼의 모서리를 둥글게 */
 }
+
 .nans {
   margin-top: 30px;
   border: 1px solid skyblue;
@@ -181,14 +187,23 @@ export default {
   padding: 3px 3px 3px 3px;
   border-radius: 5px; /* 버튼의 모서리를 둥글게 */
 }
-/* 호버 상태 */
+
 .nans:hover {
   background-color: deepskyblue;
   border: 1px solid deepskyblue;
 }
-/* 호버 상태 */
+
 .ans:hover {
   background-color: rgb(225, 90, 90);
   border: 1px solid rgb(225, 90, 90);
+}
+.bt {
+  margin-left: 30px;
+  border: 1px solid rgb(160, 160, 160);
+  background-color: rgb(255, 255, 255);
+  color: rgb(111, 111, 111);
+}
+.line {
+  margin-top: 20px;
 }
 </style>

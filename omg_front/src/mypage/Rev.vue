@@ -8,8 +8,8 @@
           <p class="text1">MY 예매내역</p>
           <div v-if="reservations.length > 0">
             <div v-for="(rev, index) in reservations" :key="rev" class="user_rev">
-              <div class="rev_info" @click="revtoggle(index)">
-                <span class="rev_title">{{ rev.movie_title }}</span>
+              <div class="rev_info">
+                <span class="rev_title"  @click="revtoggle(index)">{{ rev.movie_title }}</span>
                 <span class="rev_date">{{ rev.ticket_date }}</span>
               </div>
               <div class="rev_details">
@@ -18,7 +18,7 @@
               </div>
               <div v-if="selectedRevIndex === index" class="toggle ticket">
                 <div class="ticket-container">
-                  <img src="../images/mainpage/movie/영화1.png" class="ticket-image">
+                  <img :src="getImagePath(rev.movie_img0)" class="ticket-image">
                   <div class="ticket-content">
                     <div class="ticket-header">
                       <div class="ticket-from">
@@ -47,6 +47,7 @@
                       </div>
                     </div>
                   </div>
+                  <button class="reviewbtn">리뷰 남기기</button>
                 </div>
               </div>
             </div>
@@ -88,6 +89,9 @@ export default {
         console.error("나의예약 에러 발생", error);
       }
     },
+    getImagePath(image){
+            return (`https://image.tmdb.org/t/p/w500/${image}`);
+        },
   },
   mounted() {
     this.userrev();
@@ -237,5 +241,15 @@ export default {
   display: flex;
   justify-content: center;
   padding-top: 10px;
+}
+.reviewbtn {
+  display: flex;
+  height: 40px;
+  margin-top: 60px;
+  border: 1px solid rgb(225, 225, 225);
+  background-color: #f0eeda;
+  padding: 10px 5px 10px 5px;
+  border-radius: 7px;
+  margin-left: 100px;
 }
 </style>
