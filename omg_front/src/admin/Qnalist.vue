@@ -4,6 +4,19 @@
         <div class="qna-management">
             <h1>1:1 문의 관리</h1>
             <div class="qna-list" style="width: 100%; display: flex; flex-direction: column;">
+                <div class="qna-sort">
+                    <select class="sort-dropdown" v-model="sortorder" @change="sortqnalist">
+                        <option value="">전체</option>
+                        <option value="none">미답변</option>
+                        <option value="clear">답변완료</option>
+                    </select>
+                    <select class="sort-dropdown" v-model="typefilter" @change="sortqnalist">
+                        <option value="">전체</option>
+                        <option value="0">예매</option>
+                        <option value="1">이벤트</option>
+                        <option value="2">멤버십</option>
+                    </select>
+                </div>
                 <table>
                     <thead>
                         <tr class="qnalist-title">
@@ -15,7 +28,7 @@
                             <th class="qna-control">답변작성/삭제</th>
                         </tr>
                     </thead>
-                    <tbody v-if="qnalist.length > 0">
+                    <tbody v-if="filteredqnalist.length > 0">
                         <tr class="qnalist-value" v-for="(qna, i) in pagingData" :key="i">
                             <th class="type-value">{{ getqnatype(qna.qna_type) }}</th>
                             <th class="title-value">{{ qna.qna_title }}</th>
@@ -24,21 +37,21 @@
                             <th class="status-value" v-if="qna.qna_answer == null">미답변</th>
                             <th class="status-value" v-else>답변완료</th>
                             <th class="control-value">
-                                <button v-if="qna.qna_answer == null" class="write-btn" @click="gotowrite(qna.qna_no)">답변작성</button>
-                                <button v-else class="delete-btn" @click="gotodelete(qna.qna_no)">답변삭제</button>
+                                <button v-if="qna.qna_answer == null" class="write-btn btn" @click="gotowrite(qna.qna_no)">답변작성</button>
+                                <button v-else class="delete-btn btn" @click="gotodelete(qna.qna_no)">답변삭제</button>
                             </th>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </div>
-        <div class="pagination">
-            <ul class="number_box">
-                <li @click="prevPageGroup" :class="{disabled: currentPageGroup === 1}"><img src="../images/prev.png"/></li>
-                <li v-for="page in currentGroupPages" :key="page" @click="changePage(page)" :class="{active: page === currentPage}">
-                {{ page }}</li>
-                <li @click="nextPageGroup" :class="{disabled: currentPageGroup === pageGroups.length}"><img src="../images/next.png"/></li>
-            </ul>
+            <div class="pagination">
+                <ul class="number_box">
+                    <li @click="prevPageGroup" :class="{disabled: currentPageGroup === 1}"><img src="../images/prev.png"/></li>
+                    <li v-for="page in currentGroupPages" :key="page" @click="changePage(page)" :class="{active: page === currentPage}">
+                    {{ page }}</li>
+                    <li @click="nextPageGroup" :class="{disabled: currentPageGroup === pageGroups.length}"><img src="../images/next.png"/></li>
+                </ul>
+            </div>
         </div>
     </div>
 </template>
@@ -56,17 +69,34 @@ export default {
             currentPage:1,
             itemsPerPage:10,
             currentPageGroup: 1,
-            qnalist: []
+            qnalist: [],
+            sortorder: '',
+            typefilter: ''
         };
     },
     computed:{
+        filteredqnalist() {
+            let filteredlist = this.qnalist;
+
+            if (this.sortorder) {
+                filteredlist = filteredlist.filter(qna => {
+                    return this.sortorder === 'none' ? qna.qna_answer === null : qna.qna_answer !== null;
+                });
+            }
+
+            if (this.typefilter) {
+                filteredlist = filteredlist.filter(qna => qna.qna_type === parseInt(this.typefilter));
+            }
+
+            return filteredlist;
+        },
         pagingData(){
             const start = (this.currentPage -1) * this.itemsPerPage;
             const end = start + this.itemsPerPage;
-            return this.qnalist.slice(start,end);
+            return this.filteredqnalist.slice(start,end);
         },
         totalPages(){
-            return Math.ceil(this.qnalist.length / this.itemsPerPage);
+            return Math.ceil(this.filteredqnalist.length / this.itemsPerPage);
         },
         pageGroups(){
             const groups = [];
@@ -95,7 +125,6 @@ export default {
                 url: `http://localhost:3000/admin/qnalist`,
                 method: "POST",
             }).then((results) => {
-                // console.log(results);
                 this.qnalist = results.data;
                 });
         },
@@ -107,6 +136,9 @@ export default {
             };
             return type_name[type] || 'Unknown';
         },
+        sortqnaList() {
+            this.currentPage = 1;
+        },
         gotodelete(qna_no){
             axios({
                 url: "http://localhost:3000/admin/deleteqna",
@@ -117,6 +149,7 @@ export default {
             }).then(() => {
                 this.$swal('답변이 삭제되었습니다');
                 this.getqnalist();
+                window.location.reload();
             })
         },
         gotowrite(qna_no) {
@@ -148,13 +181,14 @@ export default {
                 this.currentPageGroup ++;
                 this.changePage(this.pageGroups[this.currentPageGroup - 1].start)
             }
-        },
+        }
     }
 }
 </script>
 
 <style scoped>
-.user-management {
+
+.qna-management {
     width: 80%;
     min-width: 80%;
     margin-top: 100px;
@@ -166,51 +200,59 @@ export default {
     box-sizing: border-box;
 }
 
-.user-management h1 {
+.qna-management h1 {
   text-align: left;
   border-bottom: 1px solid #d4cdcd;
   padding-bottom: 30px;
 }
 
-.userlist-title {
+.qna-sort {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+.sort-dropdown {
+    margin-right: 10px;
+    padding: 5px;
+}
+
+.qnalist-title {
     border-bottom: 1px solid #d4cdcd;
     height: 57px;
     font-size: large;
     color: #292828;
     text-align: center;
     background-color: #ffffff;
-    padding-bottom: 30px; /* 추가 */
+    padding-bottom: 30px;
 }
 
-.user-number {
+.qna-type {
     width: 10%;
 }
 
-.user-gender {
+.qna-title {
     width: 10%;
 }
 
-.user-name {
+.qna-user {
     width: 10%;
 }
 
-.user-age {
+.qna-date {
     width: 15%;
 }
 
-.user-grade {
+.qna-status {
     width: 15%;
 }
 
-.user-point {
+.qna-control {
     width: 15%;
 }
 
-.user-grade-update {
-    width: 15%;
-}
-
-.user-all-list {
+.qnalist-value {
     border-bottom: 1px solid #d4cdcd;
     height: 57px;
     font-size: medium;
@@ -221,13 +263,25 @@ export default {
 .btn {
     border: none;
     width: 80px;
-    border: solid 2px rgb(178, 180, 181);
+    border: solid 1px rgb(178, 180, 181);
     border-radius: 5px;
-    background-color: rgb(162, 170, 178);
-    color: rgb(0, 0, 0);
+    color: black;
     padding: 7px 0;
     font-weight: 600;
     font-size: medium;
+}
+
+.btn:hover {
+    background-color: rgb(162, 170, 178);
+    color: black;
+}
+
+.write-btn {
+    background-color: greenyellow;
+}
+
+.delete-btn {
+    background-color: red;
 }
 
 .pagination {
