@@ -150,6 +150,45 @@ router.post("/login", async(req, res) => {
 router.post("/findId", async(req, res) => {
   console.log("req.body : -------> ",req.body);
 
+  const data = {
+    user_name : req.body.user_name,
+    user_phone : req.body.user_phone,
+    user_id : req.body.user_id,
+  };
+
+  console.log("Data:-------->",data);
+
+  db.query(`select user_id from user where user_name = ? and user_phone = ?`,
+    [data.user_name, data.user_phone],
+    function(err, results, fields){
+      // console.log(results.length);
+      if(err){
+        res.send({
+          code : 400,
+          failed :  "error occurred",
+          error: err,
+        });
+      } else {
+        console.log("Database query results:", results);
+
+        if(results.length > 0){
+          const user_id = results[0].user_id;
+          res.send({
+            code: 200,
+            message : "아이디 찾기 성공",
+            user_id : user_id
+          })
+        } else {
+          res.send({
+            code: 404,
+            message: "일치하는 사용자가 없습니다."
+          });
+          // console.log(res.send.code);
+        }
+      }
+    }
+  )
+  
 });
 
 // ----------------------------------------------------------------------
@@ -157,6 +196,54 @@ router.post("/findId", async(req, res) => {
 // 비밀번호 찾기------------------------------------------------------------
 router.post("/findPwd", async(req, res) => {
   console.log("req.body : -------> ",req.body);
+
+  const data = {
+    tmp_pwd : Math.random().toString(36).slice(2),
+    user_name : req.body.user_name,
+    user_phone : req.body.user_phone,
+    user_id : req.body.user_id,
+  };
+  console.log("user_data : --------->", data);
+  
+  db.query(`select * from user where user_id = ? and user_name = ? and user_phone = ?`,
+    [data.user_id, data.user_name, data.user_phone],
+    function(err, results){
+      console.log("results.length:---->",results.length);
+      
+      if(err){
+        res.send({
+          code : 400,
+          failed : "Error occurred",
+          error : err,
+        });
+      } else if (results.length === 0){
+        res.send({
+          code : 404,
+          message : "일치하는 사용자가 없습니다.",
+        });
+      } else {
+        db.query(
+          `update user set user_pwd =? where user_id = ? and user_name = ? and user_phone = ?`,
+          [data.tmp_pwd, data.user_id, data.user_name, data.user_phone],
+          function(err, updateResults){
+            if(err) {
+              res.send({
+                code: 400,
+                failed : "Error occurred",
+                error : err,
+              });
+            } else {
+              res.send({
+                code : 200,
+                message : "임시비밀번호 부여 성공",
+                tmp_pwd : data.tmp_pwd,
+              });
+            }
+          }
+        )
+      }
+    }
+  )
 
 });
 

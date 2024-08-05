@@ -50,24 +50,29 @@
                     <li><router-link to="/" @click="logout">로그아웃</router-link></li>
                     <li><router-link :to="`/admin`">Admin</router-link></li>
                     <li><a @click="gotohelp()">고객센터</a></li>
-                    <li><router-link :to="`/mypagemain/${user.user_no}`">My Page</router-link></li>
-                    <li><router-link to="/help/notice">고객센터</router-link></li>
+                    <!-- <li><router-link :to="`/mypagemain/${user.user_no}`">My Page</router-link></li>
+                    <li><router-link to="/help/notice">고객센터</router-link></li> -->
                 </ul>
             </div>
         </div>
         <div class="menu">
             <div class="menu_wrap">
-                <ul class="menu_list">
+                <ul v-if="this.user.user_auth !== 1 && this.user.user_auth !== 0" class="menu_list">
                     <li><a href="">영화</a></li>
                     <li><a  href="http://localhost:8081/moviebooking">예매</a></li>
                     <li><a href="">이벤트</a></li>
                 </ul>
-                <ul>
+                <ul v-if="this.user.user_auth === 1" class="menu_list">
+                    <li><a href="">영화</a></li>
+                    <li><a  href="http://localhost:8081/moviebooking">예매</a></li>
+                    <li><a href="">이벤트</a></li>
+                </ul>
+                <!-- <ul>
                     <div class="total_search">
                         <input  id="search" type="text" placeholder="검색">
                         <button type="button" class="search_btn"><img src="../images/search.png" alt=""></button>
                     </div>
-                </ul>
+                </ul> -->
             </div>
         </div>
     </header>

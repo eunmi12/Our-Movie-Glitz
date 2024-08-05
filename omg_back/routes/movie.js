@@ -201,7 +201,7 @@ router.post('/cinemas', (req, res) => {
     //         join screen s on s.sc_cinema_no = c.cinema_no
     //         where sc_available = 1
     //         GROUP BY cinema_no, movie_no;`, (error, results) => {
-        db.query(`select distinct cinema_no, cinema_name, movie_no, screen_date
+        db.query(`select distinct cinema_no, cinema_name, movie_no
                 from screen
                 join cinema on cinema_no = sc_cinema_no
                 join movie on movie_no = sc_movie_no
@@ -372,12 +372,13 @@ router.post('/book', (req, res) => {
     //         return res.status(500).json({ error: '가져오기 error' });
     //     } return res.status(200).json({ message: '정보 가져옴' });
     // });
+    const ticket_cnt = seatName.length;
     const seatNumbersString = seatName.join(',');
-    const query = `insert into ticket (ticket_total_price, ticket_date, ticket_user_no, ticket_movie_no, ticket_seat, ti_se_cinema_no)
-                    values (?, ?, ?, ?, ?, ?)`;
+    const query = `insert into ticket (ticket_total_price, ticket_date, ticket_user_no, ticket_movie_no, ticket_seat, ti_se_cinema_no, ticket_cnt)
+                    values (?, ?, ?, ?, ?, ?, ?)`;
     // const values = seats.map(seat_no => [movie_no, cinema_no, date, time, seat_no]);
 
-    db.query(query, [total_price, date+' '+time, user_no, movie_no, seatNumbersString, cinema_no], (error, results) => {
+    db.query(query, [total_price, date+' '+time, user_no, movie_no, seatNumbersString, cinema_no, ticket_cnt], (error, results) => {
         if (error) {
             return res.status(500).json({ error: '예매 error' });
         }

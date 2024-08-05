@@ -11,9 +11,9 @@
                         <input type="password" v-model="user_pwd" placeholder="비밀번호"> 
                     </div>
                     <div class="find">
-                        <a @click="find_Id">아이디 찾기</a>
+                        <a @click="openFindIdModal">아이디 찾기</a>
                         <span style="color: #2b2a2aa5">|</span>
-                        <a @click="find_pwd">비밀번호 찾기</a>
+                        <a @click="openFindPwModal">비밀번호 찾기</a>
                     </div>
                     <div class="login_btn">
                         <button type="subit">SING IN</button>
@@ -35,20 +35,50 @@
                 </div>
             </div>
         </div>
+        <FindIdModal :isOpen="isFindIdModalOpen" @close="closeFindIdModal" @switch="switchModal" />
+        <FindPasswordModal :isOpen="isFindPwModalOpen" @close="closeFindPwModal" @switch="switchModal" />
+
    </div>
+   
 </template>
 <script>
 import axios from 'axios';
-
+import FindIdModal from '../views/FindId';
+import FindPasswordModal from '../views/FindPw';
 
 export default {
+    components: { FindIdModal, FindPasswordModal },
     data() {
         return {
             user_id: '',
             user_pwd: '',
+            currentView: 'findId',
+            isFindIdModalOpen: false,
+            isFindPwModalOpen: false,
         };
     },
     methods: {
+        openFindIdModal() {
+            this.isFindIdModalOpen = true;
+            this.isFindPwModalOpen = false;
+        },
+        closeFindIdModal() {
+            this.isFindIdModalOpen = false;
+        },
+        openFindPwModal() {
+            this.isFindPwModalOpen = true;
+            this.isFindIdModalOpen = false;
+        },
+        closeFindPwModal() {
+            this.isFindPwModalOpen = false;
+        },
+        switchModal(modal) {
+            if (modal === 'findId') {
+                this.openFindIdModal();
+            } else if (modal === 'findPassword') {
+                this.openFindPwModal();
+            }
+        },
         async login(){
             try{
                 const res = await axios({
