@@ -14,7 +14,9 @@
                 <button class="wishbtn" @click="addwishlist(movielist.movie_no)">♥</button>
                 </div>
             </div>
+            <div class="movie_title">
                 <h1>상세 설명</h1>
+            </div>
             <div class="moviedetail_content">
                 {{movielist.movie_comment}}
             </div>
@@ -182,11 +184,6 @@ export default {
 </script>
 
 <style scoped>
-h1{
-    width:56%;
-    margin-left:10px;
-    text-align: center;
-}
 h2{
     margin-bottom: 50px;
     text-align: left;
@@ -212,6 +209,16 @@ h2{
     margin-top: 20px;
     font-size:20px;
 
+}
+.movie_title{
+    width:50%;
+    display: block;
+    margin: 0 auto;
+}
+h1{
+    /* width:56%; */
+    margin-left:10px;
+    text-align: left;
 }
 .detail_title{
     width:100%;

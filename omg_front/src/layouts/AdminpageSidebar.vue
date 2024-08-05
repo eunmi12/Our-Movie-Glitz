@@ -28,6 +28,9 @@
                     <span @click="goToEvent">• 이벤트 관리</span>
                 </li>
                 <li>
+                    <span @click="goToCoupon">• 쿠폰 관리</span>
+                </li>
+                <li>
                     <span @click="goToFAQ">• FAQ 관리</span>
                 </li>
                 <li>
@@ -84,6 +87,11 @@ export default {
             this.$router.push({
                 path: '/admin/eventList'
             })
+        },
+        goToCoupon(){
+            this.$router.push({
+                path: '/admin/coupon'
+            });
         },
         goToFAQ() {
             this.$router.push({
