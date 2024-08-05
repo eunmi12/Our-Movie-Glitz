@@ -318,6 +318,149 @@ router.post('/deletenotice', (req,res) => {
     });
 });
 
+//쿠폰 리스트 가져오기
+router.post('/couponlist', (req,res) => {
+    db.query(`select * from coupon`, (err, result) => {
+        if(err){
+            console.log('쿠폰 리스트 불러오는 도중 에러 발생');
+            return res.status(500).json({ err: 'error'});
+        }
+        res.json(result);
+    });
+});
+
+//쿠폰 삭제하기
+router.post('/deletecoupon', (req,res) => {
+    const coupon_no = req.body.coupon_no;
+
+    db.query(`delete from coupon where coupon_no = ?`, [coupon_no], (err,result) => {
+        if(err){
+            console.log('쿠폰 삭제중 에러 발생');
+            return res.status(500).json({ err: 'error'});
+        }
+        res.json(result);
+    });
+});
+
+
+// const upload = multer({
+//     storage: multer.diskStorage({
+//         destination(req, file, cb) {
+//             cb(null, path.join(__dirname, '..', 'uploads'));
+//         },
+//         filename(req, file, cb) {
+//             console.log('Uploaded File:', file.originalname); // 업로드된 파일 이름 확인
+//             file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8') ;
+//             console.log('Uploaded File:', file.originalname);
+//             cb(null, file.originalname);
+//         },
+//     }),
+//     // limits: { fileSize: 5 * 1024 * 1024 },
+// });
+
+// 업로드 디렉토리 경로 설정
+const uploadDir = path.join(__dirname, '..', 'uploads');
+
+// 업로드 디렉토리 존재 여부 확인 및 생성
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const upload = multer({
+    storage: multer.diskStorage({
+        destination(req, file, cb) {
+            //cb => 콜백함수, 첫번째 인자 에러처리, 두번째 인자 저장될 경로지정
+            cb(null,  path.join(__dirname, '..', 'uploads'));
+        },
+        filename(req, file, cb) {
+            //한글 파일 인코딩용
+            // const originalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
+            console.log('Uploaded File:', file.originalname);
+            //첫번째 인자 에러처리, 두번째 인자 파일 이름 저장
+            cb(null, file.originalname);
+            
+        },
+    }),
+    limits: { fileSize: 5 * 1024 * 1024 },
+});
+
+//이미지 등록
+router.post('/upload_img', upload.single('img'), (request, response) => {
+   
+    return response.status(200).json({
+            message: 'success'
+        });
+   
+});
+
+//쿠폰 등록하기
+router.post('/createcoupon', (req,res) => {
+    const coupon_title = req.body.coupon_title;
+    const coupon_sale = req.body.coupon_sale;
+    const coupon_img1 = req.body.coupon_img1;
+    const coupon_startdate = req.body.coupon_startdate;
+    const coupon_enddate = req.body.coupon_enddate;
+    const coupon_comment = req.body.coupon_comment;
+
+    console.log("coupon_title:",coupon_title);
+    console.log("coupon_sale:",coupon_sale);
+    console.log("coupon_img1:",coupon_img1);
+    console.log("coupon_startdate:",coupon_startdate);
+    console.log("coupon_enddate:",coupon_enddate);
+    console.log("coupon_comment:",coupon_comment);
+
+    //img 빼고 정보 먼저 삽입중
+    db.query(`insert into coupon (coupon_title,coupon_sale,coupon_startdate,coupon_enddate,coupon_comment)
+        values (?,?,?,?,?)`,[coupon_title,coupon_sale,coupon_startdate,coupon_enddate,coupon_comment],(err,result)=> {
+    if(err){
+        res.status(200).json({message:'DB insert 실패'});
+        }
+        
+        try{
+            const dir1 = path.join(__dirname,'../uploads',coupon_img1);
+            console.log('dir1========',dir1);
+            const newdir = path.join(__dirname, '../uploads/coupon/');
+            console.log('newdir========',newdir);
+
+            if(!fs.existsSync(newdir)){
+                fs.mkdirSync(newdir); //파일 없으면 새로 만들깅
+            }
+
+            const extname = path.extname(dir1);
+            console.log('extname========',extname);
+
+            //입력된 쿠폰번호 찾기
+            db.query(`select coupon_no from coupon where coupon_title = ?`,[coupon_title], (err,result)=>{
+                
+                if(err || result.length === 0){
+                    return res.status(500).json({ message : '쿠폰 번호 조회 실패'});
+                }
+                
+                const filename = result[0].coupon_no;
+                console.log('filename=======',filename);
+                
+                const newimgpath = path.join(newdir, `${filename}-0${extname}`);
+                console.log('newimgpath=========',newimgpath);
+
+                fs.renameSync(dir1, newimgpath);
+                
+                db.query(`update coupon set coupon_img1 = ? where coupon_no =?`,[`${filename}-0${extname}`,filename], (err,result)=>{
+                    if(err){
+                        console.log('이미지 추가 실패');
+                        return res.status(500).json({ message : '이미지 업데이트 실패'});
+                    } else {
+                        return res.status(200).json({ message : 'success'});
+                    }
+                });
+            });
+
+            }catch(err){
+                return res.status(200).json({ meesage:'서버 오류 발생'});
+            }
+    })
+});
+
+
 router.get('/user/seats', (req, res) => {
     let sql = 'SELECT seat_no, seat_cinema_no, seat_name,seat_reserve FROM seat WHERE seat_cinema_no = 1';
     db.query(sql, (err, results) => {

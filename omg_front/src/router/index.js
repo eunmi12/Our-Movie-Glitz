@@ -24,6 +24,8 @@ import AdminCreateCinema from '../admin/CreateCinema.vue'
 import AdminCreateNotice from '../admin/createNotice.vue'
 import AdminUpdateNotice from '../admin/updatenotice.vue'
 import MovieDetail from '../views/MovieDetail.vue'
+import CouponList from '../admin/CouponList.vue'
+import CreateCoupon from '../admin/CreateCoupon.vue'
 import userseat from '../views/test.vue'
 //은미작성완
 
@@ -149,6 +151,16 @@ const routes = [
   path: "/moviedetail/:movie_no",
   name: "MovieDetail",
   component: MovieDetail
+},
+{
+  path: "/admin/coupon",
+  name: "CouponList",
+  component: CouponList
+},
+{
+  path: "/admin/createcoupon",
+  name: "CreateCoupon",
+  component: CreateCoupon
 },
 {
   path: "/user/seat",

@@ -360,6 +360,7 @@ textarea {
 
 .faq_answer_container.show {
     display: block;
+    width: 1250px;
 }
 
 .toggle-btn {
@@ -379,7 +380,9 @@ textarea {
     font-size: large;
     color: #292828;
     background-color: #ffffff;
-    padding: 10px 0px 30px 60px;
+    padding: 30px 0px 30px 60px;
+    overflow-wrap: break-word;
+    word-wrap: break-word; 
 }
 
 .pagination {

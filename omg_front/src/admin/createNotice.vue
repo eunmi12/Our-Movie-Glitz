@@ -152,7 +152,7 @@ export default {
 .title_wrap{
     width:100%;
     display: flex;
-    padding:5px;
+    /* padding:5px; */
     padding-top:10px;
     padding-bottom:10px;
     /* border-bottom: 1px solid #ccc; */
