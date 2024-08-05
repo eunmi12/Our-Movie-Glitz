@@ -150,14 +150,21 @@ router.post('/insertwish', (req,res) => {
 router.get('/movielist/:tag', (req, res) => {
     const movie_tag = req.params.tag;
     const sql = `
-        SELECT m.movie_no, m.movie_img0, m.movie_title, r.review_rate, m.movie_cnt
-        FROM movie m
-        LEFT JOIN review r ON m.movie_no = r.re_movie_no 
-        WHERE m.movie_tag = ?
-        order by m.movie_cnt desc
-        LIMIT 3;
+      SELECT m.movie_no, m.movie_img0, m.movie_title, ROUND(AVG(r.review_rate), 1) AS review_rate, m.movie_cnt
+      FROM movie m
+      LEFT JOIN review r ON m.movie_no = r.re_movie_no
+      WHERE m.movie_tag LIKE ?
+      GROUP BY 
+        m.movie_no, 
+        m.movie_img0, 
+        m.movie_title, 
+        m.movie_cnt
+      ORDER BY m.movie_cnt DESC
+      LIMIT 3;
     `;
-    db.query(sql, [movie_tag], (err, results) => {
+    // 'movie_tag'를 포함하는 모든 영화 검색
+    const tagSearch = `%${movie_tag}%`;
+    db.query(sql, [tagSearch], (err, results) => {
       if (err) {
         res.status(500).send(err);
       } else {

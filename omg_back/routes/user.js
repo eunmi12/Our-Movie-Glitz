@@ -22,9 +22,9 @@ const path = require("path");
 //은미작성 완
 
 //재영작성
-router.get('/eventlist', (req, res) => {
+router.post('/eventlist', (req, res) => {
     const sql = `
-        select event_no, event_img1, event_title, date_format(event_startdate, '%y-%m-%d') as event_startdate, date_format(event_enddate, '%y-%m-%d') as event_enddate from event order by event_no desc;
+        select event_no, event_img1, event_title, event_cnt ,date_format(event_startdate, '%y-%m-%d') as event_startdate, date_format(event_enddate, '%y-%m-%d') as event_enddate from event order by event_no asc;
     `;
     db.query(sql, (err, results) => {
       if (err) {
@@ -32,6 +32,27 @@ router.get('/eventlist', (req, res) => {
       } else {
         res.json(results);
       }
+    });
+});
+router.get('/maineventlist', (req, res) => {
+    const sql = `
+        select event_no, event_img1, event_title,date_format(event_startdate, '%y-%m-%d') as event_startdate, date_format(event_enddate, '%y-%m-%d') as event_enddate from event order by event_no desc;
+    `;
+    db.query(sql, (err, results) => {
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        res.json(results);
+      }
+    });
+});
+router.post('/deleteevent', (req, res) => {
+    db.query(`DELETE FROM event WHERE event_no = ?`,[req.body.event_no] , (err, results) => {
+        if(err) {
+            console.log('이벤트를 삭제할 수 없습니다.');
+            return res.status(500).json({ error: 'error' });
+        }
+        return res.json(results);
     });
 });
 //재영작성 완
