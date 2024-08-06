@@ -68,14 +68,19 @@ router.post("/join", async (req, res) => {
                 failed: "error occurred",
                 error: err,
                 });
-            } else {
-                res.send({
-                //쿼리 실행 성공시
-                code: 200,
-                message: "회원가입 성공",
-                });
             }
-            console.log(res.send);
+                const user_no = results.insertId;
+                console.log("result_no====================",user_no);
+                db.query(`insert into user_coupon (uc_user_no, uc_coupon_no) values(?,1)`,[user_no],(err,result) => {
+                  if(err){
+                    console.log('error 발생');
+                    return res.status(500).json({ err:'error'});
+                    
+                  } else{
+                    return res.json(result);
+                  }
+                })
+            
         }
     )
 })
@@ -258,7 +263,16 @@ router.post("/findPwd", async(req, res) => {
 //치혁작성 완
 
 //은미작성
+router.post('/joincoupon',(req,res)=>{
+  const uc_user_no = req.body.user_no;
 
+  db.query(`insert into user_coupon (uc_user_no, uc_coupon_no) values(?,1)`,[uc_user_no], (err,result)=>{
+    if(err){
+      return res.status(500).json({ err:'쿠폰 입력중 에러 발생'});
+    }
+    res.json(result);
+  });
+});
 //은미작성 완
 
 //재영작성

@@ -24,15 +24,16 @@ import AdminCreateCinema from '../admin/CreateCinema.vue'
 import AdminCreateNotice from '../admin/createNotice.vue'
 import AdminUpdateNotice from '../admin/updatenotice.vue'
 import MovieDetail from '../views/MovieDetail.vue'
-import CouponList from '../admin/CouponList.vue'
+import AdminCouponList from '../admin/CouponList.vue'
 import CreateCoupon from '../admin/CreateCoupon.vue'
+import EventList from '../views/EventList.vue'
 import userseat from '../views/test.vue'
 //은미작성완
 
 
 //재영작성
 import MainPage from '../views/MainPage.vue'
-import EventList from '../admin/eventList.vue'
+import AdminEventList from '../admin/eventList.vue'
 import AdminEventCreate from '../admin/CreateEvent.vue'
 //재영작성완
 
@@ -155,13 +156,18 @@ const routes = [
 },
 {
   path: "/admin/coupon",
-  name: "CouponList",
-  component: CouponList
+  name: "AdminCouponList",
+  component: AdminCouponList
 },
 {
   path: "/admin/createcoupon",
   name: "CreateCoupon",
   component: CreateCoupon
+},
+{
+  path: "/eventlist",
+  name: "EventList",
+  component: EventList
 },
 {
   path: "/user/seat",
@@ -180,7 +186,7 @@ const routes = [
 },
 {
   path: '/admin/eventlist',
-  name: 'EventList',
+  name: 'AdminEventList',
   component: EventList
 },
 {

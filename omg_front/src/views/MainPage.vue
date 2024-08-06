@@ -41,7 +41,7 @@
         <div class="contents">
           <div class="event_name">
             <h3>EVENTS</h3>
-            <a href="" class="event_all">더보기</a>
+            <a href="http://localhost:8081/eventlist" class="event_all">더보기</a>
           </div>
           <div class="event_title">
             <div  v-for="event in limitedEventlists" :key="event.event_no"  class="event_box1" >

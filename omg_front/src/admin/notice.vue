@@ -6,26 +6,29 @@
             <div class="notice-list" style="width: 100%; display: flex; flex-direction: column;">
                 <table>
                     <thead>
-                        <tr class="notice-title">
+                        <tr class="notice-title" v-if="noticeList.length > 0">
                             <th class="user-number">공지 번호</th>
                             <th class="user-gender">공지 제목</th>
                             <th class="user-gender">공지 작성일</th>
                             <th class="user-gender">공지 조회수</th>
                             <th class="user-gender">수 정</th>
+                            <th class="user-gender">삭 제</th>
                         </tr>
+                        <tr class="non-notice" v-else> 공지사항을 작성해주세요</tr>
                     </thead>
                     <tbody v-if="noticeList.length > 0">
                         <tr class="user-all-list" v-for="(notice, i) in pagingData" :key="i">
-                            <th class="user-number value">{{ i + 1 + (currentPage - 1) * itemsPerPage}}</th>
-                            <th class="user-gender value" @click="updateNotice(notice.notice_no)">{{ notice.notice_title }}</th>
+                            <th class="user-number value" @click="gotonotice(notice.notice_no)">{{ i + 1 + (currentPage - 1) * itemsPerPage}}</th>
+                            <th class="user-gender value" @click="gotonotice(notice.notice_no)">{{ notice.notice_title }}</th>
                             <th class="user-gender value">{{ new Date(notice.notice_date).toISOString().split('T')[0] }}</th>
                             <th class="user-gender value">{{ notice.notice_cnt }}</th>
                             <th><button class="update" @click="updateNotice(notice.notice_no)">수 정</button></th>
+                            <th><button class="delete" @click="deleteNotice(notice.notice_no)">삭 제</button></th>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="pagination">
+            <div v-if="noticeList.length > 0" class="pagination">
                 <ul class="number_box">
                     <li @click="prevPageGroup" :class="{disabled: currentPageGroup === 1}"><img src="../images/prev.png"/></li>
                     <li v-for="page in currentGroupPages" :key="page" @click="changePage(page)" :class="{active: page === currentPage}">
@@ -42,6 +45,7 @@
 <script>
 import axios from "axios";
 import AdminpageSidebar from "../layouts/AdminpageSidebar.vue";
+import Swal from "sweetalert2";
 
 export default {
     components: {
@@ -113,6 +117,21 @@ export default {
             })
             this.$router.push(`/admin/notice/${notice_no}`);
         },
+        gotonotice(notice_no){
+            this.$router.push(`/help/notice/${notice_no}`)
+        },
+        async deleteNotice(notice_no){
+            await axios.post(`http://localhost:3000/admin/deletenotice`,{
+                notice_no : notice_no
+            });
+            Swal.fire({
+                title:'공지사항이 삭제되었습니다.',
+                icon: 'success',
+                confirmButtonText:'확인'
+            }).then(()=>{
+                this.$router.go(0);
+            })
+        },
         //페이징
         changePage(page){
             if(page > 0 && page <= this.totalPages){
@@ -174,6 +193,13 @@ export default {
     background-color: #ffffff;
     padding-bottom: 30px; /* 추가 */
 }
+.non-notice{
+    display: block;
+    margin-top:70px;
+    font-size:36px;
+    text-align: center;
+    height: 100px;
+}
 
 .user-number {
     width: 10%;
@@ -232,7 +258,7 @@ export default {
     height: 30px;
     border: none;
     color: white;
-    background-color: #8d8d8d;
+    background-color: #aaaaaa;
     border-radius: 5px;
     cursor: pointer;
     /* margin-right: 10px; */
@@ -242,11 +268,26 @@ export default {
     width: 60px;
     height: 30px;
     border: none;
-    color: #ffffff;
-    background-color: #000000;
+    color: #aaaaaa;
+    background-color: rgb(193, 192, 192);
     border-radius: 5px;
     cursor: pointer;
     /* margin-right: 10px; */
+}
+.delete{
+    font-size: 16px;
+    width: 60px;
+    height: 30px;
+    border: none;
+    color: white;
+    background-color: #db1919;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+.delete:hover{
+    color: #db1919;
+    background-color: #ffeeee;
 }
 .btn_container{
      display: flex;
