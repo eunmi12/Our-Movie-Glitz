@@ -271,7 +271,7 @@ const routes = [
   component: SeatSelection,
 },
 {
-  path: "/payment",
+  path: "/payment/:ticket_no", // params로 주소를 이렇게 받아오므로 path도 이렇게 주소를 받아와야 됨
   name: "Payment",
   component: Payment,
 },
