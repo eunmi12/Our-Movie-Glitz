@@ -60,12 +60,12 @@
                 <ul v-if="this.user.user_auth !== 1 && this.user.user_auth !== 0" class="menu_list">
                     <li><a href="">영화</a></li>
                     <li><a  href="http://localhost:8081/moviebooking">예매</a></li>
-                    <li><a href="">이벤트</a></li>
+                    <li><a href="http://localhost:8081/eventlist">이벤트</a></li>
                 </ul>
                 <ul v-if="this.user.user_auth === 1" class="menu_list">
                     <li><a href="">영화</a></li>
                     <li><a  href="http://localhost:8081/moviebooking">예매</a></li>
-                    <li><a href="">이벤트</a></li>
+                    <li><a href="http://localhost:8081/eventlist">이벤트</a></li>
                 </ul>
                 <!-- <ul>
                     <div class="total_search">

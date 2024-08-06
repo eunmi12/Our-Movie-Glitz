@@ -223,11 +223,14 @@ export default {
 .faq {
     flex: 4;
     margin: 0 auto;
-    display: flex;
+    /* display: flex; */
     flex-direction: column;
     align-items: center; /* 중앙 정렬 */
 }
-
+h1{
+    text-align: left;
+    margin-left:40px;
+}
 .faq-section {
     width: 95%;
     margin: auto;
@@ -346,10 +349,10 @@ textarea {
     margin-left: 15px;
     font-size: large;
     border: none;
-    border-bottom: 1px solid #d4cdcd;
+    /* border-bottom: 1px solid #d4cdcd; */
     resize: none;
     overflow: hidden;
-    width: 100%;
+    width: 80%;
     box-sizing: border-box;
     min-height: 50px; /* 기본 최소 높이 */
 }
@@ -372,10 +375,11 @@ textarea {
 }
 
 .faq-answer {
-    white-space: pre;
+    white-space: pre-wrap;
+    width:100%;
     overflow: auto;   
     text-align: left;
-    border-bottom: 1px solid #d4cdcd;
+    /* border-bottom: 1px solid #d4cdcd; */
     height: auto;
     font-size: large;
     color: #292828;

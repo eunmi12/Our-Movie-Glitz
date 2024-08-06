@@ -25,7 +25,6 @@
             </div>
             <div class="button_wrap">
                 <button type="button" class="insertbtn" @click="updateNotice">공지사항 수정</button>
-                <button type="button" class="delete" @click="deleteNotice">삭제</button>
                 <button type="button" class="exit" @click="exit">취소</button>
             </div>
         </form>
@@ -96,18 +95,6 @@ export default {
                 this.$swal('공지사항 수정에 실패했습니다.'); 
                 console.error('공지사항 수정 실패');
             }
-        },
-        async deleteNotice(){
-            await axios.post(`http://localhost:3000/admin/deletenotice`,{
-                notice_no : this.notice_no
-            });
-            Swal.fire({
-                title:'공지사항이 삭제되었습니다.',
-                icon: 'success',
-                confirmButtonText:'확인'
-            }).then(()=>{
-                this.$router.push(`/admin/notice`);
-            })
         },
         exit(){
             this.$router.push(`/admin/notice`);

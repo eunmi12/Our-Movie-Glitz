@@ -501,6 +501,7 @@ router.post('/createcoupon', (req,res) => {
     const coupon_startdate = req.body.coupon_startdate;
     const coupon_enddate = req.body.coupon_enddate;
     const coupon_comment = req.body.coupon_comment;
+    const coupon_able = req.body.coupon_able;
 
     console.log("coupon_title:",coupon_title);
     console.log("coupon_sale:",coupon_sale);
@@ -508,10 +509,12 @@ router.post('/createcoupon', (req,res) => {
     console.log("coupon_startdate:",coupon_startdate);
     console.log("coupon_enddate:",coupon_enddate);
     console.log("coupon_comment:",coupon_comment);
+    console.log("coupon_able",coupon_able);
+    
 
     //img 빼고 정보 먼저 삽입중
-    db.query(`insert into coupon (coupon_title,coupon_sale,coupon_startdate,coupon_enddate,coupon_comment)
-        values (?,?,?,?,?)`,[coupon_title,coupon_sale,coupon_startdate,coupon_enddate,coupon_comment],(err,result)=> {
+    db.query(`insert into coupon (coupon_title,coupon_sale,coupon_startdate,coupon_enddate,coupon_comment,coupon_able)
+        values (?,?,?,?,?,?)`,[coupon_title,coupon_sale,coupon_startdate,coupon_enddate,coupon_comment,coupon_able],(err,result)=> {
     if(err){
         res.status(200).json({message:'DB insert 실패'});
         }

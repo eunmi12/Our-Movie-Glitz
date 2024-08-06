@@ -152,7 +152,7 @@ router.post('/coupon/:user_no', function(request, response, next){
     db.query(`select coupon_no, coupon_title, coupon_sale, coupon_img1, DATE_FORMAT(coupon_startdate, "%Y-%m-%d") AS coupon_startdate, DATE_FORMAT(coupon_enddate, "%Y-%m-%d") AS coupon_enddate, coupon_comment 
                 from coupon c
                 join user_coupon uc on c.coupon_no = uc.uc_coupon_no
-                where uc.uc_user_no = 2;`,
+                where uc.uc_user_no = ?;`,
         [user_no],
         function(error, result, field){
         if (error) {
