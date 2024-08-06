@@ -7,10 +7,13 @@
         <div class="rev_box">
           <p class="text1">MY 예매내역</p>
           <div v-if="reservations.length > 0">
-            <div v-for="(rev, index) in reservations" :key="rev" class="user_rev">
+            <div v-for="(rev, index) in paginatedReservations" :key="rev.ticket_no" class="user_rev" @click="revtoggle(index)">
               <div class="rev_info">
-                <span class="rev_title"  @click="revtoggle(index)">{{ rev.movie_title }}</span>
-                <span class="rev_date">{{ rev.ticket_date }}</span>
+                <span class="rev_title">{{ rev.movie_title }}</span>
+                <div>
+                <span class="rev_date">{{ rev.ticket_date }}&nbsp;&nbsp;&nbsp;</span>
+                <span class="rev_date">{{ rev.ticket_time }}</span>
+              </div>
               </div>
               <div class="rev_details">
                 <span class="rev_cnt">{{ rev.ticket_cnt }}명</span>
@@ -18,7 +21,7 @@
               </div>
               <div v-if="selectedRevIndex === index" class="toggle ticket">
                 <div class="ticket-container">
-                  <img :src="getImagePath(rev.movie_img0)" class="ticket-image">
+                  <img :src="getImagePath(rev.movie_img0)" class="ticket-image" />
                   <div class="ticket-content">
                     <div class="ticket-header">
                       <div class="ticket-from">
@@ -56,6 +59,11 @@
         </div>
       </div>
     </div>
+    <ul class="paging">
+      <li v-for="page in totalPages" :key="page">
+        <a href="#" @click.prevent="gotoPage(page)" :class="{ active: page === currentPage }">{{ page }}</a>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -73,7 +81,19 @@ export default {
     return {
       reservations: [],
       selectedRevIndex: null, // 선택된 예약의 인덱스를 저장할 변수
+      currentPage: 1,
+      perPage: 5,
     };
+  },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.reservations.length / this.perPage);
+    },
+    paginatedReservations() {
+      const start = (this.currentPage - 1) * this.perPage;
+      const end = start + this.perPage;
+      return this.reservations.slice(start, end);
+    },
   },
   methods: {
     revtoggle(index) {
@@ -89,14 +109,19 @@ export default {
         console.error("나의예약 에러 발생", error);
       }
     },
-    getImagePath(image){
-            return (`https://image.tmdb.org/t/p/w500/${image}`);
-        },
+    getImagePath(image) {
+      return `https://image.tmdb.org/t/p/w500/${image}`;
+    },
+    gotoPage(page) {
+      if (page > 0 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
+    },
   },
   mounted() {
     this.userrev();
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -242,6 +267,7 @@ export default {
   justify-content: center;
   padding-top: 10px;
 }
+
 .reviewbtn {
   display: flex;
   height: 40px;
@@ -251,5 +277,39 @@ export default {
   padding: 10px 5px 10px 5px;
   border-radius: 7px;
   margin-left: 100px;
+}
+
+.paging {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  justify-content: center;
+  margin-left: 400px;
+}
+
+.paging li {
+  margin: 0 5px;
+}
+
+.paging a {
+  display: block;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.paging a.active {
+  background-color: #f0eeda;
+  border-color: #d8c6b0;
+  color: #333;
+}
+
+.paging a:hover {
+  background-color: #d8c6b0;
+  border-color: #bfae9d;
 }
 </style>

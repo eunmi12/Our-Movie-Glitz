@@ -4,6 +4,7 @@ const db = require('../db.js');
 const fs = require('fs');
 const multer = require('multer');
 const path = require("path");
+const { log } = require('console');
 
 //승호작성
 
@@ -100,7 +101,7 @@ router.post('/getcoupon', function(request, response, next){
 router.post('/rev/:user_no', function(request, response, next){
     const user_no = request.params.user_no;
 
-    db.query(`select movie_img0, m.movie_title, DATE_FORMAT(ticket_date, "%Y-%m-%d-%h시") AS ticket_date, ticket_total_price,ticket_cnt,ticket_seat from ticket t join user u on t.ticket_user_no = u.user_no join movie m on t.ticket_movie_no = m.movie_no where user_no = ?;`,
+    db.query(`select ticket_no, ticket_user_no, movie_img0, m.movie_title, DATE_FORMAT(ticket_date, "%Y-%m-%d") AS ticket_date, DATE_FORMAT(ticket_time, "%H시") AS ticket_time, ticket_total_price,ticket_cnt,ticket_seat from ticket t join user u on t.ticket_user_no = u.user_no join movie m on t.ticket_movie_no = m.movie_no where user_no = ?;`,
         [user_no],
         function(error, result, field){
         if (error) {
@@ -111,11 +112,29 @@ router.post('/rev/:user_no', function(request, response, next){
         console.log(result);
     });
 });
+//예매한 영화 취소
+router.post('/canclemovie', function(request, response, next) {
+    const { user_no, ticket_no } = request.body; // user_no와 ticket_no를 받아온다
+
+    // ticket_no를 기준으로 삭제 쿼리 작성
+    db.query(`DELETE FROM ticket WHERE ticket_user_no = ? AND ticket_no = ?;`,
+        [user_no, ticket_no], // user_no와 ticket_no를 쿼리에 전달
+        function(error, result) {
+            if (error) {
+                console.error(error);
+                return response.status(500).json({ error: '예매한 영화 취소 중 에러 발생' });
+            }
+            response.json({ success: true });
+            console.log("삭제 결과:", result);
+        }
+    );
+});
+
 // 문희내역 불러오기
 router.post('/gogaek/:user_no', function(request, response, next){
     const user_no = request.params.user_no;
 
-    db.query(`select qna_answer, qna_no, qna_comment, qna_type, qna_title, DATE_FORMAT(qna_date, "%Y-%m-%d-%h:%i") AS qna_date from qna where qna_user_no = ?;`,
+    db.query(`select qna_answer, qna_no, qna_comment, qna_type, qna_title, DATE_FORMAT(qna_date, "%Y-%m-%d") AS qna_date from qna where qna_user_no = ?;`,
         [user_no],
         function(error, result, field){
         if (error) {
@@ -149,10 +168,10 @@ router.post('/review/:user_no', function(request, response, next){
 router.post('/coupon/:user_no', function(request, response, next){
     const user_no = request.params.user_no;
 
-    db.query(`select coupon_no, coupon_title, coupon_sale, coupon_img1, DATE_FORMAT(coupon_startdate, "%Y-%m-%d") AS coupon_startdate, DATE_FORMAT(coupon_enddate, "%Y-%m-%d") AS coupon_enddate, coupon_comment 
-                from coupon c
-                join user_coupon uc on c.coupon_no = uc.uc_coupon_no
-                where uc.uc_user_no = ?;`,
+    db.query(`select uc.uc_coupon_able, c.coupon_no, c.coupon_title, c.coupon_sale, c.coupon_img1, DATE_FORMAT(c.coupon_startdate, "%Y-%m-%d") AS coupon_startdate, DATE_FORMAT(c.coupon_enddate, "%Y-%m-%d") AS coupon_enddate, c.coupon_comment 
+              from coupon c
+              join user_coupon uc on c.coupon_no = uc.uc_coupon_no
+              where uc.uc_user_no = ?;`,
         [user_no],
         function(error, result, field){
         if (error) {
@@ -163,6 +182,7 @@ router.post('/coupon/:user_no', function(request, response, next){
         console.log(result);
     });
 });
+
 //리뷰 삭제하기
 router.post('/delreview', function(request, response, next){
     const review_no = request.body.review_no;
@@ -207,6 +227,24 @@ router.post('/wish/:user_no', function(request, response, next){
         if (error) {
             console.error(error);
             return response.status(500).json({ error: '찜한 영화 리스트 에러' });
+        }
+        response.json(result);
+        console.log(result);
+    });
+});
+// 찜한 영화 삭제 리스트
+router.post('/delwish', function(request, response, next){
+    const user_no = request.body.user_no;
+    const wish_movie_no = request.body.wish_movie_no;
+    console.log("wish_movie_no",wish_movie_no);
+    
+
+    db.query(`delete from wish where wish_user_no = ? and wish_movie_no = ?;`,
+        [user_no, wish_movie_no],
+        function(error, result, field){
+        if (error) {
+            console.error(error);
+            return response.status(500).json({ error: '찜한 영화 삭제 리스트 에러' });
         }
         response.json(result);
         console.log(result);
@@ -287,6 +325,8 @@ router.post('/update', function(request, response, next){
         }
     );
 });
+
+
 //회창작성 완
 
 
