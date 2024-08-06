@@ -35,6 +35,7 @@ router.post('/eventlist', (req, res) => {
       }
     });
 });
+
 router.get('/maineventlist', (req, res) => {
     const sql = `
         select event_no, event_img1, event_title,date_format(event_startdate, '%y-%m-%d') as event_startdate, date_format(event_enddate, '%y-%m-%d') as event_enddate from event order by event_no desc;
@@ -47,6 +48,7 @@ router.get('/maineventlist', (req, res) => {
       }
     });
 });
+
 router.post('/deleteevent', (req, res) => {
     db.query(`DELETE FROM event WHERE event_no = ?`,[req.body.event_no] , (err, results) => {
         if(err) {

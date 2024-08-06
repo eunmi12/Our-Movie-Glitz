@@ -578,7 +578,68 @@ router.get('/user/seats', (req, res) => {
 //은미작성 완
 
 //재영작성
+router.post('/createevent', (req,res) => {
+    const event_title = req.body.event_title;
+    const event_img1 = req.body.event_img1;
+    const event_img2 = req.body.event_img2;
+    const event_startdate = req.body.event_startdate;
+    const event_enddate = req.body.event_enddate;
 
+
+    console.log("event_title:",event_title);
+    console.log("event_img1:",event_img1);
+    console.log("event_img2:",event_img2);
+    console.log("event_startdate:",event_startdate);
+    console.log("event_enddate:",event_enddate);
+
+    //img 빼고 정보 먼저 삽입중
+    db.query(`insert into event (event_title,event_startdate,event_enddate)
+        values (?,?,?)`,[event_title,event_startdate,event_enddate],(err,result)=> {
+    if(err){
+        res.status(200).json({message:'DB insert 실패'});
+        }
+        
+        try{
+            const dir1 = path.join(__dirname,'../uploads',event_img1);
+            console.log('dir1========',dir1);
+            const newdir = path.join(__dirname, '../uploads/event/');
+            console.log('newdir========',newdir);
+
+            if(!fs.existsSync(newdir)){
+                fs.mkdirSync(newdir); //파일 없으면 새로 만들깅
+            }
+
+            const extname = path.extname(dir1);
+            console.log('extname========',extname);
+            db.query(`select event_no from event where event_title = ?`,[event_title], (err,result)=>{
+                
+                if(err || result.length === 0){
+                    return res.status(500).json({ message : '이벤트 번호 조회 실패'});
+                }
+                
+                const filename = result[0].event_no;
+                console.log('filename=======',filename);
+                
+                const newimgpath = path.join(newdir, `${filename}-0${extname}`);
+                console.log('newimgpath=========',newimgpath);
+
+                fs.renameSync(dir1, newimgpath);
+                
+                db.query(`update event set event_img1 = ? where event_no =?`,[`${filename}-0${extname}`,filename], (err,result)=>{
+                    if(err){
+                        console.log('이미지 추가 실패');
+                        return res.status(500).json({ message : '이미지 업데이트 실패'});
+                    } else {
+                        return res.status(200).json({ message : 'success'});
+                    }
+                });
+            });
+
+            }catch(err){
+                return res.status(200).json({ meesage:'서버 오류 발생'});
+            }
+    })
+});
 //재영작성 완
 
 //아름작성

@@ -10,27 +10,25 @@
                     <div class="event_detail">
                         <div class="event_detail_title">
                            <div class="title_wrap"><span>이벤트 제목:</span></div>
-                           <select v-model="event_event_no">
-                              <option v-for="(event, i) in eventlist" :key="i" :value="event.event_no">{{event.event_title}}</option>
-                           </select>
-                        </div>
-                    </div>
-                    <div class="event_detail">
-                        <div class="event_detail_title">
-                           <div class="title_wrap"><span>:</span></div>
-                               <select v-model="event_event_no">
-                              <option v-for="(event, i) in eventlist" :key="i" :value="event.event_no">{{event.event_name}}</option>
-                           </select>
+                           <input class="title_text" type="text" v-model="event_title">
                         </div>
                     </div>
                     
                     <div class="event_detail">
                         <div class="event_detail_title">
                             <div class="date_wrap"><span>이벤트 시작 날짜:</span></div>
-                                <input type="time" id="event_startdate" v-model="event_starttime">
+                                <input type="date" id="event_startdate" v-model="event_startdate">
                                 <div class="date_wrap"><span>이벤트 종료 날짜:</span></div>
-                                <input type="time" id="event_enddate" v-model="event_endtime">          
+                                <input type="date" id="event_enddate" v-model="event_enddate">          
                         </div>
+                    </div>
+                    <div class="event_img">
+                        이벤트 이미지1 :
+                        <input type="file" id="event_image" accept="image/*" @change="uploadFile($event.target.files, 0)">
+                    </div>
+                    <div class="event_img">
+                        이벤트 이미지2 :
+                        <input type="file" id="event_image" accept="image/*" @change="uploadFile($event.target.files, 1)">
                     </div>
                     <!-- <div class="event_detail">
                         <div class="comment_title"><span>상세 설명</span></div>
@@ -39,7 +37,7 @@
                 </div>
             </div>
             <div class="button_wrap">
-                <button type="button" class="insertbtn" @click="insertScreen">상영 등록</button>
+                <button type="button" class="insertbtn" @click="insertEvent">이벤트 등록</button>
                 <button type="button" class="exit" @click="exit">취소</button>
             </div>
         </form>
@@ -48,9 +46,112 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
+import Swal from "sweetalert2";
 
 export default {
+
+    data() {
+        return {
+            event_title:'',
+            event_comment: '',
+            event_sale: '',
+            event_startdate:'',
+            event_enddate:'',
+
+            event_img1:'',
+            event_img2:'',
+        };
+    },
+
+    methods:{
+        async uploadFile(file, type){
+            let name = "";
+
+            if(file){
+                name = file[0].name;
+                console.log("name",name);
+            } else{
+                return;
+            }
+
+            const formData = new FormData(); //FormData가 키-값 쌍으로 multipart/form-data 형식 서버에 전송
+
+            formData.append('img1',file[0]);
+
+            for(let key of formData.keys()){
+                console.log(key,':',formData.get(key));
+            }
+            try{
+                const res = await axios.post('http://localhost:3000/admin/upload_img', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+
+                if(res.data.message === 'success'){
+                    this.$swal('이미지 등록 성공');
+                    if(type === 0){
+                        this.event_img1 = name;
+                        console.log('event_img1', this.event_img1);
+                    }
+                } else {
+                    throw new Error('이미지 업로드 실패');
+                }
+            }catch(error){
+                console.log('error',error);
+                this.$swal('이미지 등록 실패');
+            }
+
+        },
+        async insertEvent(){
+            try{
+                if(!this.event_title){
+                    this.$swal('이벤트 제목을 작성해주세요.');
+                    return;
+                } else if(!this.event_startdate){
+                    this.$swal('이벤트 시작일을 등록해주세요.');
+                    return;
+                } else if(!this.event_enddate){
+                    this.$swal('이벤트 종료일 등록해주세요.');
+                    return;
+                } 
+                const response = await axios.post(`http://localhost:3000/admin/createevent`,{
+                    event_title : this.event_title,
+                    event_startdate : this.event_startdate,
+                    event_enddate : this.event_enddate,
+                    event_img1 : this.event_img1,
+                    event_img2 : this.event_img2
+                });
+                const data = response.data;
+                console.log("data잘가나확인용",data);
+                console.log('data.message======:',data.message);
+                if(data.message === 'success'){
+                    Swal.fire({
+                        title:'이벤트이 등록 되었습니다.',
+                        icon:'success',
+                        confirmButtonText: '확인'
+                    }).then(()=>{
+                        this.$router.push(`/admin/eventlist`);
+                    });
+                }else{
+                    this.$swal('이벤트 등록 실패함');
+                }
+            }
+            catch(error){
+                this.$swal('이벤트 등록에 실패했습니다.'); 
+                console.error('이벤트 등록 실패',error);
+            }
+        },
+        exit(){
+            this.$router.push(`/admin/eventlist`);
+        },
+        //제대로 값 받는지 확인용
+        submit() {
+            alert('시작'+this.event_enddate+'종료'+this.event_startdate+'이미지1'+this.event_img1+'이미지2'+this.event_img2+'제목'+this.event_title);
+            console.log("Selected event number:", this.event_event_no);
+        },
+
+    }
+
 }
 </script>
 
@@ -67,6 +168,9 @@ export default {
 .event_wrap{
     padding-bottom: 70px;
     padding-top:70px;
+}
+.event_img{
+    margin-top:20px ;
 }
 .event .event_wrap{
     width: 70%;
@@ -91,6 +195,7 @@ export default {
 }
 /*event_content*/ 
 .event_detail_title{
+    margin-top:50px ;
     font-size: 20px;
     padding-bottom: 5px;
 }
@@ -109,6 +214,10 @@ export default {
     width:160px;
     display: inline-block;
 }
+.title_text{
+    width: 80%;
+}
+
 .searchbtn{
     margin-left: 10px;
     border:none;
@@ -117,14 +226,18 @@ export default {
     border-radius: 5px;
 }
 .date_wrap{
-    width:190px;
+    width: 17%;
     display: inline-block;
 }
 #event_startdate{
     margin-right: 10px;
+    width: 31%;
 }
-#event_starttime{
-    margin-right: 10px;
+#event_enddate{
+    width: 31%;
+}
+#event_image{
+    width: 25%;
 }
 /*event_comment*/
 .comment_title{
@@ -142,7 +255,7 @@ export default {
 }
 .insertbtn{
     font-size: 28px;
-    width:130px;
+    width:160px;
     padding: 5px;
     margin: 5px;
     background-color:#f0eeda;
@@ -151,7 +264,7 @@ export default {
 }
 .insertbtn:hover{
     font-size: 28px;
-    width:130px;
+    width:160px;
     padding: 5px;
     margin: 5px;
     background-color: #ffffff;
