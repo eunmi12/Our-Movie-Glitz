@@ -44,6 +44,7 @@
                     </tbody>
                 </table>
             </div>
+            <br>
             <div class="pagination">
                 <ul class="number_box">
                     <li @click="prevPageGroup" :class="{disabled: currentPageGroup === 1}"><img src="../images/prev.png"/></li>
@@ -216,6 +217,8 @@ export default {
 .sort-dropdown {
     margin-right: 10px;
     padding: 5px;
+    border-radius: 10px;
+    text-align: center;
 }
 
 .qnalist-title {

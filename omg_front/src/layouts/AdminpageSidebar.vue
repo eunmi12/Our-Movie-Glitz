@@ -10,7 +10,7 @@
                     <span @click="goToStatus">• 예매현황</span>
                 </li>
                 <li>
-                    <span @click="goToReview">• 관람평 관리</span>
+                    <span @click="gotoreview">• 관람평 관리</span>
                 </li>
                 <li>
                     <span @click="goToCinema">• 상영 관리</span>
@@ -58,9 +58,9 @@ export default {
                 path: '/admin/'
             });
         },
-        goToReview() {
+        gotoreview() {
             this.$router.push({
-                path: '/admin/'
+                path: '/admin/reviewlist'
             });
         },
         goToCinema() {
