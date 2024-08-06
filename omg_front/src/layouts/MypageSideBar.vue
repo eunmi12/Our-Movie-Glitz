@@ -59,7 +59,7 @@ export default {
       this.$router.push(`/review/${this.user.user_no}`);
     },
     gotoganpyun() {
-      this.$router.push(`/ganpyun`)
+      this.$router.push(`/ellogin/${this.user.user_no}`)
     }
   },
 };

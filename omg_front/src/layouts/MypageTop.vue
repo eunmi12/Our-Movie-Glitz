@@ -1,7 +1,7 @@
 <template>
   <div class="container1">
       <div class="user">
-          <img class="img1" src="../images/search.png" alt="User Image">
+          <img class="img1" src="../images/favicon.png" alt="User Image">
           <span class="username">{{ user.user_name }}님은</span>
           <span class="usertype">{{ grade_name }} 고객 입니다.</span>
       </div>
