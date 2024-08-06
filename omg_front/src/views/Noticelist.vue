@@ -28,6 +28,7 @@
         </tbody>
       </table>
     </div>
+    <br>
         <div class="pagination">
             <ul class="number_box">
                 <li @click="prevPageGroup" :class="{disabled: currentPageGroup === 1}"><img src="../images/prev.png"/></li>
@@ -204,7 +205,7 @@ h6 {
 }
 
 .notice-value {
-    height: 30px;
+    height: 50px;
     border-bottom: 1px solid #d4cdcd;
     padding-bottom: 20px;
     color: #5d5b5b;

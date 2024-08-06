@@ -114,7 +114,7 @@ router.post('/deleteqna' , (req, res) => {
     console.log(qna_no);
     db.query(`update qna set qna_answer = null where qna_no = ?;`, [qna_no], function(err, results){
         if(err){
-            console.log(err);
+            console.log('답변 삭제 중 오류 발생');
             return res.status(500).json({ error: err });
         }
         return res.json(results);
@@ -142,6 +142,30 @@ router.post('/registqnaanswer',(req,res) =>{
     db.query(`update qna set qna_answer = ? where qna_no = ?`,[qna_answer,qna_no], (err, results) =>{
         if(err){
             console.log("1:1문의 답변 등록 중 오류 발생");
+            return res.status(500).json({ error: err });
+        }
+        return res.json(results);
+    });
+});
+
+//관리자 관람평 관리
+router.post('/review', (req, res) => { 
+    db.query(`select r.review_no,m.movie_title,r.review_rate,u.user_name,r.review_date,review_comment from review r join movie m on r.re_movie_no = m.movie_no join user u on r.re_user_no = u.user_no;`, (err, results, fields) => {
+        if(err){
+            console.log('관람평 리스트를 불러올 수 없습니다.');
+            return res.status(500).json({ error : err })
+        }
+        return res.json(results);
+    });
+});
+
+//관리자 관람평 삭제
+router.post('/deletereview' , (req, res) => {
+    const review_no = req.body.review_no;
+    console.log('review_no >>',review_no);
+    db.query(`delete from review where review_no = ?;`, [review_no], function(err, results){
+        if(err){
+            console.log('관람평 삭제 중 오류 발생');
             return res.status(500).json({ error: err });
         }
         return res.json(results);
@@ -524,7 +548,7 @@ router.get('/user/seats', (req, res) => {
 //아름작성
 // 회원목록 조회 및 삭제 관리
 router.post('/selectUser', (req, res) => {
-    db.query(`select user_no, user_gender, user_name, user_age, user_grade, user_point from user where user_del = "1";`, (err, results) => {
+    db.query(`select user_no, user_gender, user_name, user_age, user_grade, user_point from user where user_del = "1" and user_auth = "1";`, (err, results) => {
         if (err) {
             console.log('회원정보를 조회할 수 없습니다.');
             return res.status(500).json({ error: 'error'});

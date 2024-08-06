@@ -69,6 +69,7 @@ import Notice from '../views/Notice.vue';
 import Qna from '../views/Qna.vue';
 import Qnalist from '../admin/Qnalist.vue';
 import Createqna from '../admin/Createqna.vue';
+import Reviewlist from '../admin/Reviewlist.vue';
 
 
 //치혁작성완
@@ -314,6 +315,10 @@ const routes = [
 {
   path: '/admin/createqna/:qna_no',
   component: Createqna,
+},
+{
+  path: '/admin/reviewlist',
+  component: Reviewlist,
 }
 
 //치혁작성완
