@@ -6,11 +6,11 @@
       <div class="mypagebox">
         <div class="qna_box">
           <div>
-          <span class="text1">MY 문의 내역</span>
-          <button class="bt" @click="gotohelp">문의하기</button>
+            <span class="text1">MY 문의 내역</span>
+            <button class="bt" @click="gotohelp">문의하기</button>
           </div>
-          <div v-if="helpcenter.length > 0">
-            <div v-for="qna in helpcenter" :key="qna.qna_no" class="user_qna" @click="gotoheldetail(qna.qna_no)">
+          <div v-if="paginatedHelpcenter.length > 0">
+            <div v-for="qna in paginatedHelpcenter" :key="qna.qna_no" class="user_qna" @click="gotoheldetail(qna.qna_no)">
               <div class="qna_info">
                 <span class="qna_type">{{ getQnaType(qna.qna_type) }}</span>
                 <span class="qna_title">{{ qna.qna_title }}</span>
@@ -23,9 +23,17 @@
           </div>
           <div class="line" v-else>문의내역이 없습니다</div>
         </div>
+        <!-- 페이징 버튼 추가 -->
+        <ul class="paging">
+          <li v-for="page in totalPages" :key="page">
+            <a href="#" @click.prevent="gotoPage(page)" :class="{ active: page === currentPage }">
+              {{ page }}
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
-  </div>    
+  </div>
 </template>
 
 <script>
@@ -40,8 +48,23 @@ export default {
   },
   data() {
     return {
-      helpcenter: []
+      helpcenter: [],
+      currentPage: 1,
+      itemsPerPage: 5,
     };
+  },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.helpcenter.length / this.itemsPerPage);
+    },
+    paginatedHelpcenter() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.helpcenter.slice(start, end);
+    },
+    user() {
+      return this.$store.state.user || {}; // 상태가 정의되지 않았을 때 빈 객체 반환
+    }
   },
   methods: {
     gotohelp() {
@@ -77,15 +100,15 @@ export default {
         2: '문의유형 : 멤버쉽'
       };
       return types[qna_type] || '기타';
+    },
+    gotoPage(page) {
+      if (page > 0 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
     }
   },
   mounted() {
     this.userqna();
-  },
-  computed: {
-    user() {
-      return this.$store.state.user || {}; // 상태가 정의되지 않았을 때 빈 객체 반환
-    }
   }
 }
 </script>
@@ -113,7 +136,7 @@ export default {
   gap: 30px;
 }
 
-.rev_box, .qna_box {
+.qna_box {
   border: 1px solid #f0eeda;
   padding: 20px;
   border-radius: 10px;
@@ -197,13 +220,48 @@ export default {
   background-color: rgb(225, 90, 90);
   border: 1px solid rgb(225, 90, 90);
 }
+
 .bt {
   margin-left: 30px;
   border: 1px solid rgb(160, 160, 160);
   background-color: rgb(255, 255, 255);
   color: rgb(111, 111, 111);
 }
+
 .line {
   margin-top: 20px;
+}
+
+.paging {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  justify-content: center;
+}
+
+.paging li {
+  margin: 0 5px;
+}
+
+.paging a {
+  display: block;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.paging a.active {
+  background-color: #f0eeda;
+  border-color: #d8c6b0;
+  color: #333;
+}
+
+.paging a:hover {
+  background-color: #d8c6b0;
+  border-color: #bfae9d;
 }
 </style>

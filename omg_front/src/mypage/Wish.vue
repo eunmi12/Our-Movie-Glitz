@@ -7,7 +7,7 @@
         <div class="rev_box">
           <p class="text1">나의 관심 영화</p>
           <div v-if="wish.length > 0">
-            <div v-for="item in wish" :key="item.movie_id" class="user_wish">
+            <div v-for="item in paginatedWish" :key="item.movie_id" class="user_wish">
               <div class="wish_info">
                 <span class="movie_title">{{ item.movie_title }}</span>
               </div>
@@ -22,7 +22,7 @@
                   <span class="movie_director">{{ item.movie_director }}</span>
                   <button class="wish_btn" @click="gotorev">예매하기</button>
                   <div>
-                  <button class="wish_btn" @click="delwish">위시리스트 삭제</button>
+                  <button class="wish_btn" @click="delwish(item.movie_no)">위시리스트 삭제</button>
                   </div>
                 </div>
               </div>
@@ -32,6 +32,13 @@
         </div>
       </div>
     </div>
+    <ul class="paging">
+      <li v-for="page in totalPages" :key="page">
+        <a href="#" @click.prevent="gotoPage(page)" :class="{ active: page === currentPage }">
+          {{ page }}
+        </a>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -48,11 +55,33 @@ export default {
   data() {
     return {
       wish: [],
+      currentPage: 1,
+      perPage: 2,
     };
+  },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.wish.length / this.perPage);
+    },
+    paginatedWish() {
+      const start = (this.currentPage - 1) * this.perPage;
+      const end = start + this.perPage;
+      return this.wish.slice(start, end);
+    },
   },
   methods: {
     gotorev() {
       this.$router.push(`/moviebooking`);
+    },
+    async delwish(movie_no) {
+      const user_no = this.$route.params.user_no;
+      try {
+        const response = await axios.post(`http://localhost:3000/user/delwish`, { user_no: user_no, wish_movie_no: movie_no });
+        this.delwish = response.data;
+        this.userwish(); // 삭제 후 위시리스트를 새로고침
+      } catch (error) {
+        console.error("나의 위시리스트 삭제 에러 발생", error);
+      }
     },
     async userwish() {
       const user_no = this.$route.params.user_no;
@@ -63,9 +92,14 @@ export default {
         console.error("찜한영화 리스트 에러 발생", error);
       }
     },
-    getImagePath(image){
-            return (`https://image.tmdb.org/t/p/w500/${image}`);
-        },
+    getImagePath(image) {
+      return `https://image.tmdb.org/t/p/w500/${image}`;
+    },
+    gotoPage(page) {
+      if (page > 0 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
+    }
   },
   mounted() {
     this.userwish();
@@ -147,35 +181,66 @@ export default {
 
 .movie_img {
   width: 250px;
-  /* height: 200px; */
   object-fit: cover;
 }
 
 .info {
   margin-top: 50px;
 }
-/* wish_btn 스타일 */
+
 .wish_btn {
-  background-color: #f0eeda; /* 배경색 */
-  border: 1px solid #d8c6b0; /* 테두리색 */
-  color: #333; /* 텍스트 색상 */
-  padding: 10px 20px; /* 패딩 */
-  border-radius: 5px; /* 테두리 둥글게 */
-  font-size: 1em; /* 글꼴 크기 */
-  font-weight: bold; /* 글꼴 두께 */
-  cursor: pointer; /* 커서 모양 */
+  background-color: #f0eeda;
+  border: 1px solid #d8c6b0;
+  color: #333;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
   margin-top: 20px;
-  transition: background-color 0.3s, border-color 0.3s; /* 호버 효과를 위한 트랜지션 */
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
-/* 버튼 호버 상태 */
 .wish_btn:hover {
-  background-color: #d8c6b0; /* 호버 시 배경색 */
-  border-color: #bfae9d; /* 호버 시 테두리색 */
+  background-color: #d8c6b0;
+  border-color: #bfae9d;
 }
 
-/* 버튼 클릭 상태 */
 .wish_btn:active {
-  background-color: #c7bfa6; /* 클릭 시 배경색 */
+  background-color: #c7bfa6;
+}
+
+.paging {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  justify-content: center;
+  margin-left: 400px;
+}
+
+.paging li {
+  margin: 0 5px;
+}
+
+.paging a {
+  display: block;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.paging a.active {
+  background-color: #f0eeda;
+  border-color: #d8c6b0;
+  color: #333;
+}
+
+.paging a:hover {
+  background-color: #d8c6b0;
+  border-color: #bfae9d;
 }
 </style>

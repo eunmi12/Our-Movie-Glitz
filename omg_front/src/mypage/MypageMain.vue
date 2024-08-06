@@ -4,39 +4,50 @@
     <div class="mypagemain">
       <MypageSideBar />
       <div class="mypagebox">
+        <!-- 예매내역 섹션 -->
         <div class="rev_box">
           <p class="text1">MY 예매내역</p>
-          <div v-if="reservations.length > 0">
-            <div v-for="rev in reservations" :key="rev" class="user_rev">
+          <div v-if="paginatedReservations.length > 0">
+            <div v-for="rev in paginatedReservations" :key="rev.ticket_no" class="user_rev">
               <div class="rev_info">
                 <span class="rev_title">{{ rev.movie_title }}</span>
-                <span class="rev_date">{{ rev.ticket_date }}</span>
+                <div>
+                  <span class="rev_date">{{ rev.ticket_date }}&nbsp;&nbsp;&nbsp;</span>
+                  <span class="rev_date">{{ rev.ticket_time }}</span>
+                </div>
               </div>
               <div class="rev_details">
                 <span class="rev_cnt">{{ rev.ticket_cnt }}명</span>
                 <span class="rev_seat">{{ rev.ticket_seat }}</span>
                 <span class="rev_price">{{ rev.ticket_total_price }}원</span>
+                <button class="cancle" @click="movie(rev.ticket_no)">예매 취소</button>
               </div>
             </div>
+            <button v-if="reservations.length > itemsPerSection" class="more_btn" @click="gotorev">더보기</button>
           </div>
           <p v-else>예매내역이 없습니다</p>
         </div>
+
+        <!-- 문의내역 섹션 -->
         <div class="qna_box">
           <p class="text1">MY 문의내역</p>
-          <div v-if="helpcenter.length > 0">
-            <div v-for="qna in helpcenter" :key="qna" class="user_qna">
+          <div v-if="paginatedHelpcenter.length > 0">
+            <div v-for="qna in paginatedHelpcenter" :key="qna.qna_no" class="user_qna">
               <div class="qna_info">
                 <span class="qna_title" @click="gotoheldetail(qna.qna_no)">{{ qna.qna_title }}</span>
                 <span class="qna_date">{{ qna.qna_date }}</span>
               </div>
             </div>
+            <button v-if="helpcenter.length > itemsPerSection" class="more_btn" @click="gotohelpcenter">더보기</button>
           </div>
           <p v-else>문의내역이 없습니다</p>
         </div>
+
+        <!-- 리뷰내역 섹션 -->
         <div class="rev_box">
           <p class="text1">MY 리뷰 내역</p>
-          <div v-if="review.length > 0">
-            <div v-for="reviews in review" :key="reviews" class="user_review">
+          <div v-if="paginatedReview.length > 0">
+            <div v-for="reviews in paginatedReview" :key="reviews.review_no" class="user_review">
               <div class="review_info">
                 <span class="review_title">{{ reviews.movie_title }}</span>
                 <span class="review_date">{{ reviews.review_date }}</span>
@@ -47,6 +58,7 @@
                 <span class="review_rate">평점: {{ reviews.review_rate }}</span>
               </div>
             </div>
+            <button v-if="review.length > itemsPerSection" class="more_btn" @click="gotoreview">더보기</button>
           </div>
           <p v-else>리뷰내역이 없습니다</p>
         </div>
@@ -70,14 +82,43 @@ export default {
       reservations: [],
       helpcenter: [],
       review: [],
+      itemsPerSection: 3, // 각 섹션에 표시할 항목 수
+      expanded: {
+        reservations: false,
+        helpcenter: false,
+        review: false
+      }
     };
+  },
+  computed: {
+    paginatedReservations() {
+      return this.getPaginated(this.reservations, 'reservations');
+    },
+    paginatedHelpcenter() {
+      return this.getPaginated(this.helpcenter, 'helpcenter');
+    },
+    paginatedReview() {
+      return this.getPaginated(this.review, 'review');
+    },
+    user() {
+      return this.$store.state.user;
+    }
   },
   methods: {
     gotoheldetail(qna_no) {
       this.$router.push({
-        path:`/gogaekdetail/${this.user.user_no}`,
-        query:{qna_no:qna_no}
+        path: `/gogaekdetail/${this.user.user_no}`,
+        query: { qna_no: qna_no }
       });
+    },
+    gotorev() {
+      this.$router.push(`/rev/${this.user.user_no}`)
+    },
+    gotohelpcenter() {
+      this.$router.push(`/gogaekcenter/${this.user.user_no}`)
+    },
+    gotoreview() {
+      this.$router.push(`/review/${this.user.user_no}`)
     },
     async userrev() {
       const user_no = this.$route.params.user_no;
@@ -106,16 +147,30 @@ export default {
         console.error("리뷰내역 에러 발생", error);
       }
     },
+    async movie(ticket_no){
+      if (confirm('정말로 예매 취소 하시겠습니까?')) {
+        const user_no = this.user.user_no; // user_no를 this.user에서 가져옴
+        try {
+          const response = await axios.post('http://localhost:3000/user/canclemovie', { user_no, ticket_no });
+          console.log("예매 취소 성공", response.data);
+          this.$swal('예매가 취소되었습니다.');
+          this.userrev(); // 예매 내역을 다시 불러와서 갱신
+        } catch (error) {
+          console.error("예매 취소 도중 에러 발생", error);
+        }
+      } else {
+        console.log("예매 취소가 취소되었습니다.");
+      }
+    },
+    getPaginated(items, type) {
+      const limit = this.expanded[type] ? items.length : this.itemsPerSection;
+      return items.slice(0, limit);
+    }
   },
   mounted() {
     this.userrev();
     this.userqna();
     this.userreview();
-  },
-  computed: {
-    user() {
-      return this.$store.state.user;
-    }
   }
 }
 </script>
@@ -180,9 +235,11 @@ export default {
 .rev_title, .qna_title, .review_title {
   font-weight: bold;
 }
+
 .qna_title {
   cursor: pointer;
 }
+
 .rev_date, .qna_date, .review_date {
   color: #888;
 }
@@ -193,5 +250,29 @@ export default {
 
 .review_like, .review_rate {
   margin-left: 10px;
+}
+
+.more_btn {
+  display: block;
+  margin-top: 10px;
+  margin-left: 400px;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #f0eeda;
+  color: #333;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.more_btn:hover {
+  background-color: #d8c6b0;
+}
+.cancle {
+  border: none;
+  background-color: red;
+  color: white;
+  border-radius: 5px;
+  padding: 5px 5px 5px 5px;
 }
 </style>
