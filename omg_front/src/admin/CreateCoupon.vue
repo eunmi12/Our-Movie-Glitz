@@ -24,6 +24,9 @@
                             <div class="movie_detail_title">
                                 <span>할인율 : <input type="number" v-model="coupon_sale"></span>
                             </div>
+                            <div class="movie_detail_title">
+                                <span>사용 여부 : <input type="radio" v-model="coupon_able" name="1" value="0">사용 불가<input type="radio" v-model="coupon_able" name="1" value="1">사용 가능</span>
+                            </div>
                            <div class="content_wrap"><span>상세 내용</span></div>
                            <textarea rows="3" id="notice_comment" v-model="coupon_comment"></textarea>
                                <!-- <select v-model="sc_cinema_no">
@@ -38,7 +41,7 @@
                 </div>
             </div>
             <div class="button_wrap">
-                <button type="button" class="insertbtn" @click="insertCoupon">공지사항 등록</button>
+                <button type="button" class="insertbtn" @click="insertCoupon">쿠폰 등록</button>
                 <button type="button" class="exit" @click="exit">취소</button>
             </div>
         </form>
@@ -58,8 +61,8 @@ export default {
             coupon_sale: '',
             coupon_startdate:'',
             coupon_enddate:'',
-
-            coupon_img1:'',
+            coupon_able:'',
+            coupon_img1:'', 
         };
     },
 
@@ -115,17 +118,21 @@ export default {
                 } else if(!this.coupon_sale){
                     this.$swal('쿠폰 할인율 등록해주세요.');
                     return;
+                } else if(!this.coupon_able){
+                    this.$swal('사용 여부를 선택해주세요.');
+                    return;
                 } else if(!this.coupon_comment){
                     this.$swal('상세 내용을 작성해주세요.');
                     return;
                 } 
+                
                 const response = await axios.post(`http://localhost:3000/admin/createcoupon`,{
                     coupon_title : this.coupon_title,
                     coupon_sale : this.coupon_sale,
                     coupon_startdate : this.coupon_startdate,
                     coupon_enddate : this.coupon_enddate,
                     coupon_comment : this.coupon_comment,
-
+                    coupon_able : this.coupon_able,
                     coupon_img1 : this.coupon_img1
                 });
                 const data = response.data;
@@ -202,6 +209,12 @@ export default {
     font-size: 20px;
     padding-bottom: 5px;
 }
+.movie_detail_title input[type="number"]{
+    width: 100px;
+}
+.movie_detail_title input[type="radio"]{
+    margin-left:10px;
+}
 .movie_list_right {
   width: 80%;
   margin: 0 auto;
@@ -238,7 +251,7 @@ export default {
 
 .content_wrap{
     margin: 0 auto;
-    margin: 5px;
+    margin-top: 15px;
 }
 
 .searchbtn{

@@ -19,7 +19,8 @@
                     </thead>
                     <tbody v-if="selectUser.length > 0">
                         <tr class="user-all-list" v-for="(user, i) in pageSelectUser" :key="i">
-                            <th class="user-number value">{{ user.user_no }}</th>
+                            <!-- <th class="user-number value">{{ user.user_no }}</th> -->
+                            <th class="user-number value">{{ i + 1 }}</th>
                             <th class="user-gender value">{{ user.user_gender }}</th>
                             <th class="user-name value">{{ user.user_name }}</th>
                             <th class="user-age value">{{ new Date(user.user_age).toISOString().split('T')[0] }}</th>

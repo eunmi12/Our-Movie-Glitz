@@ -6,10 +6,9 @@
       <div v-else>
           <div v-for="(faq, i) in faqlist" :key="i">
           <div class="faq-list"><img class="question-mark" src="../images/faq.png"><span class="text">{{ faq.faq_q }}</span><img @click="toggleAnswer(faq.faq_no)" class="toggle-btn" src="../images/down.png"></div>
-            <!-- <div class="faq-toggle"><img @click="toggleAnswer(faq.faq_no)" class="toggle-btn" src="../images/down.png"></div> -->
           <div :class="['faq_answer_container', 'faq_answer_container'+faq.faq_no, showAnswer ? 'show' : '']">
-            <div colspan="2" class="faq-answer" v-if="faq.faq_a == null"><span class="text">▶ 답변 준비중입니다.</span></div>
-            <div colspan="2" class="faq-answer" v-else><span class="text">▶ {{ faq.faq_a }}</span></div>
+            <div class="faq-answer" v-if="faq.faq_a == null"><span class="text">▶ 답변 준비중입니다.</span></div>
+            <div class="faq-answer" v-else><span class="text">▶ {{ faq.faq_a }}</span></div>
           </div>
           </div>
         </div>
@@ -98,7 +97,6 @@ img {
 .text { 
   margin-left: 15px;
   overflow: hidden;
-  /* white-space: nowrap; */
   text-overflow: ellipsis;
   vertical-align: middle;
 }

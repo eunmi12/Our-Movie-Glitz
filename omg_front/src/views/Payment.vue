@@ -8,12 +8,13 @@
                 <div class="information">
                     <h3>예매정보</h3>
                     <ul>
-                        <li>영화 제목: {{ this.movie_title }}</li>
-                        <li>상영 날짜 / 시간: {{ this.ticket_date }}</li>
-                        <!-- <li>상영 시간: {{ this.screen_starttime }}</li> -->
-                        <li>상영관: {{ this.screen_cinema_no }}</li>
-                        <li>인원 수: {{ this.ticket_cnt }}</li>
-                        <li>좌석번호: {{ this.ticket_seat }}</li>
+                        <li>영화 제목 : {{ this.ticket.movie_title }}</li>
+                        <li>상영 날짜 : {{ formattedDate }}</li>
+                        <li>상영 시간 : {{ this.ticket.ticket_time }}</li>
+                        <li>상영관 : {{ this.ticket.ti_se_cinema_no }}관</li>
+                        <li>인원 수 : {{ this.ticket.ticket_cnt }}</li>
+                        <li>좌석번호 : {{ this.ticket.ticket_seat }}</li>
+                        <li>결제 금액 : {{ formattedTotalPrice }}원</li>
                     </ul>
                 </div>
                 <div class="discount">
@@ -27,12 +28,18 @@
                     <h3>결제수단 선택</h3>
                     <div>
                         <input id="payment-by-card" name="how" type="radio" value="card" v-model="how" />
-                        <label for="how-card">신용카드</label>
+                        <label for="how-card" @click="requestPay">신용카드</label>
                     </div>
                     <div>
                         <input id="payment-by-cash" name="how" type="radio" value="cash" v-model="how" />
                         <label for="how-cash">무통장입금</label>
                     </div>
+                    <div class="account-info">
+                        계좌번호: (이젠은행)111-2222-33333
+                    </div>
+                </div>
+                <div>
+                    <button class="payment-btn" @click="goToPayment">결제하기</button>
                 </div>
             </div>
         </div>
@@ -47,6 +54,10 @@ export default {
         return {
             how: null,
             movie_title: {},
+            ticket : {
+                ticket_date: {},
+                ticket_total_price: {},
+            }
         };
     },
 
@@ -55,17 +66,36 @@ export default {
         // this.getTitle();
     },
 
+    computed: {
+        formattedDate() {
+            // ticket_date를 문자열로 변환 후 'T'로 분리
+            const dateString = String(this.ticket.ticket_date);
+
+            // 날짜부분만 추출
+            if (dateString) {
+            return dateString.split('T')[0];
+        } else {
+            return console.error('error');
+        }
+        },
+        formattedTotalPrice() {
+            // 금액을 문자열로 변환
+            const priceString = this.ticket.ticket_total_price.toString();
+
+            // 정규 표현식을 사용하여 쉼표 추가
+            return priceString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+    },
 
     methods: {
         async getTicket() {
             try {
-                const ticket_no = this.$route.params.ticket_no;
+                const ticket_no = this.$route.params.ticket_no; // 여기서 사용할 떄, 보내준 곳이 있어야 됨
                 console.log('티켓넘버 보냄?', ticket_no);
                 const response = await axios.get(`http://localhost:3000/movie/payment/${ticket_no}`);
                 console.log('티켓데이터 보냄?', response.data);
-
-                this.ticket = response.data[0].ticket_no;
-                console.log('response.data:', response.data[0].ticket_no);
+                this.ticket = response.data[0];
+                console.log('response.data:', response.data[0]);
 
                 if (response.data && response.data.length > 0) {
                     this.ticket_no = response.data[0].ticket_no;
@@ -96,6 +126,29 @@ export default {
                 console.error('영화이름 오류:', error);
             }
         },
+
+        async requestPay() {
+            if (!this.how) {
+                alert('결제 수단을 선택해주세요.');
+                return;
+            } 
+            try {
+                const response = await axios.post(`http://localhost:3000/movie/initiatePayment`, {
+                    // 필요한 결제 정보를 서버로 전송
+                    ticket_no: this.ticket.ticket_no,
+                    movie_title: this.ticket.movie_title,
+                    ticket_cnt: this.ticket.ticket_cnt,
+                    ticket_total_price: this.ticket.ticket_total_price,
+                    how: this.how,
+                });
+
+                const paymentData = response.data;
+                // 이니시스 결제 페이지로 리다이렉트
+                window.location.href = paymentData.paymentUrl; // paymentUrl : 서버에서 받은 결제 페이지 URL
+            } catch (error) {
+                console.error('결제 요청 오류:', error);
+            }
+        }
     },
 }
 </script>
@@ -140,11 +193,28 @@ export default {
 }
 
 .select-pay {
-    margin-bottom: 50px;
+    margin-bottom: 150px;
     margin-left: 30px;
 }
 
 .select-pay h3 {
     text-shadow: 2px 2px 5px rgba(224, 138, 33, 0.6);
+}
+
+.payment-btn{
+    padding: 10px 20px;
+    background-color: #e9ec8d;
+    border: none;
+    cursor: pointer;
+    margin-top: 70px;
+    position: absolute;
+    bottom: 0px; /* 하단에서의 거리 */
+    left: 50%;
+    transform: translateX(-50%); /* 가로 방향 중앙 정렬 */
+}
+
+.account-info {
+    font-size: x-small;
+    color: rgb(149, 147, 147);
 }
 </style>

@@ -8,6 +8,7 @@ const { log } = require('console');
 
 //승호작성
 
+//예매관리
 router.get('/reservationlist',(req,res)=>{
 
     db.query(`select ticket_no,user_name,movie_title
@@ -23,6 +24,38 @@ router.get('/reservationlist',(req,res)=>{
     })
 });
 
+//관람평관리
+router.get('/reviewlist',(req,res)=>{
+
+    db.query(`select review_comment, review_rate, user_name ,movie_title
+        from review r
+        join user u on r.re_user_no = u.user_no
+        join movie m on r.re_movie_no = m.movie_no;`,
+    (err,results)=>{
+        if(err) {
+            console.log('리뷰리스트를 불러올 수 없습니다.');
+            return res.status(500).json({ error: err });
+        } 
+        return res.json(results);
+    })
+});
+
+//10대 예매현황
+router.get('/teen',(req,res)=>{
+    db.query(`select movie_title ,count(movie_title)
+            from ticket t
+                join movie m on t.ticket_movie_no = m.movie_no
+                join user u on t.ticket_user_no = u.user_no
+            where user_age between '2005-01-01'and'2015-12-31'
+            group by movie_title;`,
+        (err,results)=>{
+            if(err) {
+                console.log('예매현황을 불러오던중 오류발생');
+                return res.status(500).json({ error: err });
+            } 
+            return res.json(results);
+        })
+})
 
 
 //승호작성 완
@@ -114,7 +147,7 @@ router.post('/deleteqna' , (req, res) => {
     console.log(qna_no);
     db.query(`update qna set qna_answer = null where qna_no = ?;`, [qna_no], function(err, results){
         if(err){
-            console.log(err);
+            console.log('답변 삭제 중 오류 발생');
             return res.status(500).json({ error: err });
         }
         return res.json(results);
@@ -142,6 +175,30 @@ router.post('/registqnaanswer',(req,res) =>{
     db.query(`update qna set qna_answer = ? where qna_no = ?`,[qna_answer,qna_no], (err, results) =>{
         if(err){
             console.log("1:1문의 답변 등록 중 오류 발생");
+            return res.status(500).json({ error: err });
+        }
+        return res.json(results);
+    });
+});
+
+//관리자 관람평 관리
+router.post('/review', (req, res) => { 
+    db.query(`select r.review_no,m.movie_title,r.review_rate,u.user_name,r.review_date,review_comment from review r join movie m on r.re_movie_no = m.movie_no join user u on r.re_user_no = u.user_no;`, (err, results, fields) => {
+        if(err){
+            console.log('관람평 리스트를 불러올 수 없습니다.');
+            return res.status(500).json({ error : err })
+        }
+        return res.json(results);
+    });
+});
+
+//관리자 관람평 삭제
+router.post('/deletereview' , (req, res) => {
+    const review_no = req.body.review_no;
+    console.log('review_no >>',review_no);
+    db.query(`delete from review where review_no = ?;`, [review_no], function(err, results){
+        if(err){
+            console.log('관람평 삭제 중 오류 발생');
             return res.status(500).json({ error: err });
         }
         return res.json(results);
@@ -444,6 +501,7 @@ router.post('/createcoupon', (req,res) => {
     const coupon_startdate = req.body.coupon_startdate;
     const coupon_enddate = req.body.coupon_enddate;
     const coupon_comment = req.body.coupon_comment;
+    const coupon_able = req.body.coupon_able;
 
     console.log("coupon_title:",coupon_title);
     console.log("coupon_sale:",coupon_sale);
@@ -451,10 +509,12 @@ router.post('/createcoupon', (req,res) => {
     console.log("coupon_startdate:",coupon_startdate);
     console.log("coupon_enddate:",coupon_enddate);
     console.log("coupon_comment:",coupon_comment);
+    console.log("coupon_able",coupon_able);
+    
 
     //img 빼고 정보 먼저 삽입중
-    db.query(`insert into coupon (coupon_title,coupon_sale,coupon_startdate,coupon_enddate,coupon_comment)
-        values (?,?,?,?,?)`,[coupon_title,coupon_sale,coupon_startdate,coupon_enddate,coupon_comment],(err,result)=> {
+    db.query(`insert into coupon (coupon_title,coupon_sale,coupon_startdate,coupon_enddate,coupon_comment,coupon_able)
+        values (?,?,?,?,?,?)`,[coupon_title,coupon_sale,coupon_startdate,coupon_enddate,coupon_comment,coupon_able],(err,result)=> {
     if(err){
         res.status(200).json({message:'DB insert 실패'});
         }
@@ -524,7 +584,7 @@ router.get('/user/seats', (req, res) => {
 //아름작성
 // 회원목록 조회 및 삭제 관리
 router.post('/selectUser', (req, res) => {
-    db.query(`select user_no, user_gender, user_name, user_age, user_grade, user_point from user where user_del = "1";`, (err, results) => {
+    db.query(`select user_no, user_gender, user_name, user_age, user_grade, user_point from user where user_del = "1" and user_auth = "1";`, (err, results) => {
         if (err) {
             console.log('회원정보를 조회할 수 없습니다.');
             return res.status(500).json({ error: 'error'});

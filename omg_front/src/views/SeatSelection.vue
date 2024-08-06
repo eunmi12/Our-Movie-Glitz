@@ -37,7 +37,8 @@
           </div>
       </div>
       <div class="confirm-seats">
-          <button @click="confirmBooking">예약 완료</button>
+          <button @click="confirmBooking" :disabled="isBooking">예약 완료</button>
+          <button class="next" @click="goToNext">다음단계</button>
       </div>
   </div>
 </template>
@@ -57,6 +58,9 @@ export default {
       seatRows: [],
       selectedSeats: [],
       numSeats: 1,
+      ticket_no: {},
+      seatName: [],
+      isBooking: false // 예약 진행 상태를 나타내는 변수
     };
   },
   created() {
@@ -162,12 +166,24 @@ export default {
           this.selectedSeats.forEach(seat => seat.selected = false);
           this.selectedSeats = [];
       },
+
+      // selectTicketNo() {
+      //       axios.post(`http://localhost:3000/movie/ticketNo`, selectTicketNo)
+      //       .then(results => {
+      //       console.log('티켓 넘버 꺼내옴');
+      //       // window.location.href =`http://localhost:8081/payment`
+      //     })
+      //     .catch(error => {
+      //       console.error('티켓 넘버 정보확인 오류', error);
+      //     });
+      //     },
+
       confirmBooking() {
           if (this.selectedSeats.length !== this.numSeats) {
           alert(`선택된 좌석의 수가 인원수와 맞지 않습니다.`);
           return;
           }
-          const seatName = this.selectedSeats.map(seat => seat.seat_name);
+          const seatName = this.selectedSeats.map(seat => seat.seat_name); // 여기서 오류나는데?
           const seatNumbers = this.selectedSeats.map(seat => seat.seat_no);
           console.log("seatNumbers: ------------->",seatName);
           console.log("seatNumbers: ------------->",seatNumbers);
@@ -175,7 +191,7 @@ export default {
               user_no: this.$store.state.user.user_no,
               movie_no: this.$store.state.movie_r.movie_no,
               cinema_no: this.$store.state.movie_r.cinema_no,
-              date: this.$store.state.movie_r.date,
+              date: this.$store.state.movie_r.date, 
               time: this.$store.state.movie_r.time,
               seat_no: this.$route.params.seat_no,
               seatName,
@@ -183,26 +199,84 @@ export default {
               total_price: this.selectedSeats.length * 15000
           };
           console.log("bookingDetails:--------->",bookingDetails.seat_no);
-          
+
+          const selectTicketNo = {
+              user_no: this.$store.state.user.user_no,
+              movie_no: this.$store.state.movie_r.movie_no,
+              cinema_no: this.$store.state.movie_r.cinema_no,
+              date: this.$store.state.movie_r.date + ' ' + this.$store.state.movie_r.time, 
+              seat_no: this.$route.params.seat_no,
+              seatName,
+          }
+          this.seatName = bookingDetails.seatName;
+
+          // 예약 진행 상태를 true로 설정
+          this.isBooking = true;
+
           this.$store.commit('setMovie_r', bookingDetails);
-          axios.post (`http://localhost:3000/movie/book`, bookingDetails,seatName ,seatNumbers)
+          axios.post (`http://localhost:3000/movie/book`, bookingDetails, seatName ,seatNumbers)
           .then(results => {
               alert('좌석 예약이 완료되었습니다.');
               this.selectedSeats = [];
               this.fetchSeats();
-              window.location.href =`http://localhost:8081/payment`
+              // this.$router.push({
+              //   name: 'Payment',
+                // data: {
+                //   ticket_no,
+                // }
+              // });
           })
           .catch(error => {
               console.error('좌석 예약 에러', error);
-          });
+              // 좌석 예약 에러야? => 그럼 예약 진행 상태 false로
+              this.isBooking = false;
+          } 
+        );
 
           axios.post(`http://localhost:3000/movie/reserve`, bookingDetails)
           .then(results => {
               console.log('좌석 저장 완료');
+              // this.selectTicketNo();
           })
           .catch(error => {
               console.error('좌석 저장 에러', error);
           });
+        },
+
+    
+        goToNext() {
+          const seatName = this.selectedSeats.map(seat => seat.seat_name);
+          const selectTicketNo = {
+              user_no: this.$store.state.user.user_no,
+              movie_no: this.$store.state.movie_r.movie_no,
+              cinema_no: this.$store.state.movie_r.cinema_no,
+              date: this.$store.state.movie_r.date,
+              time: this.$store.state.movie_r.time, 
+              // seat_no: this.$route.params.seat_no,
+              seatName : this.seatName
+          }
+
+          this.$store.commit('setMovie_r', selectTicketNo);
+          axios.post(`http://localhost:3000/movie/ticketNo`, selectTicketNo)
+          .then(results => {
+            console.log(('티켓 넘버 호출', results));
+            this.selectedSeats = [];
+            const ticket_no = results.data[0].ticket_no // 여기서 데이터를 꺼내옴
+            console.log('tickt_no:', ticket_no);
+            window.location.href =`http://localhost:8081/payment/${ticket_no}`
+            // this.$router.push({
+            //     name: 'Payment',
+            //     data: {
+            //       ticket_no,
+            //     }
+            // })
+          }) .catch (error => {
+              console.error('예약 중 오류 발생', error);
+            alert('예약 중 오류가 발생했습니다.');
+          })
+        },
+          
+        
       },
       // confirmBooking() {
       //     // 예약 완료 로직
@@ -241,7 +315,7 @@ export default {
           //     console.error('예약 중 오류가 발생', error);
           //     alert('예약 중 오류가 발생함');
           // });
-  },
+  
 };
 </script>
 
@@ -376,6 +450,10 @@ export default {
   border: none;
   cursor: pointer;
   margin-top: 70px;
+}
+
+.next {
+  margin-left: 50px;
 }
 
 .confirm-seats button:hover {

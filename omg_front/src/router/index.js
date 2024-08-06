@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 
 //승호작성
-
+import adminstatics from '../admin/adminstatics.vue'
 //승호작성완
 
 //진우작성
@@ -24,15 +24,16 @@ import AdminCreateCinema from '../admin/CreateCinema.vue'
 import AdminCreateNotice from '../admin/createNotice.vue'
 import AdminUpdateNotice from '../admin/updatenotice.vue'
 import MovieDetail from '../views/MovieDetail.vue'
-import CouponList from '../admin/CouponList.vue'
+import AdminCouponList from '../admin/CouponList.vue'
 import CreateCoupon from '../admin/CreateCoupon.vue'
+import EventList from '../views/EventList.vue'
 import userseat from '../views/test.vue'
 //은미작성완
 
 
 //재영작성
 import MainPage from '../views/MainPage.vue'
-import EventList from '../admin/eventList.vue'
+import AdminEventList from '../admin/eventList.vue'
 import AdminEventCreate from '../admin/CreateEvent.vue'
 //재영작성완
 
@@ -69,20 +70,16 @@ import Notice from '../views/Notice.vue';
 import Qna from '../views/Qna.vue';
 import Qnalist from '../admin/Qnalist.vue';
 import Createqna from '../admin/Createqna.vue';
+import Reviewlist from '../admin/Reviewlist.vue';
 
 
 //치혁작성완
 const routes = [
-  // {
-  //   path: '/',
-  //   name: 'MainPage',
-  //   component: MainPage
-  // },
-  // {
-  //   path: '/test',
-  //   component: Header,
-  // },
-
+  {
+    path: '/admin/statics',
+    name: 'adminstatics',
+    component: adminstatics
+  },
   //승호작성
 
 //승호작성완
@@ -155,13 +152,18 @@ const routes = [
 },
 {
   path: "/admin/coupon",
-  name: "CouponList",
-  component: CouponList
+  name: "AdminCouponList",
+  component: AdminCouponList
 },
 {
   path: "/admin/createcoupon",
   name: "CreateCoupon",
   component: CreateCoupon
+},
+{
+  path: "/eventlist",
+  name: "EventList",
+  component: EventList
 },
 {
   path: "/user/seat",
@@ -180,7 +182,7 @@ const routes = [
 },
 {
   path: '/admin/eventlist',
-  name: 'EventList',
+  name: 'AdminEventList',
   component: EventList
 },
 {
@@ -276,7 +278,7 @@ const routes = [
   component: SeatSelection,
 },
 {
-  path: "/payment",
+  path: "/payment/:ticket_no", // params로 주소를 이렇게 받아오므로 path도 이렇게 주소를 받아와야 됨
   name: "Payment",
   component: Payment,
 },
@@ -314,6 +316,10 @@ const routes = [
 {
   path: '/admin/createqna/:qna_no',
   component: Createqna,
+},
+{
+  path: '/admin/reviewlist',
+  component: Reviewlist,
 }
 
 //치혁작성완

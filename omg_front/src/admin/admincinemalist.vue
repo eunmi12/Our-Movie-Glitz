@@ -8,13 +8,14 @@
             <div class="cinema_list">
                 <table>
                     <thead>
-                        <tr class="list_title">
+                        <tr class="list_title" v-if="cinemalist.length > 0">
                             <th class="cinema_no">상영관 이름</th>
                             <th class="cinema_name">영화 제목</th>
                             <th class="cinema_name">상영 날짜</th>
                             <th class="cinema_name">상영 시간</th>
                             <th class="cinema_update">삭제하기</th>
                         </tr>
+                        <tr class="no_cinema" v-else> 상영 정보를 등록해주세요</tr>
                     </thead>
                     <tbody>
                         <tr v-for="(cinema,i) in pagingData" :key="i">
@@ -27,7 +28,7 @@
                     </tbody>
                 </table> 
             </div>
-            <div class="pagination">
+            <div v-if="cinemalist.length > 0" class="pagination">
                 <ul class="number_box">
                     <li @click="prevPageGroup" :class="{disabled: currentPageGroup === 1}"><img src="../images/prev.png"/></li>
                     <li v-for="page in currentGroupPages" :key="page" @click="changePage(page)" :class="{active: page === currentPage}">
@@ -205,6 +206,13 @@ export default {
   border-bottom: 1px solid #d4cdcd;
   /* border-top: 1px solid #d4cdcd; */
 }
+.no_cinema{
+    display: block;
+    margin-top:70px;
+    font-size:36px;
+    text-align: center;
+    height: 100px;
+}
 .cinema_list table {
     width: 100%;
   /* border-collapse: collapse; 테이블 셀 간의 간격 제거 */
@@ -234,8 +242,8 @@ export default {
     width: 60px;
     height: 30px;
     border: none;
-    color: rgb(182, 0, 0);
-    background-color: #c74a4a34;
+    color: white;
+    background-color: #db1919;
     border-radius: 5px;
     cursor: pointer;
     /* margin-right: 10px; */
@@ -245,8 +253,8 @@ export default {
     width: 60px;
     height: 30px;
     border: none;
-    color:  #e0e0e0;
-    background-color: rgb(0, 0, 0);
+    color: #db1919;
+    background-color: #ffeeee;
     border-radius: 5px;
     cursor: pointer;
     /* margin-right: 10px; */
