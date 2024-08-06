@@ -10,6 +10,7 @@ import adminstatics from '../admin/adminstatics.vue'
 // import Header from '../layouts/Header.vue';
 import Join from '../views/Join.vue'
 import Login from '../views/Login.vue'
+import EasyLogin from '../mypage/EasyLogin.vue'
 
 //진우작성완
 
@@ -96,6 +97,12 @@ const routes = [
   name: 'Login',
   component: Login
 },
+{
+  path: '/ellogin/:user_no',
+  name: 'EasyLogin',
+  component: EasyLogin
+},
+
 //진우작성완
 
 
