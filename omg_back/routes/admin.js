@@ -8,6 +8,7 @@ const { log } = require('console');
 
 //승호작성
 
+//예매관리
 router.get('/reservationlist',(req,res)=>{
 
     db.query(`select ticket_no,user_name,movie_title
@@ -23,6 +24,38 @@ router.get('/reservationlist',(req,res)=>{
     })
 });
 
+//관람평관리
+router.get('/reviewlist',(req,res)=>{
+
+    db.query(`select review_comment, review_rate, user_name ,movie_title
+        from review r
+        join user u on r.re_user_no = u.user_no
+        join movie m on r.re_movie_no = m.movie_no;`,
+    (err,results)=>{
+        if(err) {
+            console.log('리뷰리스트를 불러올 수 없습니다.');
+            return res.status(500).json({ error: err });
+        } 
+        return res.json(results);
+    })
+});
+
+//10대 예매현황
+router.get('/teen',(req,res)=>{
+    db.query(`select movie_title ,count(movie_title)
+            from ticket t
+                join movie m on t.ticket_movie_no = m.movie_no
+                join user u on t.ticket_user_no = u.user_no
+            where user_age between '2005-01-01'and'2015-12-31'
+            group by movie_title;`,
+        (err,results)=>{
+            if(err) {
+                console.log('예매현황을 불러오던중 오류발생');
+                return res.status(500).json({ error: err });
+            } 
+            return res.json(results);
+        })
+})
 
 
 //승호작성 완

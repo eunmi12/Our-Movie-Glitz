@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 
 //승호작성
-
+import adminstatics from '../admin/adminstatics.vue'
 //승호작성완
 
 //진우작성
@@ -73,16 +73,11 @@ import Createqna from '../admin/Createqna.vue';
 
 //치혁작성완
 const routes = [
-  // {
-  //   path: '/',
-  //   name: 'MainPage',
-  //   component: MainPage
-  // },
-  // {
-  //   path: '/test',
-  //   component: Header,
-  // },
-
+  {
+    path: '/admin/statics',
+    name: 'adminstatics',
+    component: adminstatics
+  },
   //승호작성
 
 //승호작성완
