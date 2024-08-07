@@ -127,7 +127,7 @@ export default {
                     // console.log(results);
                     this.deleteUser = results.data;
                     this.AllSelectUser();
-                    window.location.href = `http://localhost:8081/admin/userlist`;
+                    // window.location.href = `http://localhost:8081/admin/userlist`;
                 })
                 .catch(() => {
                     console.error('error');
