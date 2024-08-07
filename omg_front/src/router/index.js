@@ -75,13 +75,15 @@ import Reviewlist from '../admin/Reviewlist.vue';
 
 
 //치혁작성완
+
+//승호작성
+
 const routes = [
   {
     path: '/admin/statics',
     name: 'adminstatics',
     component: adminstatics
   },
-  //승호작성
 
 //승호작성완
 
