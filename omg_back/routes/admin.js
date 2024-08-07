@@ -481,7 +481,7 @@ const upload = multer({
             
         },
     }),
-    limits: { fileSize: 5 * 1024 * 1024 },
+    // limits: { fileSize: 5 * 1024 * 1024 },
 });
 
 //이미지 등록
@@ -593,15 +593,17 @@ router.post('/createevent', (req,res) => {
     console.log("event_enddate:",event_enddate);
 
     //img 빼고 정보 먼저 삽입중
-    db.query(`insert into event (event_title,event_startdate,event_enddate)
-        values (?,?,?)`,[event_title,event_startdate,event_enddate],(err,result)=> {
+    db.query(`insert into event (event_title,event_startdate,event_enddate,event_img1, event_img2)
+        values (?,?,?,?,?)`,[event_title,event_startdate,event_enddate,'',''],(err,result)=> {
     if(err){
         res.status(200).json({message:'DB insert 실패'});
         }
-        
+        console.log("result",result[0]);
         try{
             const dir1 = path.join(__dirname,'../uploads',event_img1);
             console.log('dir1========',dir1);
+            const dir2 = path.join(__dirname,'../uploads',event_img2);
+            console.log('dir1========',dir2);
             const newdir = path.join(__dirname, '../uploads/event/');
             console.log('newdir========',newdir);
 
@@ -610,9 +612,11 @@ router.post('/createevent', (req,res) => {
             }
 
             const extname = path.extname(dir1);
+            const extname2 = path.extname(dir2);
             console.log('extname========',extname);
+            console.log('extname========',extname2);
             db.query(`select event_no from event where event_title = ?`,[event_title], (err,result)=>{
-                
+                console.log('extname========',extname);
                 if(err || result.length === 0){
                     return res.status(500).json({ message : '이벤트 번호 조회 실패'});
                 }
@@ -621,11 +625,14 @@ router.post('/createevent', (req,res) => {
                 console.log('filename=======',filename);
                 
                 const newimgpath = path.join(newdir, `${filename}-0${extname}`);
+                const newimgpath2 = path.join(newdir, `${filename}-1${extname2}`);
                 console.log('newimgpath=========',newimgpath);
+                console.log('newimgpath=========',newimgpath2);
 
                 fs.renameSync(dir1, newimgpath);
+                fs.renameSync(dir2, newimgpath2);
                 
-                db.query(`update event set event_img1 = ? where event_no =?`,[`${filename}-0${extname}`,filename], (err,result)=>{
+                db.query(`update event set event_img1 = ? , event_img2 = ?  where event_no =?`,[`${filename}-0${extname}`,`${filename}-1${extname2}`,filename], (err,result)=>{
                     if(err){
                         console.log('이미지 추가 실패');
                         return res.status(500).json({ message : '이미지 업데이트 실패'});
