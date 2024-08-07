@@ -20,7 +20,7 @@
         </thead>
         <tbody>
             <tr class="notice-value" v-for="(notice, i) in pagingData" :key="i">
-                <th class="no-value">{{ i + 1 }}</th>
+                <th class="no-value">{{ i + 1 + (currentPage - 1) * itemsPerPage }}</th>
                 <th class="nm-value"><span @click="gotonotice(notice.notice_no)">{{ notice.notice_title }}</span></th>
                 <th class="date-value">{{ new Date(notice.notice_date).toISOString().split('T')[0] }}</th>
                 <th class="view-value">{{ notice.notice_cnt }}</th>
@@ -176,6 +176,13 @@ h6 {
     border-radius: 5px;
   padding: 5px;
   font-size: 14px;
+  background-color: ivory;
+  text-align: center;
+  float: right;
+}
+
+.sort-option {
+    text-align: center;
 }
 
 .notice-title {

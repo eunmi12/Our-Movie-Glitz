@@ -18,25 +18,34 @@
                         </tr>
                     </thead>
                     <tbody v-if="selectUser.length > 0">
-                        <tr class="user-all-list" v-for="(user, i) in pageSelectUser" :key="i">
+                        <tr class="user-all-list" v-for="(user, i) in pagingData" :key="i">
                             <!-- <th class="user-number value">{{ user.user_no }}</th> -->
-                            <th class="user-number value">{{ i + 1 }}</th>
+                            <th class="user-number value">{{ i + 1 + (currentPage - 1) * itemsPerPage }}</th>
                             <th class="user-gender value">{{ user.user_gender }}</th>
                             <th class="user-name value">{{ user.user_name }}</th>
                             <th class="user-age value">{{ new Date(user.user_age).toISOString().split('T')[0] }}</th>
                             <th class="user-grade value">{{ getUserGrade(user.user_grade) }}</th>
                             <th class="user-address value">{{ user.user_point }}포인트</th>
-                            <th><select class="user-grade-update btn" @change="updateUserGrade(user.user_no, $event)">
+                            <th><select class="user-grade-update-btn btn" @change="updateUserGrade(user.user_no, $event)">
                                 <option disabled selected>변경</option>
                                 <option value = 1>브론즈</option>
                                 <option value = 2>실버</option>
                                 <option value = 3>골드</option>
                                 <option value = 4>플래티넘</option>
                             </select></th>
-                            <th><button type="button" class="user-delete btn" @click="goToDelete(user.user_no)">삭제</button></th>
+                            <th><button type="button" class="user-delete-btn btn" @click="goToDelete(user.user_no)">삭제</button></th>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+            <br>
+            <div class="pagination">
+                <ul class="number_box">
+                    <li @click="prevPageGroup" :class="{disabled: currentPageGroup === 1}"><img src="../images/prev.png"/></li>
+                    <li v-for="page in currentGroupPages" :key="page" @click="changePage(page)" :class="{active: page === currentPage}">
+                    {{ page }}</li>
+                    <li @click="nextPageGroup" :class="{disabled: currentPageGroup === pageGroups.length}"><img src="../images/next.png"/></li>
+                </ul>
             </div>
         </div>
     </div>
@@ -49,7 +58,6 @@ export default {
     components: {
         AdminpageSidebar
     },
-
     data() {
         return {
             selectUser: [],
@@ -57,13 +65,41 @@ export default {
             deleteUser: [],
 
             // 페이징
-            pageSelectUser: [], // 한 페이지에 보여줄 유저리스트를 잘라 담을 새 리스트
-            pageNum: 0,
-            pageCnt: 0,
-            onePageCnt: 10,
+            currentPage:1,
+            itemsPerPage:10,
+            currentPageGroup: 1,
         };
     },
-
+    computed: {
+        startIndex() {
+            return (this.currentPage - 1) * this.itemsPerPage;
+        },
+        pagingData(){
+            const start = (this.currentPage -1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            return this.selectUser.slice(start, end);
+        },
+        totalPages(){
+            return Math.ceil(this.selectUser.length / this.itemsPerPage);
+        },
+        pageGroups(){
+            const groups = [];
+            for (let i = 1; i<=this.totalPages; i +=10){
+                groups.push({
+                    start: i,
+                    end: Math.min(i+9, this.totalPages),
+                });
+            }
+            return groups;
+        },
+        currentGroupPages(){
+            const group = this.pageGroups[this.currentPageGroup - 1];
+            if(group){
+                return Array.from({ length: group.end - group.start + 1}, (_, i) => group.start + i);
+            }
+            return[];
+        },
+    },
     mounted() {
         this.AllSelectUser();
     },
@@ -76,21 +112,8 @@ export default {
             }).then((results) => {
                 // console.log(results);
                 this.selectUser = results.data;
-                this.pageCnt = Math.ceil(this.selectUser.length / this.onePageCnt)
-                this.setPage(1)
             });
         },
-
-        setPage(page) {
-            this.pageNum = page - 1;
-            this.sliceList();
-        },
-
-        sliceList() {
-            const start = 0 + this.pageNum * this.onePageCnt;
-            this.pageSelectUser = this.selectUser.slice(start, start + this.onePageCnt);
-        },
-
         updateUserGrade(user_n, event) {
             const newGrade = event.target.value;
             if (confirm('정말 등급을 변경하시겠습니까?')) {
@@ -105,7 +128,8 @@ export default {
                     console.log(results);
                     this.updateUser = results.data;
                     this.AllSelectUser(); // 등급 업데이트 후 목록을 갱신
-                    window.location.href = `http://localhost:8081/admin/userlist`;
+                    //mounted로 목록을 갱신하기때문에 windowlocation으로 페이지를 reload 해주지않아도 됨
+                    // window.location.href = `http://localhost:8081/admin/userlist`;
                 })
                 .catch(() => {
                     console.error('error'); 
@@ -114,6 +138,36 @@ export default {
                 window.location.href = `http://localhost:8081/admin/userlist`;
             }
         },
+
+        //유저 삭제 메소드 치혁작성 - swal알림창 사용 삭제할때 취소 삭제 선택가능
+
+        // goToDelete(user_n) {
+        //     this.$swal({
+        //         title: `정말 삭제하시겠습니까?`,
+        //         icon: 'warning',
+        //         showCancelButton: true,
+        //         confirmButtonText: '삭제',
+        //         cancelButtonText: '취소',
+        //         reverseButtons: true,
+        //     }).then(result => {
+        //         if (result.value) {
+        //             axios({
+        //                 url: `http://localhost:3000/admin/deleteUser`,
+        //                 method: "POST",
+        //                 data: {
+        //                     user_no: user_n
+        //                 },
+        //             }).then(res => {
+        //                 if (res.data.message == '삭제') {
+        //                     this.$swal("삭제되었습니다.");
+        //                     this.AllSelectUser();
+        //                 }
+        //             }).catch(() => {
+        //                 this.$swal("오류 발생");
+        //             });
+        //         }
+        //     });
+        // },
 
         goToDelete(user_n) {
             if (confirm('정말 삭제하시겠습니까?')) {
@@ -127,16 +181,15 @@ export default {
                     // console.log(results);
                     this.deleteUser = results.data;
                     this.AllSelectUser();
+                    //mounted로 목록을 갱신하기때문에 windowlocation으로 페이지를 reload 해주지않아도 됨
+
                     // window.location.href = `http://localhost:8081/admin/userlist`;
                 })
                 .catch(() => {
                     console.error('error');
                 });
-            } else {
-                window.location.href = `http://localhost:8081/admin/userlist`;
             }
         },
-
         getUserGrade(grade) {
             const grades = {
                 1: '브론즈',
@@ -145,14 +198,41 @@ export default {
                 4: '플래티넘'
             };
             return grades[grade] || 'Unknown'; // grades[grade]가 유효하면 그 값을 반환, 아니면 Unknown을 반환
+        },
+        changePage(page){
+            if(page > 0 && page <= this.totalPages){
+                this.currentPage = page;
+            }
+        },
+        prevPage(){
+            if(this.currentPage > 1 ){
+                this.changePage(this.currentPage - 1);
+            }
+        },
+        nextPage(){
+            if(this.currentPage < this.totalPages) {
+                this.changePage(this.currentPage + 1);
+            }
+        },
+        prevPageGroup(){
+            if(this.currentPageGroup > 1){
+                this.currentPageGroup--;
+                this.changePage(this.pageGroups[this.currentPageGroup - 1 ].start);
+            }
+        },
+        nextPageGroup(){
+            if(this.currentPageGroup < this.pageGroups.length){
+                this.currentPageGroup ++;
+                this.changePage(this.pageGroups[this.currentPageGroup - 1].start)
+            }
         }
-
     }
 
 }
 </script>
 
 <style scoped>
+
 .user-management {
     width: 80%;
     min-width: 80%;
@@ -209,9 +289,13 @@ export default {
     width: 15%;
 }
 
-/* .user-delete {
-    width: 10%;
-} */
+.user-delete-btn {
+    background-color: red;
+}
+
+.user-grade-update-btn {
+    background-color: lightgray;
+}
 
 .user-all-list {
     border-bottom: 1px solid #d4cdcd;
@@ -224,13 +308,50 @@ export default {
 .btn {
     border: none;
     width: 80px;
-    border: solid 2px rgb(178, 180, 181);
+    border: solid 1px rgb(178, 180, 181);
     border-radius: 5px;
-    background-color: rgb(162, 170, 178);
+    /* background-color: rgb(162, 170, 178); */
     color: rgb(0, 0, 0);
     padding: 7px 0;
-    font-weight: 600;
+    font-weight: bold;
     font-size: medium;
+    height: 40px;
+}
+
+.pagination {
+    width: 100%;
+    text-align: center;
+    padding-top: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination .number_box {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.number_box li {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.number_box li.active {
+    background-color: #f0eeda;
+    border-radius: 5px;
+    color: black;
+}
+
+.number_box img {
+    width: 15px;
+    padding-bottom: 5px;
 }
 
 /* .user-grade-update-btn {

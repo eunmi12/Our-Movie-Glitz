@@ -208,13 +208,11 @@ export default {
     background-color: #ffffff;
     padding-bottom: 30px;
     padding-top: 10px;
-    padding-left: 50px;
 }
 
 .review-value {  
     cursor: pointer;
     display: flex;
-  width: 1250px;
   font-weight: bold;
     border-bottom: 1px solid #d4cdcd;
     height: 70px;
@@ -244,11 +242,10 @@ export default {
 
 .review_comt_container.show {
     display: block;
-    width: 1250px;
 }
 
 .title {
-    flex: 1;
+    flex: 1.5;
 }
 
 .rate {
@@ -268,7 +265,7 @@ export default {
 }
 
 .title-value {
-    flex: 1.2;
+    flex: 1.5;
 }
 
 .rate-value {
@@ -285,7 +282,6 @@ export default {
 
 .del-value {
     flex: 1;
-    margin-right: 12px;
 }
 
 .review-sort {
@@ -299,6 +295,7 @@ export default {
     border-radius: 10px;
     height: 35px;
     text-align: center;
+    background-color: ivory;
 }
 
 .delete{
