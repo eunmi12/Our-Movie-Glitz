@@ -672,6 +672,8 @@ router.post('/deleteUser', (req, res) => {
             return res.status(500).json({ error: 'error' });
         }
         return res.json(results);
+        // 치혁작성 삭제메소드 돌릴때 json message 일치시 작동하므로 필요
+        // return res.status(200).json({ message: '삭제' }); 
     });
 });
 

@@ -219,6 +219,7 @@ export default {
     padding: 5px;
     border-radius: 10px;
     text-align: center;
+    background-color: ivory;
 }
 
 .qnalist-title {

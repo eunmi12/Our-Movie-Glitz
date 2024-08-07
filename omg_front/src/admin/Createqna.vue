@@ -143,8 +143,6 @@ export default {
     margin-left: 30px;
 }
 
-/* 완성 */
-
 .qna-answer {
     padding-top: 40px;
     padding-bottom: 40px;

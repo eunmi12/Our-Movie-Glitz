@@ -65,17 +65,14 @@ export default {
         async regist(){
             console.log("qna_user_no:", this.qna_user_no);
             try{
-                if(!this.qna_title){
+                if(this.qna_type === undefined || this.qna_type === null){
+                    this.$swal('문의유형을 선택하세요.');
+                    return;
+                } else if(!this.qna_title){
                     this.$swal('제목을 입력하세요.');
                     return;
                 } else if(!this.qna_comment){
                     this.$swal('내용을 입력하세요.');
-                    return;
-                } else if(this.qna_type === undefined || this.qna_type === null){
-                    this.$swal('문의유형을 선택하세요.');
-                    return;
-                } else if (this.qna_user_no === null) {
-                    this.$swal('사용자 정보가 없습니다.');
                     return;
                 }
                 const response = await axios.post(`http://localhost:3000/admin/registqna`,
