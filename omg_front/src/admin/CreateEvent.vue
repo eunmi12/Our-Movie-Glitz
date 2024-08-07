@@ -54,8 +54,6 @@ export default {
     data() {
         return {
             event_title:'',
-            event_comment: '',
-            event_sale: '',
             event_startdate:'',
             event_enddate:'',
 
@@ -77,7 +75,7 @@ export default {
 
             const formData = new FormData(); //FormData가 키-값 쌍으로 multipart/form-data 형식 서버에 전송
 
-            formData.append('img1',file[0]);
+            formData.append('img',file[0]);
 
             for(let key of formData.keys()){
                 console.log(key,':',formData.get(key));
@@ -92,6 +90,9 @@ export default {
                     if(type === 0){
                         this.event_img1 = name;
                         console.log('event_img1', this.event_img1);
+                    } else if(type === 1){
+                        this.event_img2 = name;
+                        console.log('event_img2', this.event_img2);
                     }
                 } else {
                     throw new Error('이미지 업로드 실패');
@@ -151,7 +152,6 @@ export default {
         },
 
     }
-
 }
 </script>
 
