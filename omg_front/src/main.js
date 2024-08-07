@@ -17,3 +17,5 @@ app.use(store);
 app.use(VueSweetalert2);
 app.mount('#app');
 app.use(BootstrapVue3);
+
+window.Kakao.init("8e6728892efb3b06470225642e03db50");
