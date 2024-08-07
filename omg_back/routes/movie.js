@@ -395,8 +395,8 @@ router.post('/book', (req, res) => {
 });
 
 router.post('/reserve', (req, res) => {
-    console.log(req.body.seatNumbers);
-    console.log("req.body:------->",req.body);
+    // console.log(req.body.seatNumbers);
+    // console.log("req.body:------->",req.body);
     db.query(`update seat set seat_reserve = 0 where seat_no in (?)`, [req.body.seatNumbers], (error, results) => { // 쿼리에서 in (?) : 여러개의 값을 넣을 수 있음
         if(error) {
             return res.status(500).json({ error: '좌석저장 error' });
@@ -405,12 +405,14 @@ router.post('/reserve', (req, res) => {
 });
 
 
-// 예매완료 - 결제
+// 예매완료 - 결제정보
 router.get('/payment/:ticket_no', (req, res, next) => {
     const ticket_no = req.params.ticket_no;
-    db.query(`select t.ticket_no, t.ticket_total_price, t.ticket_date, t.ticket_time, t.ticket_cnt, t.ticket_movie_no, t.ticket_seat, t.ti_se_cinema_no , t.ticket_user_no, m.movie_title 
+    db.query(`select t.ticket_no, t.ticket_total_price, t.ticket_date, t.ticket_time, t.ticket_cnt, t.ticket_movie_no, t.ticket_seat, t.ti_se_cinema_no , t.ticket_user_no, m.movie_title , u.user_name, u.user_phone, uc.uc_coupon_no
                 from ticket t
                 join movie m on m.movie_no = t.ticket_movie_no
+                join user u on u.user_no = t.ticket_user_no
+                join user_coupon uc on uc.uc_user_no = t.ticket_user_no
                 where ticket_no = ?`, [ticket_no], (error, results, fields) => {
         if(error) {
             console.log(error);
@@ -455,31 +457,74 @@ router.post('/ticketNo', (req, res) => {
     });
 });
 // 결제 - 이니시스
-router.post('/initiatePayment', async(req, res) => {
-    const { ticket_no, movie_title, ticket_cnt, ticket_total_price, how } = req.body;
+// router.post('/orderPay', async(req, res) => {
+//     const { ticket_no, movie_title, ticket_cnt, ticket_total_price, how, user_name, user_phone } = req.body;
 
-    try {
-        // 이니시스 결제 요청을 위한 데이터 준비
-        const paymentData = {
-            // 이니시스 결제 API에 필요한 데이터 (상세는 이니시스 문서 참조)
-            // 예 : amount, order_id, return_url 등
-            amount: calculateAmount(), // 금액 계산 함수
-            order_id: ticket_no,
-            return_url: `http://localhost:8081/`, // 결제 후 리다이렉트 할 URL
-            payment_method: how,
-            payment_title: movie_title,
-            payment_cnt: ticket_cnt,
-            payment_price: ticket_total_price,
-        };
-        // 이니시스 결제 API 호출
-        const response = await axios.post(`http://api.inicis.com/payments`, paymentData);
-        // 결제 페이지 URL 반환
-        res.json({ paymentUrl: response.data.paymentUrl });
-    } catch (error) {
-        console.error('이니시스 결제 API 오류:', error);
-        res.status(500).send('결제 요청 오류');
-    } return res.status(200).json(response); // ?
-})
+//     try {
+//         // 이니시스 결제 요청을 위한 데이터 준비
+//         const paymentData = {
+//             // 이니시스 결제 API에 필요한 데이터 (상세는 이니시스 문서 참조)
+//             // 예 : amount, order_id, return_url 등
+//             // amount: calculateAmount(), // 금액 계산 함수
+//             order_id: ticket_no,
+//             return_url: `http://localhost:8081/`, // 결제 후 리다이렉트 할 URL
+//             pay_method: "card",
+//             name: movie_title,
+//             payment_cnt: ticket_cnt,
+//             amount: ticket_total_price,
+            
+//         };
+//         // 이니시스 결제 API 호출
+//         const response = await axios.post(`http://api.inicis.com/payments`, paymentData);
+//         // 결제 페이지 URL 반환
+//         res.json({ paymentUrl: response.data.paymentUrl });
+//     } catch (error) {
+//         console.error('이니시스 결제 API 오류:', error);
+//         res.status(500).send('결제 요청 오류');
+//     } return res.status(200).json(response); // ?
+// })
+router.post('/orderPay', (req, res, next) => {
+    const order = req.body;
+    console.log(order);
+
+    // 결제 정보 저장
+    db.query(`insert into payment
+                (order_name, order_cnt, order_price, order_phone, order_user_no, order_payment_by) 
+                values(?, ?, ?, ?, ?, ?);`, [order.order_nm, order.order_cnt, order.order_price, order.order_phone, order.user_no, order.payment_type], function(err, results, fields) { // order_coupon도 필요할거야..
+                    if(err) {
+                        return res.status(500).json({ message : '결제 실패' });
+                    } 
+                    // 좌석 예약 상태 업데이트
+                    // db.query(`update seat set seat_reserve = 0`)
+                    return res.status(200).json(results);
+                });
+});
+
+// 결제 - 쿠폰조회
+router.post('/getCoupons', (req, res, next) => {
+    const { couponIds } = req.body;
+
+    db.query(`select uc_coupon_no, uc_user_no from user_coupon uc
+            join user u on u.user_no = uc.uc_user_no
+            where u.user_no = ? and uc.uc_coupon_able = 1`, [req.body.couponIds], (err, results) => {
+        if (err) {
+            return res.status(500).json({ message: '쿠폰 정보 조회 실패' });
+        }
+        res.status(200).json(results);
+    });
+});
+// 결제 - 쿠폰적용
+router.post('/applyCoupon', (req, res, next) => {
+    const { couponId, ticketId } = req.body;
+
+    // 쿠폰 적용 로직
+    db.query(`update user_coupon set uc_coupon_able = 0 where uc_coupon_no = ? and uc_user_no = ?`, [couponId, ticketId], (err, results) => {
+        if(err) {
+            return res.status(500).json({ message: '쿠폰 적용 실패' });
+        }
+        res.status(200).json(results);
+    });
+});
 
 //아름작성 완
 

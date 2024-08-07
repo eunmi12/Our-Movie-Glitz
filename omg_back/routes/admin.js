@@ -42,7 +42,7 @@ router.get('/reviewlist',(req,res)=>{
 
 //10대 예매현황
 router.get('/teen',(req,res)=>{
-    db.query(`select movie_title ,count(movie_title)
+    db.query(`select movie_title ,count(movie_title) as cnt
             from ticket t
                 join movie m on t.ticket_movie_no = m.movie_no
                 join user u on t.ticket_user_no = u.user_no
@@ -53,7 +53,102 @@ router.get('/teen',(req,res)=>{
                 console.log('예매현황을 불러오던중 오류발생');
                 return res.status(500).json({ error: err });
             } 
+            console.log('results : ',results);
+            
             return res.json(results);
+
+        })
+})
+
+router.get('/twenties',(req,res)=>{
+    db.query(`select movie_title ,count(movie_title) as cnt
+            from ticket t
+                join movie m on t.ticket_movie_no = m.movie_no
+                join user u on t.ticket_user_no = u.user_no
+            where user_age between '1995-01-01'and'2004-12-31'
+            group by movie_title;`,
+        (err,results)=>{
+            if(err) {
+                console.log('예매현황을 불러오던중 오류발생');
+                return res.status(500).json({ error: err });
+            } 
+            console.log('results : ',results);
+            
+            return res.json(results);
+
+        })
+})
+
+router.get('/thirties',(req,res)=>{
+    db.query(`select movie_title ,count(movie_title) as cnt
+            from ticket t
+                join movie m on t.ticket_movie_no = m.movie_no
+                join user u on t.ticket_user_no = u.user_no
+            where user_age between '1985-01-01'and'1995-12-31'
+            group by movie_title;`,
+        (err,results)=>{
+            if(err) {
+                console.log('예매현황을 불러오던중 오류발생');
+                return res.status(500).json({ error: err });
+            } 
+            console.log('results : ',results);
+            
+            return res.json(results);
+
+        })
+})
+router.get('/forties',(req,res)=>{
+    db.query(`select movie_title ,count(movie_title) as cnt
+            from ticket t
+                join movie m on t.ticket_movie_no = m.movie_no
+                join user u on t.ticket_user_no = u.user_no
+            where user_age between '1975-01-01'and'1985-12-31'
+            group by movie_title;`,
+        (err,results)=>{
+            if(err) {
+                console.log('예매현황을 불러오던중 오류발생');
+                return res.status(500).json({ error: err });
+            } 
+            console.log('results : ',results);
+            
+            return res.json(results);
+
+        })
+})
+router.get('/fifties',(req,res)=>{
+    db.query(`select movie_title ,count(movie_title) as cnt
+            from ticket t
+                join movie m on t.ticket_movie_no = m.movie_no
+                join user u on t.ticket_user_no = u.user_no
+            where user_age between '1965-01-01'and'1975-12-31'
+            group by movie_title;`,
+        (err,results)=>{
+            if(err) {
+                console.log('예매현황을 불러오던중 오류발생');
+                return res.status(500).json({ error: err });
+            } 
+            console.log('results : ',results);
+            
+            return res.json(results);
+
+        })
+})
+router.get('/sixties',(req,res)=>{
+    db.query(`select movie_title ,count(movie_title) as cnt
+            from ticket t
+                join movie m on t.ticket_movie_no = m.movie_no
+                join user u on t.ticket_user_no = u.user_no
+            where user_age between '1955-01-01'and'1965-12-31'
+            group by movie_title;`,
+        (err,results)=>{
+            if(err) {
+                console.log('예매현황을 불러오던중 오류발생');
+                return res.status(500).json({ error: err });
+            } 
+            console.log('results : ',results);
+            
+            return res.json(results);
+
         })
 })
 

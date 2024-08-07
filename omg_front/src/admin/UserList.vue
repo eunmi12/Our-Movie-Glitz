@@ -182,6 +182,7 @@ export default {
                     this.deleteUser = results.data;
                     this.AllSelectUser();
                     //mounted로 목록을 갱신하기때문에 windowlocation으로 페이지를 reload 해주지않아도 됨
+
                     // window.location.href = `http://localhost:8081/admin/userlist`;
                 })
                 .catch(() => {

@@ -55,7 +55,7 @@ export default {
         },
         goToStatus() {
             this.$router.push({
-                path: '/admin/'
+                path: '/admin/statics'
             });
         },
         gotoreview() {
@@ -75,7 +75,7 @@ export default {
         },
         goToTicket() {
             this.$router.push({
-                path: '/admin/'
+                path: '/admin'
             });
         },
         gotonotice() {
