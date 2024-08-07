@@ -16,10 +16,10 @@
                   <img src="../images/coupon.png" class="coupon_img" alt="쿠폰 이미지">
                 </div>
                 <div class="info">
-                  <span class="coupon_sale">{{ cp.coupon_sale }}원</span>
+                  <span class="coupon_sale">{{ cp.coupon_sale }}원 할인</span>
                   <span class="coupon_enddate">{{ cp.coupon_enddate }}까지</span>
                   <span class="coupon_comment">{{ cp.coupon_comment }}</span>
-                  <span class="coupon_comment">{{ CouponStatus(cp.uc_coupon_able) }}</span>
+                  <span class="coupon_status">{{ CouponStatus(cp.uc_coupon_able) }}</span>
                 </div>
               </div>
             </div>
@@ -152,6 +152,13 @@ export default {
 
 .coupon_sale, .coupon_enddate, .coupon_comment {
   color: #888;
+  font-size: 20px;
+  margin-top: 30px;
+}
+.coupon_status {
+  color: black;
+  margin-top: 30px;
+  font-size: 20px;
 }
 
 .coupon_details {

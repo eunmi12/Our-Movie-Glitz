@@ -123,7 +123,7 @@ export default {
     async userrev() {
       const user_no = this.$route.params.user_no;
       try {
-        const response = await axios.post(`http://localhost:3000/user/rev/${user_no}`);
+        const response = await axios.post(`http://localhost:3000/user/revs/${user_no}`);
         this.reservations = response.data;
       } catch (error) {
         console.error("예약내역 에러 발생", error);

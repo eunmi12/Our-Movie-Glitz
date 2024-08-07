@@ -98,12 +98,33 @@ router.post('/getcoupon', function(request, response, next){
         console.log(result);
     });
 })
+//앞으로 볼 영화 예매내용 불러오기
+router.post('/revs/:user_no', function(request, response, next){
+    const user_no = request.params.user_no;
+    const currentDate = new Date().toISOString().slice(0, 10); // 현재 날짜 (YYYY-MM-DD 형식)
+    const currentTime = new Date().toISOString().slice(11, 16); // 현재 시간 (HH:MM 형식)
 
-// 예매내역 불러오기
+    db.query(`SELECT ticket_no, ticket_user_no, movie_img0, m.movie_title, DATE_FORMAT(ticket_date, "%Y-%m-%d") AS ticket_date, DATE_FORMAT(ticket_time, "%H시") AS ticket_time, ticket_total_price, ticket_cnt, ticket_seat 
+              FROM ticket t 
+              JOIN user u ON t.ticket_user_no = u.user_no 
+              JOIN movie m ON t.ticket_movie_no = m.movie_no 
+              WHERE user_no = ? 
+              AND (ticket_date > ? OR (ticket_date = ? AND ticket_time > ?))`,
+        [user_no, currentDate, currentDate, currentTime],
+        function(error, result, field){
+        if (error) {
+            console.error(error);
+            return response.status(500).json({ error: '예매내역 에러' });
+        }
+        response.json(result);
+        console.log(result);
+    });
+});
+//모든 예매 불러오기
 router.post('/rev/:user_no', function(request, response, next){
     const user_no = request.params.user_no;
 
-    db.query(`select ticket_no, ticket_user_no, movie_img0, m.movie_title, DATE_FORMAT(ticket_date, "%Y-%m-%d") AS ticket_date, DATE_FORMAT(ticket_time, "%H시") AS ticket_time, ticket_total_price,ticket_cnt,ticket_seat from ticket t join user u on t.ticket_user_no = u.user_no join movie m on t.ticket_movie_no = m.movie_no where user_no = ?;`,
+    db.query(`select m.movie_no, ticket_no, ticket_user_no, movie_img0, m.movie_title, DATE_FORMAT(ticket_date, "%Y-%m-%d") AS ticket_date, DATE_FORMAT(ticket_time, "%H시") AS ticket_time, ticket_total_price,ticket_cnt,ticket_seat from ticket t join user u on t.ticket_user_no = u.user_no join movie m on t.ticket_movie_no = m.movie_no where user_no = ?;`,
         [user_no],
         function(error, result, field){
         if (error) {
@@ -142,6 +163,21 @@ router.post('/gogaek/:user_no', function(request, response, next){
         if (error) {
             console.error(error);
             return response.status(500).json({ error: '문희내역 에러' });
+        }
+        response.json(result);
+        console.log(result);
+    });
+});
+// 리뷰 작성
+router.post('/crereview', function(request, response, next){
+    const { review_rate, review_comment, movie_no, user_no } = request.body;
+
+    db.query(`insert into review (review_rate, review_comment, re_movie_no, re_user_no) values (?,?,?,?);`,
+        [review_rate, review_comment, movie_no, user_no],
+        function(error, result, field){
+        if (error) {
+            console.error(error);
+            return response.status(500).json({ error: '리뷰 작성 도중 에러' });
         }
         response.json(result);
         console.log(result);

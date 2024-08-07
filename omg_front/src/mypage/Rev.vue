@@ -11,9 +11,9 @@
               <div class="rev_info">
                 <span class="rev_title">{{ rev.movie_title }}</span>
                 <div>
-                <span class="rev_date">{{ rev.ticket_date }}&nbsp;&nbsp;&nbsp;</span>
-                <span class="rev_date">{{ rev.ticket_time }}</span>
-              </div>
+                  <span class="rev_date">{{ rev.ticket_date }}&nbsp;&nbsp;&nbsp;</span>
+                  <span class="rev_date">{{ rev.ticket_time }}</span>
+                </div>
               </div>
               <div class="rev_details">
                 <span class="rev_cnt">{{ rev.ticket_cnt }}명</span>
@@ -46,11 +46,12 @@
                       </div>
                       <div class="ticket-time">
                         <span class="label">Start Time</span>
-                        <span class="value">{{ rev.ticket_date }}</span>
+                        <span class="value">{{ rev.ticket_date }} {{ rev.ticket_time }}</span>
                       </div>
                     </div>
                   </div>
-                  <button class="reviewbtn">리뷰 남기기</button>
+                  <!-- 리뷰 남기기 버튼 조건부 렌더링 -->
+                  <button v-if="isPastReservation(rev.ticket_date, rev.ticket_time)" class="reviewbtn" @click="gotocreatereview(rev.movie_no)">리뷰 남기기</button>
                 </div>
               </div>
             </div>
@@ -96,6 +97,9 @@ export default {
     },
   },
   methods: {
+    gotocreatereview(movie_no) {
+      this.$router.push(`/createreview/${movie_no}`)
+    },
     revtoggle(index) {
       // 같은 인덱스를 클릭하면 토글, 다른 인덱스를 클릭하면 선택 변경
       this.selectedRevIndex = this.selectedRevIndex === index ? null : index;
@@ -116,6 +120,12 @@ export default {
       if (page > 0 && page <= this.totalPages) {
         this.currentPage = page;
       }
+    },
+    isPastReservation(ticketDate, ticketTime) {
+      // 시간에서 "시"를 제거하고 24시간 형식으로 변환
+      const formattedTime = ticketTime.replace('시', ':00');
+      const ticketDateTime = new Date(`${ticketDate}T${formattedTime}`);
+      return new Date() > ticketDateTime;
     },
   },
   mounted() {

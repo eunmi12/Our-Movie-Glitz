@@ -51,6 +51,7 @@ import UserOut from '../mypage/UserOut.vue'
 import Review from '../mypage/Review.vue'
 import GogaekDetail from '../mypage/GogaekDetail.vue'
 import Wish from '../mypage/Wish.vue'
+import CreateReview from '../mypage/CreateReview.vue'
 //회창작성완
 
 //아름작성
@@ -260,6 +261,11 @@ const routes = [
   path: '/wish/:user_no',
   name: 'Wish',
   component: Wish
+},
+{
+  path: '/createreview/:user_no',
+  name: 'CreateReview',
+  component: CreateReview
 },
 //회창작성완
 
