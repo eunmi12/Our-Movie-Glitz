@@ -1,6 +1,6 @@
 <template>
     <div class="review">
-        <h6>리뷰</h6>
+        <h6>관람평</h6>
         <br><br>
         <div class="review-cont">
             <div class="review-title">
@@ -8,14 +8,12 @@
                     <button class="dropdown-toggle" type="button" @click="toggleType">{{ selectedTypeText }}</button>
                     <ul class="dropdown-menu" :class="{ show: isDropdownOpen }">
                         <li v-for="(type, i) in typelist" :key="i">
-                            <a class="dropdown-item" href="#" @click.prevent="selectType(i)">{{ type }}</a>
+                            <a class="dropdown-item" href="#" @click.prevent="selectType(i)">{{ type }}점</a>
                         </li>
                     </ul>
                 </div>
                 <div class="title-value">
-                    <div v-for="movie in i" :key="movie.movie_no">
                         <div>{{ movie.movie_title }}</div>
-                    </div>
                 </div>
             </div>
             <div class="review-comt">
@@ -29,7 +27,6 @@
     </div>
 </template>
 
-
 <script>
 import axios from 'axios';
 
@@ -37,38 +34,49 @@ export default {
     data() {
         return {
             isDropdownOpen: false,
-            typelist: ['5점', '4점', '3점', '2점', '1점'],
+            typelist: [5,4,3,2,1],
             selectedType: null,
             review_comment: "",
-            movies: [] // 영화 목록
-        }
+            movie: {
+                movie_title: '',
+                movie_no: ''
+            },
+        };
     },
     computed: {
         user() {
             return this.$store.state.user;
         },
-        review_user_no() {
+        re_user_no() {
             return this.user ? this.user.user_no : null;
         },
         selectedTypeText() {
-            return this.selectedType !== null ? this.typelist[this.selectedType] : '평점';
+            return this.selectedType !== null ? `${this.typelist[this.selectedType]}점` : '평점';
         }
     },
     methods: {
         toggleType() {
             this.isDropdownOpen = !this.isDropdownOpen;
         },
-        async movie() {
-            const movie_no = this.$route.params.movie_no;
+        selectType(index) { // selectType 메서드 정의
+            this.selectedType = index;
+            this.isDropdownOpen = false; // 드롭다운 메뉴를 닫습니다.
+        },
+        async movietitle() {
+            const user_no = this.re_user_no; // 수정된 부분
             try {
-                const response = await axios.post(`http://localhost:3000/user/rev/${user_no}`);
-                this.movie_no = response.data;
+                const response = await axios.post(`http://localhost:3000/user/reviewtitle`, { user_no });
+                this.movie.movie_title = response.data[0].movie_title; // 수정된 부분
+                this.movie.movie_no = response.data[0].movie_no; // 수정된 부분
+
             } catch (error) {
-                console.error("영화 제목 불러오기 발생", error);
+                console.error("영화제목 불러오기 에러 발생", error);
             }
         },
         async registt() {
-            console.log("review_user_no:", this.review_user_no);
+
+            console.log("review_user_no:", this.re_user_no);
+            console.log("review_movie_no:", this.movie.movie_no);
             try {
                 if (!this.review_comment) {
                     this.$swal('내용을 입력하세요.');
@@ -78,31 +86,33 @@ export default {
                     return;
                 }
 
-                const response = await axios.post(`http://localhost:3000/crereview`, {
-                    review_comment: this.review_comment,
+                const response = await axios.post(`http://localhost:3000/user/crereview`, {
                     review_rate: this.typelist[this.selectedType],
-                    user_no: this.review_user_no
+                    review_comment: this.review_comment,
+                    movie_no: this.movie.movie_no, // 수정된 부분
+                    user_no: this.re_user_no // 수정된 부분
                 });
 
                 const data = response.data;
                 console.log("DATA : ", data);
                 this.$swal('리뷰 내용이 등록되었습니다.');
-                this.$router.push(`/mypagemain`);
+                this.$router.push(`/mypagemain/${this.re_user_no}`);
             } catch (error) {
-                console.error("리뷰 등록 중 오류 발생");
+                console.error("리뷰 등록 중 오류 발생", error);
             }
         },
         cancel() {
-            this.$router.push(`/mypagemain`);
+            this.$router.push(`/mypagemain/${this.user.user_no}`);
         },
     },
     mounted() {
+        this.movietitle();
     }
 }
 </script>
 
 <style scoped>
-
+/* 스타일은 기존과 동일 */
 h6 {
   text-align: center;
   font-weight: bold;
@@ -178,6 +188,7 @@ h6 {
     height: 35px;
     padding: 10px;
     box-sizing: border-box;
+    margin-left: 630px;
 }
 
 .review-comt {
@@ -220,5 +231,4 @@ h6 {
     width: 50px;
     height: 30px;
 }
-
 </style>

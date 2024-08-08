@@ -11,7 +11,7 @@
         <div class="sub-text" @click="goToAboutPage6">&bull; 회원탈퇴</div>
         <div class="sub-text" @click="gotoganpyun">&bull; 간편 로그인</div>
       </div>
-      <div class="text" @click="goToAboutPage8">&bull; 나의 리뷰내역</div>
+      <div class="text" @click="goToAboutPage8">&bull; 나의 관람평내역</div>
       <div class="text" @click="goToAboutPage7">&bull; 나문희내역</div>
     </div>
   </div>

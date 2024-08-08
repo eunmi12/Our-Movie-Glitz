@@ -136,7 +136,31 @@ router.post('/revs/:user_no', function(request, response, next){
 router.post('/rev/:user_no', function(request, response, next){
     const user_no = request.params.user_no;
 
-    db.query(`select m.movie_no, ticket_no, ticket_user_no, movie_img0, m.movie_title, DATE_FORMAT(ticket_date, "%Y-%m-%d") AS ticket_date, DATE_FORMAT(ticket_time, "%H시") AS ticket_time, ticket_total_price,ticket_cnt,ticket_seat from ticket t join user u on t.ticket_user_no = u.user_no join movie m on t.ticket_movie_no = m.movie_no where user_no = ?;`,
+    db.query(`SELECT 
+                r.re_movie_no,
+                r.re_user_no,
+                r.review_comment,
+                m.movie_no, 
+                t.ticket_no, 
+                t.ticket_user_no, 
+                m.movie_img0, 
+                m.movie_title, 
+                DATE_FORMAT(t.ticket_date, "%Y-%m-%d") AS ticket_date, 
+                DATE_FORMAT(t.ticket_time, "%H시") AS ticket_time, 
+                t.ticket_total_price,
+                t.ticket_cnt,
+                t.ticket_seat,
+                r.review_no IS NOT NULL AS review_written
+            FROM 
+                ticket t
+            JOIN 
+                user u ON t.ticket_user_no = u.user_no
+            JOIN 
+                movie m ON t.ticket_movie_no = m.movie_no
+            LEFT JOIN 
+                review r ON t.ticket_movie_no = r.re_movie_no AND t.ticket_user_no = r.re_user_no
+            WHERE 
+                u.user_no = ?;`,
         [user_no],
         function(error, result, field){
         if (error) {
@@ -147,6 +171,63 @@ router.post('/rev/:user_no', function(request, response, next){
         console.log(result);
     });
 });
+// //모든 예매 불러오기
+// router.post('/rev/:user_no', async (request, response) => {
+//     const user_no = request.params.user_no;
+
+//     try {
+//         const reservations = await db.query(`
+//             SELECT r.*, 
+//                    m.movie_title, 
+//                    m.movie_img0, 
+//                    (SELECT COUNT(*) FROM review WHERE re_user_no = ? AND re_movie_no = m.movie_no) AS review_written
+//             FROM reservations r
+//             JOIN movies m ON r.movie_no = m.movie_no
+//             WHERE r.user_no = ?
+//         `, [user_no, user_no]);
+
+//         response.json(reservations);
+//     } catch (error) {
+//         console.error("나의 예약 정보 불러오기 에러", error);
+//         response.status(500).send("서버 에러");
+//     }
+// });
+
+//리뷰 영화 제목 불러오기
+router.post('/reviewtitle', function(request, response, next){
+    const user_no = request.body.user_no; // 수정된 부분
+
+    if (!user_no) {
+        return response.status(400).json({ error: 'user_no가 필요합니다.' });
+    }
+
+    db.query(`SELECT movie_no, m.movie_title FROM ticket t JOIN user u ON t.ticket_user_no = u.user_no JOIN movie m ON t.ticket_movie_no = m.movie_no WHERE user_no = ?`, // 수정된 부분
+        [user_no], // 수정된 부분
+        function(error, result, field){
+        if (error) {
+            console.error(error);
+            return response.status(500).json({ error: '예매내역 에러' });
+        }
+        response.json(result);
+        console.log(result);
+    });
+});
+
+// router.post('/reviewtitle/:user_no', function(request, response, next){
+//     const user_no = request.params.user_no;
+
+//     db.query(`SELECT m.movie_title FROM ticket t JOIN user u ON t.ticket_user_no = u.user_no JOIN movie m ON t.ticket_movie_no = m.movie_no WHERE user_no = ? and movie_no = ?;`,
+//         [user_no],
+//         function(error, result, field){
+//         if (error) {
+//             console.error(error);
+//             return response.status(500).json({ error: '예매내역 에러' });
+//         }
+//         response.json(result);
+//         console.log(result);
+//     });
+// });
+
 //예매한 영화 취소
 router.post('/canclemovie', function(request, response, next) {
     const { user_no, ticket_no } = request.body; // user_no와 ticket_no를 받아온다
@@ -181,18 +262,22 @@ router.post('/gogaek/:user_no', function(request, response, next){
     });
 });
 // 리뷰 작성
-router.post('/crereview', function(request, response, next){
-    const { review_rate, review_comment, movie_no, user_no } = request.body;
+router.post('/crereview', (request, response) =>{
+    const review_comment = request.body.review_comment;
+    const review_rate = request.body.review_rate;
+    const re_user_no = request.body.user_no;
+    const re_movie_no = request.body.movie_no;
+    console.log('내용 >>', review_comment,'평점 >>',review_rate,'유저넘버 >>',re_user_no,'영화넘버 >>',re_movie_no);
+    
 
     db.query(`insert into review (review_rate, review_comment, re_movie_no, re_user_no) values (?,?,?,?);`,
-        [review_rate, review_comment, movie_no, user_no],
-        function(error, result, field){
+        [review_rate, review_comment, re_movie_no, re_user_no],
+        (error, result)=>{
         if (error) {
             console.error(error);
             return response.status(500).json({ error: '리뷰 작성 도중 에러' });
         }
         response.json(result);
-        console.log(result);
     });
 });
 // 리뷰내역 불러오기

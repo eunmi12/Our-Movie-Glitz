@@ -5,7 +5,7 @@
       <MypageSideBar />
       <div class="mypagebox">
         <div class="rev_box">
-          <p class="text1">MY 리뷰 내역</p>
+          <p class="text1">MY 관람평 내역</p>
           <div v-if="paginatedReviews.length > 0">
             <div v-for="review in paginatedReviews" :key="review.review_no" class="user_review">
               <div class="review_info">
