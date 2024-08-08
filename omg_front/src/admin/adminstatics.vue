@@ -2,6 +2,7 @@
   <div class="admin">
     <adminpage-sidebar/>
     <div class="chat_wrap">
+      <h1>예매 현황</h1>
       <div class="adminmain">
         10대 예매현황
         <GChart
@@ -273,6 +274,24 @@ export default {
 </script>
 
 <style scoped>
+.chat_wrap {
+    width: 80%;
+    min-width: 80%;
+    margin-top: 100px;
+    padding: 0 10% 0 5%;
+    display: inline-block;
+    vertical-align: top;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    box-sizing: border-box;
+}
+
+.chat_wrap h1 {
+  text-align: left;
+  border-bottom: 1px solid #d4cdcd;
+  padding-bottom: 30px;
+}
+
 .admin{
     display: flex;
 }
@@ -282,6 +301,8 @@ export default {
     align-items: center;
 }
 .chart {
+  display: flex;
+  overflow: hidden;
   width: 1000px;
   height: 500px;
   padding-left: 400px;

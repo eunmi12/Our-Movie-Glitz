@@ -2,7 +2,7 @@
     <div style="display: flex;">
     <AdminpageSidebar />
         <div class="user-management">
-            <h1>회원관리</h1>
+            <h1>회원 관리</h1>
             <div class="user-list" style="width: 100%; display: flex; flex-direction: column;">
                 <table>
                     <thead>

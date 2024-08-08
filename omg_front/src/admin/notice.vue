@@ -28,6 +28,7 @@
                     </tbody>
                 </table>
             </div>
+            <br>
             <div v-if="noticeList.length > 0" class="pagination">
                 <ul class="number_box">
                     <li @click="prevPageGroup" :class="{disabled: currentPageGroup === 1}"><img src="../images/prev.png"/></li>
