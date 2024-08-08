@@ -50,8 +50,12 @@
                       </div>
                     </div>
                   </div>
+                  <div class="qwer">
+                    <button v-if="isPastReservation(rev.ticket_date, rev.ticket_time) && rev.review_comment == null" class="reviewbtn" @click="gotocreatereview(rev.movie_no)">관람평 남기기</button>
+                    <button type="submit" v-else-if="rev.review_comment !== null" class="reviewbtn">관람평 작성 완료</button>
+                    <button type="submit" v-else class="reviewbtn">예매 완료</button>
+                  </div>
                   <!-- 리뷰 남기기 버튼 조건부 렌더링 -->
-                  <button v-if="isPastReservation(rev.ticket_date, rev.ticket_time)" class="reviewbtn" @click="gotocreatereview(rev.movie_no)">리뷰 남기기</button>
                 </div>
               </div>
             </div>
@@ -106,6 +110,9 @@ export default {
     },
     async userrev() {
       const user_no = this.$route.params.user_no;
+      const reviewcomt = this.review_comment;
+      console.log(reviewcomt);
+      
       try {
         const response = await axios.post(`http://localhost:3000/user/rev/${user_no}`);
         this.reservations = response.data;
@@ -226,6 +233,7 @@ export default {
 }
 
 .ticket-content {
+  width: 50%;
   display: flex;
   flex-direction: column;
   gap: 20px; /* 컨텐츠 내부 요소 간의 간격을 넓혔습니다 */
@@ -234,6 +242,12 @@ export default {
 .ticket-header {
   display: flex;
   justify-content: space-between;
+}
+
+.qwer {
+  float: right;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .ticket-from,
@@ -279,7 +293,10 @@ export default {
 }
 
 .reviewbtn {
+  text-align: center;
+  width: 140px;
   display: flex;
+  justify-content: center;
   height: 40px;
   margin-top: 60px;
   border: 1px solid rgb(225, 225, 225);

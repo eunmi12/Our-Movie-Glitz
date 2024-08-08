@@ -45,7 +45,7 @@
 
         <!-- 리뷰내역 섹션 -->
         <div class="rev_box">
-          <p class="text1">MY 리뷰 내역</p>
+          <p class="text1">MY 관람평 내역</p>
           <div v-if="paginatedReview.length > 0">
             <div v-for="reviews in paginatedReview" :key="reviews.review_no" class="user_review">
               <div class="review_info">
