@@ -28,8 +28,7 @@
       <div class="seats">
           <div v-for="(row, rowIndex) in seatRows" :key="rowIndex" class="seat-row">
           <span class="seat-label">{{ row.label }}</span>
-              <span
-                  v-for="(seat, i) in row.seats" :key="i" @click="selectSeat(seat)"
+              <span v-for="(seat, i) in row.seats" :key="i" @click="selectSeat(seat)"
                   :class="['seat', { 'selected': seat.selected, 'reserved': seat.seat_reserve == 0 }]">
                   {{ seat.seat_name }}
                   </span>

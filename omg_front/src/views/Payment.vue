@@ -189,20 +189,40 @@ export default {
         },
         calculateDiscount(couponNo) {
             // 쿠폰 번호에 따른 할인 금액을 반환하는 메서드
-            const couponDiscounts = {
-                1: 5000, // 신규가입 쿠폰 할인 금액
-                2: 15000 // 등업 쿠폰 할인 금액
-            };
-            return couponDiscounts[couponNo] || '알 수 없는 쿠폰';
+            // const couponDiscounts = {
+            //     1: 5000, // 신규가입 쿠폰 할인 금액
+            //     2: 15000 // 등업 쿠폰 할인 금액
+            // };
+            // return couponDiscounts[couponNo] || '알 수 없는 쿠폰';
+            if (couponNo === 1) {
+                return 5000; // 신규가입 쿠폰 할인 금액
+            } else if (couponNo >= 2 && couponNo <= 23) {
+                return 15000; // 등급 쿠폰에 따른 할인 금액
+            } else {
+                return 0; // 알 수 없는 쿠폰에 대한 기본 값
+            }
         },
 
         getCouponLabel(couponNo) {
             // 쿠폰 번호에 따른 라벨을 반환하는 메서드
-            const couponLabels = {
-                1: '신규가입 쿠폰',
-                2: '등업 쿠폰'
-            };
-            return couponLabels[couponNo] || '알 수 없는 쿠폰';
+            // const couponLabels = {
+            //     1: '회원가입 쿠폰',
+            //     2: '브론즈등급 할인쿠폰',
+            // };
+            // return couponLabels[couponNo] || '알 수 없는 쿠폰';
+            if (couponNo === 1) {
+                return '회원가입 쿠폰';
+            } else if (couponNo >= 2 && couponNo <= 3) {
+                return '브론즈등급 할인쿠폰';
+            } else if (couponNo >= 4 && couponNo <= 7) {
+                return '실버등급 할인쿠폰';
+            } else if (couponNo >= 8 && couponNo <= 13) {
+                return '골드등급 할인쿠폰';
+            } else if (couponNo >= 14 && couponNo <= 23) {
+                return '플래티넘 할인쿠폰';
+            } else {
+                return '알 수 없는 쿠폰'; // 기본값
+            }
         },
         // async requestPay() {
         //     if (!this.how) {
@@ -262,6 +282,8 @@ export default {
                     order_phone: this.ticket.user_phone,
                     // order_coupon: this.user_coupon,
                     user_no: this.$store.state.user.user_no,
+                    payment_type: 1,
+                    couponId: this.selectedCoupon,
                 }
             })
             .then(() => {
@@ -282,8 +304,11 @@ export default {
                 // buyer_addr: '',
                 // buyer_postcode: '',
             },
-        (rsp) => {
+            
 
+
+        (rsp) => {
+            window.location.href = "http://localhost:8081/";
             if (rsp.success) {
                 console.log(rsp);
                 axios ({
@@ -299,6 +324,9 @@ export default {
                         order_phone: this.ticket.user_phone,
                         // order_coupon: this.user_coupon,
                         user_no: this.$store.state.user.user_no,
+                        couponId: this.selectedCoupon,
+                        payment_type: 1,
+                        couponId: this.selectedCoupon,
                     }
                 })
                 .then(() => {
@@ -327,7 +355,8 @@ export default {
                             // user_name: this.ticket.user_name,
                             order_phone: this.ticket.user_phone,
                             // order_coupon: this.user_coupon,
-                            user_no: this.$store.state.user.user_no
+                            user_no: this.$store.state.user.user_no,
+                            couponId: this.selectedCoupon,
                         });
                         
                         // console.log('결과요결과', results);
@@ -375,16 +404,19 @@ export default {
     width: 100%;
     border: 1px solid #ccc;
     margin-top: 30px;
+    background-color: rgb(244, 244, 244);
 }
 
 .information {
     margin-bottom: 70px;
-    margin-top: 50px;
+    margin-top: 70px;
 }
 
 .information h3 {
     margin-left: 30px;
-    text-shadow: 2px 2px 5px rgba(224, 138, 33, 0.6);
+    margin-right: 30px;
+    text-shadow: 2px 2px 5px rgba(107, 106, 104, 0.6);
+    border-bottom: 1px solid #ccc;
 }
 
 .discount {
@@ -393,7 +425,22 @@ export default {
 }
 
 .discount h3 {
-    text-shadow: 2px 2px 5px rgba(224, 138, 33, 0.6);
+    text-shadow: 2px 2px 5px rgba(107, 106, 104, 0.6);
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    margin-right: 30px;
+}
+
+.discount .discount-coupon {
+    display: block; /* '할인쿠폰 적용' 텍스트가 블록 요소로서 새로운 줄에 위치하게 합니다 */
+    margin-bottom: 10px; /* 텍스트와 드롭다운 간의 공간 조정 */
+}
+
+.discount select {
+    width: 12%; /* 드롭다운의 폭을 조정합니다. 필요에 따라 조절 가능 */
+    padding: 5px; /* 드롭다운의 내부 여백을 조정합니다 */
+    border: 2px solid #ccc; /* 드롭다운의 테두리 스타일 */
+    border-radius: 4px; /* 드롭다운의 모서리 둥글게 처리 */
 }
 
 .price {
@@ -402,16 +449,25 @@ export default {
 }
 
 .price h3 {
-    text-shadow: 2px 2px 5px rgba(224, 138, 33, 0.6);
+    text-shadow: 2px 2px 5px rgba(107, 106, 104, 0.6);
+    border-bottom: 1px solid #ccc;
+    margin-right: 30px;
 }
 
 .select-pay {
-    margin-bottom: 170px;
+    margin-bottom: 120px;
     margin-left: 30px;
 }
 
 .select-pay h3 {
-    text-shadow: 2px 2px 5px rgba(224, 138, 33, 0.6);
+    text-shadow: 2px 2px 5px rgba(107, 106, 104, 0.6);
+    border-bottom: 1px solid #ccc;
+    margin-right: 30px;
+}
+
+.payment {
+    position: relative; /* 부모 요소를 상대 위치로 설정 */
+    padding-bottom: 70px; /* 버튼이 부모 요소의 하단에 잘 보이도록 여백 추가 */
 }
 
 .payment-btn{
@@ -420,8 +476,8 @@ export default {
     border: none;
     cursor: pointer;
     margin-top: 70px;
-    position: absolute;
-    bottom: -200px; /* 하단에서의 거리 */
+    position: absolute; /* 부모 요소를 기준으로 절대 위치 설정 */
+    bottom: 0; /* 부모 요소의 하단에 위치 */
     left: 50%;
     transform: translateX(-50%); /* 가로 방향 중앙 정렬 */
 }
