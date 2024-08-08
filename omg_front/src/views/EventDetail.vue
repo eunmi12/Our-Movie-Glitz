@@ -2,8 +2,8 @@
     <div>
         <div class="main1">
             <div class="title">
-                <h3>이벤트 제목으로 쓸거임</h3>
-                <span>시작일 마감일로 쓸거임</span>
+                <h3>{{ event.event_title }}</h3>
+                <span>{{ event.event_startdate }}~{{ event.event_enddate }}</span>
             </div>
             <div class="main2">
                 <img src="../../../omg_back/uploads/event/11-1.webp" alt="이벤트 이미지">
@@ -19,18 +19,42 @@
 import axios from "axios";
 
 export default {
-    data() {
+  data() {
+    return {
+      event: {},
+    };
+  },
+  mounted() {
+  window.scrollTo(0, 0);
+},
+  created() {
+    window.scrollTo(0, 0);
+    this.getevent();
+  },
 
+  methods: {
+    getevent() {
+      const event_no = this.$route.params.event_no;
+      console.log('event_no', event_no);
+      axios.get(`http://localhost:3000/admin/event/${event_no}`)
+        .then(res => {
+          console.log('Events fetched:', res.data);
+          this.event = res.data[0]; // 응답 데이터가 배열일 경우
+          console.log('디스이벤트입니다', this.event);
+        })
+        .catch(error => {
+          console.error('Error fetching event:', error);
+        });
     },
-    methods: {
-        gototop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
+    gototop() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
     }
-}
+  },
+};
+
 </script>
 
 <style scoped>
