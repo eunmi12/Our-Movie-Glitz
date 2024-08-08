@@ -31,9 +31,28 @@ const app = express();
 //   res.status(200).send("uploaded");
 // });
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/movies'); // 파일이 저장될 경로
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); // 파일 이름 설정
+    }
+});
+
+const upload = multer({ storage: storage });
+
+router.post('/upload', upload.array('files'), (req, res) => {
+    console.log('Uploaded files:', req.files);
+    res.json({ message: 'Files uploaded successfully', files: req.files });
+});
+
+
 router.post('/createMovie',(req,res)=>{
 
     // console.log('req.body : ', req.body);
+
+    var imgnum;
 
     
     const data = {
@@ -45,12 +64,35 @@ router.post('/createMovie',(req,res)=>{
         movie_director : req.body.director,
         movie_actor : req.body.actor,
         movie_img0 : req.body.poster,
-        movie_age : req.body.age
+        movie_age : req.body.age,
+        movie_img :req.body.imgs
     };
+
     console.log('data : ', data);
 
-    const sql = `INSERT INTO movie (movie_startdate,movie_enddate,movie_tag,movie_comment,movie_title,movie_director,movie_actor,movie_img0,movie_age) values (?,?,?,?,?,?,?,?,?);`
-     db.query(sql,[data.movie_startdate,data.movie_enddate,data.movie_tag,data.movie_comment,data.movie_title,data.movie_director,data.movie_actor,data.movie_img0,data.movie_age],(err,results)=>{
+
+    if (Array.isArray(data.movie_img)) {
+        console.log('movie_img.length ->>', data.movie_img.length);
+
+        imgnum = data.movie_img.length;
+
+    } else {
+        console.log('movie_img is not an array');
+    }
+    if(imgnum == 0){
+        const sql = `INSERT INTO movie (movie_startdate,movie_enddate,movie_tag,movie_comment,movie_title,movie_director,movie_actor,movie_img0,movie_age) values (?,?,?,?,?,?,?,?,?);`
+        db.query(sql,[data.movie_startdate,data.movie_enddate,data.movie_tag,data.movie_comment,data.movie_title,data.movie_director,data.movie_actor,data.movie_img0,data.movie_age],(err,results)=>{
+           if (err) {
+               res.status(500).send(err);
+               console.log(err);
+             } else {
+               res.json(results);
+             }
+   
+        })
+    }else if(imgnum == 1){
+        const sql = `INSERT INTO movie (movie_startdate,movie_enddate,movie_tag,movie_comment,movie_title,movie_director,movie_actor,movie_img0,movie_age,movie_img1) values (?,?,?,?,?,?,?,?,?,?);`
+        db.query(sql,[data.movie_startdate,data.movie_enddate,data.movie_tag,data.movie_comment,data.movie_title,data.movie_director,data.movie_actor,data.movie_img0,data.movie_age,data.movie_img[0]],(err,results)=>{
         if (err) {
             res.status(500).send(err);
             console.log(err);
@@ -59,6 +101,56 @@ router.post('/createMovie',(req,res)=>{
           }
 
      })
+
+    }else if(imgnum == 2){
+        const sql = `INSERT INTO movie (movie_startdate,movie_enddate,movie_tag,movie_comment,movie_title,movie_director,movie_actor,movie_img0,movie_age,movie_img1,movie_img2) values (?,?,?,?,?,?,?,?,?,?,?);`
+        db.query(sql,[data.movie_startdate,data.movie_enddate,data.movie_tag,data.movie_comment,data.movie_title,data.movie_director,data.movie_actor,data.movie_img0,data.movie_age,data.movie_img[0],data.movie_img[1]],(err,results)=>{
+           if (err) {
+               res.status(500).send(err);
+               console.log(err);
+             } else {
+               res.json(results);
+             }
+   
+        })
+    }else if(imgnum == 3){
+        const sql = `INSERT INTO movie (movie_startdate,movie_enddate,movie_tag,movie_comment,movie_title,movie_director,movie_actor,movie_img0,movie_age,movie_img1,movie_img2,movie_img3) values (?,?,?,?,?,?,?,?,?,?,?,?);`
+        db.query(sql,[data.movie_startdate,data.movie_enddate,data.movie_tag,data.movie_comment,data.movie_title,data.movie_director,data.movie_actor,data.movie_img0,data.movie_age,data.movie_img[0],data.movie_img[1],data.movie_img[2]],(err,results)=>{
+           if (err) {
+               res.status(500).send(err);
+               console.log(err);
+             } else {
+               res.json(results);
+             }
+   
+        })
+    }else if(imgnum == 4){
+        const sql = `INSERT INTO movie (movie_startdate,movie_enddate,movie_tag,movie_comment,movie_title,movie_director,movie_actor,movie_img0,movie_age,movie_img1,movie_img2,movie_img3,movie_img4) values (?,?,?,?,?,?,?,?,?,?,?,?,?);`
+        db.query(sql,[data.movie_startdate,data.movie_enddate,data.movie_tag,data.movie_comment,data.movie_title,data.movie_director,data.movie_actor,data.movie_img0,data.movie_age,data.movie_img[0],data.movie_img[1],data.movie_img[2],data.movie_img[3]],(err,results)=>{
+           if (err) {
+               res.status(500).send(err);
+               console.log(err);
+             } else {
+               res.json(results);
+             }
+   
+        })
+    }else{
+        const sql = `INSERT INTO movie (movie_startdate,movie_enddate,movie_tag,movie_comment,movie_title,movie_director,movie_actor,movie_img0,movie_age,movie_img1,movie_img2,movie_img3,movie_img4,movie_img5) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?);`
+        db.query(sql,[data.movie_startdate,data.movie_enddate,data.movie_tag,data.movie_comment,data.movie_title,data.movie_director,data.movie_actor,data.movie_img0,data.movie_age,data.movie_img[0],data.movie_img[1],data.movie_img[2],data.movie_img[3],data.movie_img[4]],(err,results)=>{
+           if (err) {
+               res.status(500).send(err);
+               console.log(err);
+             } else {
+               res.json(results);
+             }
+   
+        })
+    }
+    
+    
+
+    
 })
 
 //승호작성 완

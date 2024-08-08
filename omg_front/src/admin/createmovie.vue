@@ -66,7 +66,7 @@
                     </div>
                     <div class="movie_detail">
                         <div class="comment_title"><span>스틸컷</span></div>
-                        <input multiple type="file" id="movie_img2" @click="uploads()">
+                        <input multiple ref="imgs" type="file" id="movie_img2" @change="uploads()">
                     </div>
                 </div>
             </div>
@@ -120,6 +120,8 @@ export default {
             enddate:"",
             age:"",
             actor:[],
+            imgs:[],
+            newimgs:[]
             
         }
     },
@@ -131,6 +133,80 @@ export default {
     },
     
     methods:{
+        uploads(){
+            this.imgs = this.$refs.imgs.files;
+            this.newimgs = [];
+
+            for(var i = 0; i < this.imgs.length; i++){
+                 console.log('this.imgs - >',this.imgs[i].name)
+                 this.newimgs.push(this.imgs[i].name)
+            }
+
+            // console.log('newimgs -> ',this.newimgs);
+
+            if(this.imgs.length > 5){
+                
+                alert('이미지는 5개만 넣어주세용개릥ㅇ.<~')
+                this.$refs.imgs.value = ''; // 파일 초기화
+                this.imgs = [];
+            }
+
+            // 파일을 서버로 전송
+                const formData = new FormData();
+                for (let i = 0; i < this.imgs.length; i++) {
+                    formData.append('files', this.imgs[i]);
+                }
+
+                // 서버에 파일 업로드 요청
+                fetch('http://localhost:3000/movie/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Upload success:', data);
+                })
+                .catch(error => {
+                    console.error('Upload error:', error);
+                });
+                        
+        },
+
+        // uploads() {
+        //     this.imgs = this.$refs.imgs.files;
+        //     this.newimgs = [];
+
+        //     if (this.imgs.length > 5) {
+        //         alert('이미지는 5개만 넣어주세용개릥ㅇ.<~');
+        //         this.$refs.imgs.value = ''; // 파일 초기화
+        //         this.imgs = [];
+        //         return;
+        //     }
+
+        //     for (let i = 0; i < this.imgs.length; i++) {
+        //         console.log('this.imgs ->', this.imgs[i].name);
+        //         this.newimgs.push(this.imgs[i].name);
+        //     }
+
+        //     // 파일을 서버로 전송
+        //     const formData = new FormData();
+        //     for (let i = 0; i < this.imgs.length; i++) {
+        //         formData.append('files', this.imgs[i]);
+        //     }
+
+        //     // 서버에 파일 업로드 요청
+        //     fetch('http://localhost:3000/movie/upload', {
+        //         method: 'POST',
+        //         body: formData
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         console.log('Upload success:', data);
+        //     })
+        //     .catch(error => {
+        //         console.error('Upload error:', error);
+        //     });
+        // },
         InsertInfo(){
             const fetch = require('node-fetch');
             // var i;
@@ -246,10 +322,14 @@ export default {
                         actor:this.actor.join(","),//쉼표까지 같이보내서 data도 같이보내줘야됨;
                         startdate:this.startdate,
                         enddate:this.enddate,
-                        age:this.age
+                        age:this.age,
+                        imgs:this.newimgs
+
                     });
                     const data = response.data;
+
                     console.log("정보삽입중?",data);
+
                 this.$swal('영화 등록 성공.');
                 this.$router.push(`/`);
             }

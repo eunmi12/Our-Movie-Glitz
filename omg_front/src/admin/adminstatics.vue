@@ -105,7 +105,7 @@ export default {
           title: '40대 예매현황'
         }
       },
-      chartData1: [
+      chartData5: [
         ['Movie Title', 'User'],
       ],
       chartOptions5: {
