@@ -1,12 +1,12 @@
 <template>
     <div class="good">
       <div class="carousel">
-        <img src="../images/mainpage/movie/액션1.png" alt="">
-        <!-- <video src="../videos/영화1.mp4" autoplay muted loop></video> -->
+        <!-- <img src="../images/mainpage/movie/액션1.png" alt=""> -->
+        <video src="../videos/영화1.mp4" autoplay muted loop></video>
         <!-- <video src="../videos/영화1.mp4"><a href=""></a></video> -->
         <strong class="main_name">파일럿</strong>
         <span class="main_sname">파일럿의 상세내용 입니다.<br>asdsadsadasdsadsa</span>
-        <!-- <div class="main_select"><a href="http://localhost:8081/MovieDetail/25" id="select">상세보기</a></div> -->
+        <div class="main_select"><a href="http://localhost:8081/MovieDetail/25" id="select">상세보기</a></div>
       </div>
   
       <div class="list">

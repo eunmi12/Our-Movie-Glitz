@@ -19,6 +19,27 @@ const { log } = require('console');
 //치혁작성 완
 
 //은미작성
+router.post('/eventlisting', (req,res) => {
+    
+    db.query(`select event_no, event_img1, event_title, event_cnt ,date_format(event_startdate, '%y-%m-%d') as event_startdate, date_format(event_enddate, '%y-%m-%d') as event_enddate from event where event_enddate > now() order by event_no asc`,(err,result) => {
+        if(err){
+            res.status(500).json({ err:'진행중 이벤트에러'});
+        } else{
+            res.json(result);
+        }
+    });
+});
+
+router.post('/eventlistend', (req,res) => {
+    
+    db.query(`select event_no, event_img1, event_title, event_cnt ,date_format(event_startdate, '%y-%m-%d') as event_startdate, date_format(event_enddate, '%y-%m-%d') as event_enddate from event where event_enddate < now() order by event_no asc`,(err,result) => {
+        if(err){
+            res.status(500).json({ err:'종료된 이벤트에러'});
+        } else{
+            res.json(result);
+        }
+    });
+});
 
 //은미작성 완
 
