@@ -22,7 +22,7 @@
                             </div>
                             <div class="setbtn">
                                 <p class="input_radio">
-                                    <input class="ka_set" type="radio" name="kakao_set" id="kakao_set" value="set" @click="kakao_login" v-model="selectedOption" :class="{'active': selectedOption === 'set'}">
+                                    <input class="ka_set" type="radio" name="kakao_set" id="kakao_set" value="set" @click="kakao_set" v-model="selectedOption" :class="{'active': selectedOption === 'set'}">
                                     <label :for="kakao_set" :class="{'active-label': selectedOption === 'set'}" >설정</label>
                                 </p>
                                 <p class="input_radio" >
@@ -66,7 +66,7 @@ export default {
     },
     data() {
         return {
-            selectedOption: 'unset',
+            selectedOption: localStorage.getItem('kakaoSelectedOption') || 'unset',
             selectedOption1: 'unset1',
         };
     },
@@ -76,16 +76,40 @@ export default {
         }
     },
     methods: {
-        kakao_login(){
+        kakao_set(){
             window.Kakao.Auth.login({
-                scope: "profile_nickname, account_email",
-                success: this.getKakaoProfile,
-                fail: err => {
-                console.error(err);
-                this.$swal('카카오 로그인에 실패했습니다.');
+                success: (authObj) => {
+                    console.log(authObj);
+                    this.loginWithKakao(authObj.access_token);
+                },
+                fail: (err) => {
+                    console.error(err);
+                    this.$swal('카카오 로그인에 실패했습니다.');
                 }
             });
-        }
+        },        
+        async loginWithKakao(accessToken) {
+            try {
+                // 서버로 액세스 토큰을 전송
+                const response = await axios.post('http://localhost:3000/auth/kakao_set', {
+                access_token: accessToken,
+                local_user_no: this.$store.state.user.user_no // 현재 로그인된 로컬 사용자의 ID
+                });
+
+                if (response.data.success) {
+                 // 카카오 연결 성공 시 설정 값 업데이트
+                this.selectedOption = 'set';
+                localStorage.setItem('kakaoSelectedOption', 'set');
+                this.$swal("카카오 연결 성공");
+                //window.location.href = "/";  // 페이지 리다이렉트
+                } else {
+                this.$swal('카카오 계정과 로컬 계정을 연결하는 데 실패했습니다.');
+                }
+            } catch (error) {
+                console.error(error);
+                this.$swal('서버와의 연결에 실패했습니다.');
+            }
+        },    
     }
 }
 </script>

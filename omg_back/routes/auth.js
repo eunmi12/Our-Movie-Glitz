@@ -4,6 +4,7 @@ const db = require('../db.js');
 const fs = require('fs');
 const multer = require('multer');
 const path = require("path");
+const axios = require('axios'); // axios import 추가
 
 //승호작성
 
@@ -254,14 +255,143 @@ router.post("/findPwd", async(req, res) => {
 
 // ----------------------------------------------------------------------
 
-// 카카오 로그인----------------------------------------------------------
+// 카카오 간편로그인 설정----------------------------------------------------------
+router.post("/kakao_set", async(req, res) => {
+  console.log("req.body:--------->",req.body);
+  
+  const { access_token, local_user_no } = req.body;
 
+  if (!access_token || !local_user_no) {
+    return res.status(400).json({ success: false, message: 'Access token and local user ID are required' });
+  }
 
+  try {
+    // 카카오 API에서 사용자 정보 요청
+    const kakaoResponse = await axios.get('https://kapi.kakao.com/v2/user/me', {
+      headers: {
+        Authorization: `Bearer ${access_token}`
+      }
+    });
 
+    const kakaoAccount = kakaoResponse.data.kakao_account;
+    const kakaoId = kakaoResponse.data.id;
+    const kakaoEmail = kakaoAccount.email;
+    const kakaoName = kakaoAccount.profile.nickname;
 
+    // 데이터베이스에 소셜 사용자 정보 저장 또는 업데이트
+    db.query('SELECT * FROM social_user WHERE user_no = ? AND social_provider = ?', [local_user_no, 'kakao'], (err, results) => {
+      if (err) {
+        console.error('Error querying the database:', err);
+        return res.status(500).json({ success: false, message: 'Database query failed' });
+      }
 
+      if (results.length === 0) {
+        // 소셜 사용자 정보가 존재하지 않으면 새로 생성
+        db.query('INSERT INTO social_user (user_no, social_provider, social_id, social_name, social_token, social_email) VALUES (?, ?, ?, ?, ?, ?)', 
+        [local_user_no, 'kakao', kakaoId, kakaoName, access_token, kakaoEmail], (err, result) => {
+          if (err) {
+            console.error('Error inserting into the database:', err);
+            return res.status(500).json({ success: false, message: 'Database insertion failed' });
+          }
+
+          // 로컬 사용자 테이블의 user_social 필드 업데이트
+          db.query('UPDATE user SET user_social = 1 WHERE user_no = ?', [local_user_no], (err, result) => {
+            if (err) {
+              console.error('Error updating the user table:', err);
+              return res.status(500).json({ success: false, message: 'Failed to update user table' });
+            }
+
+            res.json({ success: true, message: 'Kakao account successfully linked' });
+          });
+        });
+      } else {
+        // 소셜 사용자 정보가 존재하면 업데이트
+        db.query('UPDATE social_user SET social_id = ?, social_name = ?, social_token = ?, social_email = ? WHERE user_no = ? AND social_provider = ?', 
+        [kakaoId, kakaoName, access_token, kakaoEmail, local_user_no, 'kakao'], (err, result) => {
+          if (err) {
+            console.error('Error updating the database:', err);
+            return res.status(500).json({ success: false, message: 'Database update failed' });
+          }
+
+          // 로컬 사용자 테이블의 user_social 필드 업데이트
+          db.query('UPDATE user SET user_social = 1 WHERE user_no = ?', [local_user_no], (err, result) => {
+            if (err) {
+              console.error('Error updating the user table:', err);
+              return res.status(500).json({ success: false, message: 'Failed to update user table' });
+            }
+
+            res.json({ success: true, message: 'Kakao account successfully linked' });
+          });
+        });
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching user info from Kakao:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch user info from Kakao' });
+  }
+});
 
 // ----------------------------------------------------------------------
+
+// 카카오 로그인----------------------------------------------------------
+router.post('/kakao_login', async (req, res) => {
+  const { access_token } = req.body;
+  console.log("req.body: ------->",req.body);
+  
+
+  if (!access_token) {
+      return res.status(400).json({ success: false, message: 'Access token is required' });
+  }
+
+  try {
+      // 카카오 API에서 사용자 정보 요청
+      const kakaoResponse = await axios.get('https://kapi.kakao.com/v2/user/me', {
+          headers: {
+              Authorization: `Bearer ${access_token}`
+          }
+      });
+
+      const kakaoId = kakaoResponse.data.id;
+      console.log("kakaoId:---------->",kakaoId);
+      
+      // 데이터베이스에서 사용자 조회
+      db.query('SELECT u.user_id, u.user_no, u.user_auth, u.user_name, u.user_del FROM user u JOIN social_user s ON u.user_no = s.user_no WHERE s.social_id = ? AND s.social_provider = ?', [kakaoId, 'kakao'], (err, results) => {
+          if (err) {
+              console.error('Error querying the database:', err);
+              return res.status(500).json({ success: false, message: 'Database query failed' });
+          }
+
+          if (results.length === 0) {
+              return res.status(404).json({ success: false, message: 'User not found' });
+          }
+
+          const user = results[0];
+          console.log("user:--------->",user);
+          
+
+          // 세션에 사용자 정보 저장 (세션을 사용하는 경우)
+          req.session.user = {
+              user_id: user.user_id,
+              user_no: user.user_no,
+              user_auth: user.user_auth,
+              user_name: user.user_name,
+              user_del: user.user_del
+          };
+          console.log("req.session.user:-=----------->",req.session.user);
+          
+          res.json({ success: true, user_id: user.user_id, user_no: user.user_no, user_auth: user.user_auth, user_name: user.user_name, user_del: user.user_del });
+
+          console.log("res.json:------->",res.json);
+          
+      });
+  } catch (error) {
+      console.error('Error fetching user info from Kakao:', error);
+      res.status(500).json({ success: false, message: 'Failed to fetch user info from Kakao' });
+  }
+});
+
+// ----------------------------------------------------------------------
+
 
 
 //진우작성 완

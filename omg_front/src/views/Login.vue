@@ -28,7 +28,7 @@
                     <h3>간편 로그인</h3>
                 </div>
                 <div class="social kakaologin">
-                    <button type="button">카카오 로그인</button>
+                    <button type="button" @click="kakao_login">카카오 로그인</button>
                 </div>
                 <div class="naverlogin">
                     <button type="button">네이버 로그인</button>
@@ -137,6 +137,45 @@ export default {
         join(){
             this.$router.push({path: '/join'})
             console.log('회원가입 페이지로 이동');
+        },
+        kakao_login(){
+            window.Kakao.Auth.login({
+                success: (authObj) => {
+                    console.log(authObj);
+                    this.handleKakaoLogin(authObj.access_token);                    
+                },
+                fail:(err) => {
+                    console.error(err);
+                    this.$swal('카카오 로그인에 실패했습니다.');
+                }
+            });
+        },
+        async handleKakaoLogin(accessToken){
+            try{
+                console.log("this.$router:---------->",this.$router);  // 디버깅을 위해 추가
+                const res = await axios.post('http://localhost:3000/auth/kakao_login',{
+                    access_token: accessToken
+                });
+
+                if(res.data.success) {
+                    const userPayload = {
+                        user_id : res.data.user_id,
+                        user_no : res.data.user_no,
+                        user_auth : res.data.user_auth,
+                        user_name : res.data.user_name,
+                        user_del : res.data.user_del,
+                    };
+                    this.$store.commit('setUser', userPayload);
+                    this.$router.push({path:'/'});
+                    this.$swal('카카오 로그인 성공');
+                } else {
+                    this.$swal('카카오 로그인에 실패했습니다.');
+                }
+            } catch(error){
+                console.error(error);
+                this.$swal('서버와의 연결에 실패했습니다.')
+                
+            }
         }
     }
 }
