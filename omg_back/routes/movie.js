@@ -403,6 +403,14 @@ router.post('/reserve', (req, res) => {
         } return res.status(200).json({ results });
     });
 });
+// 좌석 상태 복구
+router.post('/cancelReservation', (req, res) => {
+    db.query(`update seat set seat_reserve = 1 where seat_no in(?)`, [req.body.seatNumbers], (error, results) => {
+        if(error) {
+            return res.status(500).json({ error: '좌석복구 error' });
+        } return res.status(200).json({ results });
+    });
+});
 
 
 // 예매완료 - 결제정보
@@ -494,9 +502,24 @@ router.post('/orderPay', (req, res, next) => {
                     if(err) {
                         return res.status(500).json({ message : '결제 실패' });
                     } 
-                    // 좌석 예약 상태 업데이트
-                    // db.query(`update seat set seat_reserve = 0`)
-                    return res.status(200).json(results);
+
+                    // 결제 정보가 성공적으로 저장된 경우, 쿠폰 상태 업데이트
+                    const couponId = order.couponId; 
+                    const userNo = order.user_no;
+
+                    if (couponId) {
+                        // 쿠폰 상태 업데이트 쿼리
+                        db.query(`update user_coupon set uc_coupon_able = 0 where uc_coupon_no = ? and uc_user_no = ?`, [couponId, userNo], (err, results) => {
+                            if (err) {
+                                console.error('쿠폰 상태 업데이트 오류', err);
+                                return res.status(200).json({message: '결제는 성공했으나 쿠폰상태 업테이트 실패'});
+                            }
+                            return res.status(200).json(results);
+                        });
+                    } else {
+                        // 쿠폰이 없는 경우
+                        return res.status(200).json(results);
+                    }
                 });
 });
 
@@ -518,7 +541,7 @@ router.post('/applyCoupon', (req, res, next) => {
     const { couponId, ticketId } = req.body;
 
     // 쿠폰 적용 로직
-    db.query(`update user_coupon set uc_coupon_able = 0 where uc_coupon_no = ? and uc_user_no = ?`, [couponId, ticketId], (err, results) => {
+    db.query(`update user_coupon set uc_coupon_able = 1 where uc_coupon_no = ? and uc_user_no = ?`, [couponId, ticketId], (err, results) => {
         if(err) {
             return res.status(500).json({ message: '쿠폰 적용 실패' });
         }

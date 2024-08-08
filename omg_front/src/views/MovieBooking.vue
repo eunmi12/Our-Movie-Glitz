@@ -269,6 +269,13 @@
         },
   
         goToSeatSelection() {
+            // 예매 전(좌석선택 전) 로그인여부 체크
+            if (!this.$store.state.user.user_no) {
+                alert ('로그인 후 이용 가능합니다.');
+                this.$router.push('/login'); // 로그인 페이지로 리다이렉트
+                return;
+            }
+
             if (this.selectedMovie && this.selectedCinema && this.selectedDate && this.selectedTime) {
                 axios({
                     url: `http://localhost:3000/movie/saveinfo`,
