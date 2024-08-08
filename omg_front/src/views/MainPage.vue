@@ -21,7 +21,7 @@
                 </dt>
                 <dd v-for="movie in movielists[index]" :key="movie.movie_no">
                   
-                  <router-link :to="`/MovieDetail/${movie.movie_no}`">
+                  <a :href="`/MovieDetail/${movie.movie_no}`" @click="moviecnt(movie.movie_no)">
                     <div class="img_wrap" data-scale="false">
                       <img :src="getImagePath(movie.movie_img0)" alt="영화 이미지">
                     </div>
@@ -29,7 +29,7 @@
                       <span>{{ movie.movie_title }}</span>
                       <strong >{{ movie.review_rate ? movie.review_rate +'점': '평점 정보 없음' }}</strong>
                     </div>
-                  </router-link>
+                  </a>
                 </dd>
               </dl>
             </li>
@@ -48,7 +48,7 @@
 
               <div class="event_box2">
                 <div class="event_box3">
-                    <a href="">
+                  <a :href="`/eventDetail/${event.event_no}`" @click="eventcnt(event.event_no)">
                         <div class="img_wrap1">
                             <img :src="getImagePath2(event.event_img1)" alt="이벤트 이미지당">
                             <!-- <img :src="require(`../images/mainpage/${event.event_img1}`)" > -->
@@ -57,7 +57,7 @@
                         <strong>{{event.event_title}}</strong>
                         <span>{{ event.event_startdate }} ~ {{ event.event_enddate }}</span>
                         </div>
-                    </a>
+                      </a>
                 </div>
               </div>
             </div>
@@ -110,6 +110,24 @@ export default {
           console.error('Error fetching movielist for tag :', error);
         });
     },
+    async moviecnt(movie_no){
+      console.log('asdasdsadasdasdasdsadsa',movie_no);
+      try {
+        await axios.post(`http://localhost:3000/movie/mainmoviecnt`,{movie_no :movie_no});
+        console.log(`영화 번호 ${movie_no}의 조회수가 증가했습니다.`);
+      } catch (error) {
+        console.error(`영화 번호 ${movie_no}의 조회수 증가 중 오류 발생:`, error);
+      }
+    },
+    async eventcnt(event_no){
+      console.log('asdasdsadasdasdasdsadsa',event_no);
+      try {
+        await axios.post(`http://localhost:3000/user/maineventcnt`,{event_no :event_no});
+        console.log(`이벤트 번호 ${event_no}의 조회수가 증가했습니다.`);
+      } catch (error) {
+        console.error(`이벤트 번호 ${event_no}의 조회수 증가 중 오류 발생:`, error);
+      }
+    },
     getImagePath(imageName) {
       return(`https://image.tmdb.org/t/p/w500/${imageName}`);
     },
@@ -128,6 +146,7 @@ export default {
     align-items: center;
     width: 100%;
     height: auto; /* 또는 원하는 높이 */
+    
   }
 
   .carousel video {

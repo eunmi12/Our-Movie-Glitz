@@ -58,6 +58,18 @@ router.post('/deleteevent', (req, res) => {
         return res.json(results);
     });
 });
+
+router.post('/maineventcnt', (req,res)=>{
+    const event_no = req.body.event_no;
+    console.log('제이에스임' ,event_no);
+    db.query(`update event set event_cnt = event_cnt + 1 where event_no = ?;`, [event_no], (err,result) =>{
+        if(err){
+            console.log(' 이벤트 조회수 증가 중 에러 발생');
+            return res.status(500).json({ err:'error'});
+        }
+        return res.json(result);
+    });
+});
 //재영작성 완
 
 //아름작성

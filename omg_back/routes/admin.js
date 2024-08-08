@@ -673,6 +673,18 @@ router.get('/user/seats', (req, res) => {
 //은미작성 완
 
 //재영작성
+router.get('/event/:event_no' , (req , res ) => {
+    const event_no = req.params.event_no;
+    console.log("event_no 나오냐", event_no);
+    db.query(`select event_no,event_title,event_cnt,event_img2,date_format(event_startdate, '%y-%m-%d') as event_startdate, date_format(event_enddate, '%y-%m-%d') as event_enddate from event where event_no=?;`, [event_no], (err, results) => {
+        if(err) {
+            console.log('이벤트를 불러올 수 없습니다.');
+            return res.status(500).json({ error : err })
+        }
+        return res.status(200).json( results );
+    });
+});
+
 router.post('/createevent', (req,res) => {
     const event_title = req.body.event_title;
     const event_img1 = req.body.event_img1;

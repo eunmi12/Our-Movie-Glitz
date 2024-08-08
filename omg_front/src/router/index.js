@@ -202,7 +202,7 @@ const routes = [
   component: AdminEventCreate 
 },
 {
-  path: "/EventDetail/:event_no",
+  path: "/eventDetail/:event_no",
   name: "EventDetail",
   component: EventDetail
 },
