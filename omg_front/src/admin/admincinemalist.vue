@@ -3,7 +3,7 @@
     <AdminpageSidebar />
         <div class="cinema_wrap">
             <div class="cinema_title">
-                <h1 class="title"> 상 영 정 보 </h1>
+                <h1 class="title">상영 관리</h1>
             </div>
             <div class="cinema_list">
                 <table>
@@ -28,6 +28,7 @@
                     </tbody>
                 </table> 
             </div>
+            <br>
             <div v-if="cinemalist.length > 0" class="pagination">
                 <ul class="number_box">
                     <li @click="prevPageGroup" :class="{disabled: currentPageGroup === 1}"><img src="../images/prev.png"/></li>
@@ -192,15 +193,8 @@ export default {
 <style scoped>
 .cinema{
     display: flex;
-    width:100%;
 }
-.cinema_wrap{
-    width:70%;
-    margin:0 30px;
-}
-.cinema_title{
-    margin: 100px 20px 10px 10px;
-}
+
 .cinema_list{
     /* display:flex; */
   border-bottom: 1px solid #d4cdcd;
@@ -323,4 +317,23 @@ export default {
     width: 15px;
     padding-bottom: 5px;
 }
+
+.cinema_wrap {
+    width: 80%;
+    min-width: 80%;
+    padding: 0 10% 0 5%;
+    margin-top: 100px;
+    display: inline-block;
+    vertical-align: top;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    box-sizing: border-box;
+}
+
+.cinema_wrap h1 {
+  text-align: left;
+  border-bottom: 1px solid #d4cdcd;
+  padding-bottom: 30px;
+}
+
 </style>

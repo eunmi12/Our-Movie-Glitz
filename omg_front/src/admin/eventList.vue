@@ -29,6 +29,7 @@
                     </tbody>
                 </table> 
             </div>
+            <br>    
             <div class="pagination">
                 <ul class="number_box">
                     <li @click="prevPageGroup" :class="{disabled: currentPageGroup === 1}"><img src="../images/prev.png"/></li>
@@ -213,16 +214,25 @@ export default {
 <style scoped>
 .event{
     display: flex;
-    width:100%;
+    /* width:100%; */
 }
 .event_wrap{
-    width:70%;
-    margin:0 30px;
+    width:80%;
+    min-width: 80%;
+    /* margin-top: 100px; */
+    padding: 0 10% 0 5%;
+    display: inline-block;
+    vertical-align: top;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    box-sizing: border-box;
 }
 .event_title{
     margin: 100px 20px 10px 10px;
 }
 .event_list{
+    margin: auto;
+    width: 95%;
     /* display:flex; */
   border-bottom: 1px solid #d4cdcd;
   /* border-top: 1px solid #d4cdcd; */
@@ -236,6 +246,13 @@ export default {
     border-bottom: 1px solid #d4cdcd; 
     padding: 10px;
     text-align: center;
+}
+
+.event_title h1 {
+    width: 100%;
+    text-align: left;
+  border-bottom: 1px solid #d4cdcd;
+  padding-bottom: 30px;
 }
 
 .event_no{

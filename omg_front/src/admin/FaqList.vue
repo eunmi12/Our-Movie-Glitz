@@ -32,6 +32,7 @@
                     </div>
                 </div>
             </div>
+            <br>
             <div class="pagination">
                 <ul class="number_box">
                     <li @click="prevPageGroup" :class="{disabled: currentPageGroup === 1}"><img src="../images/prev.png"/></li>
@@ -215,24 +216,29 @@ export default {
 }
 </script><style scoped>
 .adminfaq {
-    width:95%;
+    /* width:100%; */
     display: flex;
-    align-items: center;
+    /* align-items: center; */
 }
 
 .faq {
-    flex: 4;
-    margin: 0 auto;
-    /* display: flex; */
-    flex-direction: column;
-    align-items: center; /* 중앙 정렬 */
+    width: 80%;
+    min-width: 80%;
+    margin-top: 100px;
+    padding: 0 10% 0 5%;
+    display: inline-block;
+    vertical-align: top;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    box-sizing: border-box;
 }
 h1{
     text-align: left;
-    margin-left:40px;
+  border-bottom: 1px solid #d4cdcd;
+  padding-bottom: 30px;
 }
 .faq-section {
-    width: 95%;
+    /* width: 95%; */
     margin: auto;
     padding-bottom: 10px;
     display: flex;
@@ -316,8 +322,9 @@ h1{
 
 .create {
     display: flex;
-    justify-content: center; /* 중앙 정렬 */
+    justify-content: flex-end; /* 중앙 정렬 */
     margin-top: 20px;
+    margin-right: 40px;
 }
 
 .insertFaq {
