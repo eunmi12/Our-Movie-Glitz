@@ -94,7 +94,7 @@ router.post("/login", async(req, res) => {
   const user_id = req.body.user_id;
   const user_pwd = req.body.user_pwd;
 
-  db.query("select user_no, user_id, user_pwd, user_name, user_phone, user_auth, user_del from user where user_id = ?",
+  db.query("select user_no, user_id, user_pwd, user_name, user_phone, user_auth, user_del, user_age from user where user_id = ?",
     [user_id, user_pwd],
     (err, results, fields) => {
       if(err){
@@ -125,6 +125,7 @@ router.post("/login", async(req, res) => {
                 user_pwd: user.user_pwd,
                 user_auth: user.user_auth,
                 user_name: user.user_name,
+                user_age: user.user_age,
               })
             } else{
               res.send({
