@@ -99,7 +99,8 @@ export default {
                             user_no: res.data.user_no,
                             user_auth: res.data.user_auth,
                             user_name: res.data.user_name,
-                            user_del : res.data.user_del
+                            user_del : res.data.user_del,
+                            user_age : res.data.user_age
                         };
                         this.$store.commit('setUser', userPayload);
                         // window.location.href = '/';

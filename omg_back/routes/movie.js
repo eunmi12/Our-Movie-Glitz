@@ -157,6 +157,46 @@ router.post('/createMovie',(req,res)=>{
 
 //진우작성
 
+//---------------------------------------------------------------------------------------------------
+router.post('/enddate', (req, res) => {
+
+    db.query(`SELECT 
+                movie_no, movie_title, movie_startdate, movie_enddate, movie_img0, ROUND(AVG(review_rate), 1) AS review_rate
+                FROM movie m 
+                left JOIN review r ON m.movie_no = r.re_movie_no
+                GROUP BY m.movie_no, m.movie_no, m.movie_title, m.movie_startdate, m.movie_enddate, m.movie_img0
+                order by m.movie_enddate asc`, (err, results) => {
+        if(err) {
+            res.status(500).json({ err:'진행중 영화리스트 오류'});
+        } else {
+            res.status(200).json(results)
+        }
+    })
+});
+
+
+router.post('/ranking', (req, res) => {
+
+    db.query(`SELECT 
+                movie_no, movie_title, movie_startdate, movie_enddate, movie_img0, ROUND(AVG(review_rate), 1) AS review_rate
+                FROM movie m 
+                left JOIN review r ON m.movie_no = r.re_movie_no
+                GROUP BY m.movie_no, m.movie_no, m.movie_title, m.movie_startdate, m.movie_enddate, m.movie_img0
+                order by review_rate desc`, (err, results) => {
+        if(err) {
+            res.status(500).json({ err:'진행중 영화리스트 오류'});
+        } else {
+            res.status(200).json(results)
+        }
+    })
+})
+
+
+
+
+
+
+
 //진우작성 완
 
 //치혁작성

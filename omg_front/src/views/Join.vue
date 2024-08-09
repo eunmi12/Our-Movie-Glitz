@@ -184,7 +184,7 @@ export default {
             // 생년월일 유효성 검사
             if (!this.user_age) {
                 this.errors.user_age = '생년월일을 입력해 주세요.';
-                vthis.$swal(this.errors.user_age);
+                this.$swal(this.errors.user_age);
                 return false;
             }
 

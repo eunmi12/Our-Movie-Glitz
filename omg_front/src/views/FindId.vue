@@ -108,7 +108,7 @@ export default {
         },
         goToLogin(){
             // 로그인
-            // this.$store.dispatch('updateUserEmail', this.user_email);
+            this.$store.dispatch('updateUserEmail', this.user_id);
             this.resetForm();
             this.$emit('close');
             this.$router.push({ path: '/login' });
