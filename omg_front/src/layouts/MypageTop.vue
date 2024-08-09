@@ -6,7 +6,7 @@
           <span class="usertype">{{ grade_name }} 고객 입니다.</span>
       </div>
       <div class="container2">
-          <div class="coupon">
+          <div class="coupon" @click="gotocoupon">
               <div class="text3">MY COUPON</div>
               <div class="text4">{{coupon.user_coupon}} 개</div>
           </div>
@@ -37,6 +37,9 @@ export default {
       };
   },
   methods: {
+      gotocoupon() {
+        this.$router.push(`/coupon/${this.$route.params.user_no}`)
+      },  
       gotopagewish() {
           this.$router.push(`/wish/${this.$route.params.user_no}`);
       },
@@ -136,6 +139,7 @@ export default {
 
 .coupon {
   border-right: 1px solid #ddd;
+  cursor: pointer;
 }
 
 .point {

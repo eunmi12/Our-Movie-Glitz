@@ -22,7 +22,7 @@
                   <span class="movie_director">{{ item.movie_director }}</span>
                   <button class="wish_btn" @click="gotorev">예매하기</button>
                   <div>
-                  <button class="wish_btn" @click="delwish(item.movie_no)">위시리스트 삭제</button>
+                  <button class="wish_btn" @click="delwish(item.movie_no)">관심영화 삭제</button>
                   </div>
                 </div>
               </div>
@@ -46,6 +46,7 @@
 import MypageSideBar from '../layouts/MypageSideBar.vue';
 import MypageTop from '../layouts/MypageTop.vue';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   components: {
@@ -75,13 +76,28 @@ export default {
     },
     async delwish(movie_no) {
       const user_no = this.$route.params.user_no;
-      try {
-        const response = await axios.post(`http://localhost:3000/user/delwish`, { user_no: user_no, wish_movie_no: movie_no });
-        this.delwish = response.data;
-        this.userwish(); // 삭제 후 위시리스트를 새로고침
-      } catch (error) {
-        console.error("나의 위시리스트 삭제 에러 발생", error);
-      }
+      Swal.fire({
+        title: '정말로 삭제하시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '삭제하기',
+        cancelButtonText: '취소하기'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axios.post(`http://localhost:3000/user/delwish`, { user_no: user_no, wish_movie_no: movie_no });
+            Swal.fire('삭제되었습니다!', '관심영화에서 삭제되었습니다.', 'success');
+            this.userwish(); // 삭제 후 위시리스트를 새로고침
+          } catch (error) {
+            console.error("나의 관심영화 삭제 에러 발생", error);
+            Swal.fire('에러 발생', '관심영화 삭제 도중 에러가 발생했습니다.', 'error');
+          }
+        } else {
+          console.log("관심영화 삭제가 취소되었습니다.");
+        }
+      });
     },
     async userwish() {
       const user_no = this.$route.params.user_no;
