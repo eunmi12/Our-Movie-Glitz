@@ -41,6 +41,10 @@ export default {
                 movie_title: '',
                 movie_no: ''
             },
+            ticket: {
+                ticket_no: '',
+                ticket_re: ''
+            }
         };
     },
     computed: {
@@ -73,40 +77,85 @@ export default {
                 console.error("영화제목 불러오기 에러 발생", error);
             }
         },
-        async registt() {
-
-            console.log("review_user_no:", this.re_user_no);
-            console.log("review_movie_no:", this.movie.movie_no);
+        async ticketno() {
+            const user_no = this.re_user_no;
             try {
-                if (!this.review_comment) {
-                    this.$swal('내용을 입력하세요.');
-                    return;
-                } else if (this.selectedType === null) {
-                    this.$swal('평점이 없습니다.');
-                    return;
-                }
-
-                const response = await axios.post(`http://localhost:3000/user/crereview`, {
-                    review_rate: this.typelist[this.selectedType],
-                    review_comment: this.review_comment,
-                    movie_no: this.movie.movie_no, // 수정된 부분
-                    user_no: this.re_user_no // 수정된 부분
-                });
-
-                const data = response.data;
-                console.log("DATA : ", data);
-                this.$swal('리뷰 내용이 등록되었습니다.');
-                this.$router.push(`/mypagemain/${this.re_user_no}`);
+                const response = await axios.post(`http://localhost:3000/user/reviewticketno`, { user_no });
+                this.ticket.ticket_no = response.data[0].ticket_no;
+                this.ticket.ticket_re = response.data[0].ticket_re;
+                
             } catch (error) {
-                console.error("리뷰 등록 중 오류 발생", error);
+                console.error("영화제목 불러오기 에러 발생", error);
             }
         },
+        async registt() {
+    console.log("review_user_no:", this.re_user_no);
+    console.log("review_movie_no:", this.movie.movie_no);
+    console.log("ticket_no:", this.ticket.ticket_no);
+    console.log("ticket_re:", this.ticket.ticket_re);
+
+    try {
+        if (!this.review_comment) {
+            this.$swal('내용을 입력하세요.');
+            return;
+        } else if (this.selectedType === null) {
+            this.$swal('평점이 없습니다.');
+            return;
+        }
+
+        const response = await axios.post(`http://localhost:3000/user/crereview`, {
+            review_rate: this.typelist[this.selectedType],
+            review_comment: this.review_comment,
+            movie_no: this.movie.movie_no, // 수정된 부분
+            user_no: this.re_user_no,      // 수정된 부분
+            ticket_no: this.ticket.ticket_no,  
+            ticket_re: this.ticket.ticket_re
+        });
+
+        if (response.data) {
+            this.$swal('리뷰가 성공적으로 등록되었습니다.');
+            this.$router.push(`/mypagemain/${this.re_user_no}`);
+        }
+    } catch (error) {
+        console.error("리뷰 등록 오류:", error);
+        this.$swal('리뷰 등록 중 오류가 발생했습니다.');
+    }
+},
+        // async registt() {
+
+        //     console.log("review_user_no:", this.re_user_no);
+        //     console.log("review_movie_no:", this.movie.movie_no);
+        //     try {
+        //         if (!this.review_comment) {
+        //             this.$swal('내용을 입력하세요.');
+        //             return;
+        //         } else if (this.selectedType === null) {
+        //             this.$swal('평점이 없습니다.');
+        //             return;
+        //         }
+
+        //         const response = await axios.post(`http://localhost:3000/user/crereview`, {
+        //             review_rate: this.typelist[this.selectedType],
+        //             review_comment: this.review_comment,
+        //             movie_no: this.movie.movie_no, // 수정된 부분
+        //             user_no: this.re_user_no // 수정된 부분
+        //         });
+
+        //         const data = response.data;
+        //         console.log("DATA : ", data);
+        //         this.$swal('리뷰 내용이 등록되었습니다.');
+        //         this.$router.push(`/mypagemain/${this.re_user_no}`);
+        //     } catch (error) {
+        //         console.error("리뷰 등록 중 오류 발생", error);
+        //     }
+        // },
         cancel() {
             this.$router.push(`/mypagemain/${this.user.user_no}`);
         },
     },
     mounted() {
         this.movietitle();
+        this.ticketno();
     }
 }
 </script>

@@ -85,14 +85,14 @@ export default {
                 const data = response.data;
                 console.log("DATA : ",data);
                 this.$swal('문의 내용이 등록되었습니다.');
-                this.$router.push(`/`);
+                this.$router.push(`/gogaekcenter/${this.qna_user_no}`);
             }
             catch(error){
                 console.error("1:1문의 등록 중 오류 발생");
             }
         },
         cancel(){
-            this.$router.push(`/`);
+            this.$router.push(`/gogaekcenter/${this.qna_user_no}`);
         },
     }
 }

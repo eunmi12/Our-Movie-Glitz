@@ -51,8 +51,8 @@
                     </div>
                   </div>
                   <div class="qwer">
-                    <button v-if="isPastReservation(rev.ticket_date, rev.ticket_time) && rev.review_comment == null" class="reviewbtn" @click="gotocreatereview(rev.movie_no)">관람평 남기기</button>
-                    <button type="submit" v-else-if="rev.review_comment !== null" class="reviewbtn">관람평 작성 완료</button>
+                    <button v-if="isPastReservation(rev.ticket_date, rev.ticket_time) && rev.ticket_re == '0'" class="reviewbtn" @click="gotocreatereview(rev.ticket_no)">관람평 남기기</button>
+                    <button type="submit" v-else-if="rev.ticket_re == '1'" class="reviewbtn">관람평 작성 완료</button>
                     <button type="submit" v-else class="reviewbtn">예매 완료</button>
                   </div>
                   <!-- 리뷰 남기기 버튼 조건부 렌더링 -->
@@ -101,8 +101,8 @@ export default {
     },
   },
   methods: {
-    gotocreatereview(movie_no) {
-      this.$router.push(`/createreview/${movie_no}`)
+    gotocreatereview(ticket_no) {
+      this.$router.push(`/createreview/${ticket_no}`)
     },
     revtoggle(index) {
       // 같은 인덱스를 클릭하면 토글, 다른 인덱스를 클릭하면 선택 변경
