@@ -346,14 +346,14 @@ h3{
 /* input */
 #user_id, #user_pwd, #user_pwd2, #user_name{
     width: 500px;
-    height: 30px;
+    height: 40px;
     border-radius: 5px;
     border: 1px solid #ccc;
     padding: 10px;
 }
 .id_check, .pwd_check{
     width: 130px;
-    height: 30px;
+    height: 40px;
     font-size: 18px;
     border: 0px;
     background: #f0eeda;
@@ -365,7 +365,7 @@ h3{
 /* phone */
 #number1{
     width: 60px;
-    height: 30px;
+    height: 40px;
     border: 1px solid #ccc;
     font-size: 16px;
     text-align: right;
@@ -373,7 +373,7 @@ h3{
     margin-right: 5px;
 }
 #number2, #number3{
-    height: 30px;
+    height: 40px;
     width: 100px;
     font-size: 16px;
     border: 1px solid #ccc;
@@ -388,7 +388,7 @@ option{
 
 #age_name{
     width: 200px;
-    height: 30px;
+    height: 40px;
     padding: 10px;
     font-size: 16px;
     border-radius: 5px;

@@ -181,7 +181,7 @@ export default {
     margin-top: 10px;
     /* color: white; */
     background-color: #fdfbe7;
-    box-shadow: 2px 2px 5px rgba(0, 199, 174, 0.5);
+    box-shadow: 2px 2px 5px rgba(183, 183, 183, 0.5);
 
 }
 
@@ -268,7 +268,7 @@ export default {
 }
 
 .form-group button {
-    background-color: #fff9b8;
+    background-color: #fdfbe7;
     /* color: #fff; */
     border: none;
     padding: 15px 20px;

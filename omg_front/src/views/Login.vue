@@ -16,10 +16,10 @@
                         <a @click="openFindPwModal">비밀번호 찾기</a>
                     </div>
                     <div class="login_btn">
-                        <button type="subit">SING IN</button>
+                        <button type="subit">로그인</button>
                     </div>
                     <div class="join_btn">
-                        <button type="butotn" @click="join">JOIN</button>
+                        <button type="butotn" @click="join">회원가입</button>
                     </div>
                 </form>
             </div>

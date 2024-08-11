@@ -180,7 +180,7 @@ export default {
     margin-top: 10px;
     /* color: white; */
     background-color: #fdfbe7;
-    box-shadow: 2px 2px 5px rgba(0, 199, 174, 0.5);
+    box-shadow: 2px 2px 5px rgba(183, 183, 183, 0.5);
 
 }
 

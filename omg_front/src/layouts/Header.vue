@@ -152,7 +152,8 @@ header .wrap .category{
     line-height: 50px;
 }
 .category ul li{
-    width: 30%;
+    width: 33%;
+    text-align: center;
 }
 .category ul li a{
     color: #5b5a53;
