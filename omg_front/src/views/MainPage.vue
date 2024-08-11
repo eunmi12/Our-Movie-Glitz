@@ -132,7 +132,8 @@ export default {
       return(`https://image.tmdb.org/t/p/w500/${imageName}`);
     },
     getImagePath2(imageName) {
-      return require(`../images/mainpage/events/${imageName}`);
+      return require(`../../../omg_back/uploads/event/${imageName}`);
+      // D:\이젠\OMG\Our-Moive-Glitz\omg_back\uploads\event
     },
   },
 };

@@ -47,6 +47,18 @@ router.post('/upload', upload.array('files'), (req, res) => {
     res.json({ message: 'Files uploaded successfully', files: req.files });
 });
 
+//영화 중복등록 확인용
+router.post('/moviecheck', (req,res)=>{
+    const title = req.body.title;
+
+    db.query(`SELECT movie_title FROM movie WHERE movie_title = ?`,[title],(err,result)=>{
+        if(result.length >0 ){
+            return res.status(200).json({ exists : true });//존재하면 true
+        } else {
+            return res.status(200).json({ exists : false }); //없으면 false 
+        }
+    });
+});
 
 router.post('/createMovie',(req,res)=>{
 
