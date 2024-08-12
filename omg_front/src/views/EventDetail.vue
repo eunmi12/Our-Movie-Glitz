@@ -7,8 +7,8 @@
             </div>
             <div class="main2">
               <!-- <img :src="getImagePath(event.event_img2)" alt="이벤트 이미지당"> -->
-              <img src="../../../omg_back/uploads/event/11-1.webp" alt="이벤트 이미지">
-
+              <!-- <img src="../../../omg_back/uploads/event/11-1.webp" alt="이벤트 이미지"> -->
+               <img :src="event.event_img2 ? require(`../../../omg_back/uploads/event/${event.event_img2}`) : '/goodsempty2.jpg'" alt="상품 이미지">
             </div>
             <div class="notice-btn">
             <button class="top" @click="gototop">▲Top</button>
