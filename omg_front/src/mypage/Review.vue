@@ -15,7 +15,9 @@
               <div class="review_details">
                 <span class="review_comment">{{ review.review_comment }}</span>
                 <span class="review_like">좋아요: {{ review.review_like }}</span>
-                <span class="review_rate">평점: {{ review.review_rate }}</span>
+                <span class="review_rate">
+                  평점: <span v-html="renderStars(review.review_rate)"></span>
+                </span>
               </div>
               <button class="delete_btn" @click="delreview(review.review_no)">삭제하기</button>
             </div>
@@ -100,6 +102,18 @@ export default {
       if (page > 0 && page <= this.totalPages) {
         this.currentPage = page;
       }
+    },
+    renderStars(rate) {
+      const fullStar = '★'; // 가득 찬 별 (유니코드)
+      const emptyStar = '☆'; // 빈 별 (유니코드)
+      const maxStars = 5;
+      let stars = '';
+
+      for (let i = 0; i < maxStars; i++) {
+        stars += i < rate ? fullStar : emptyStar;
+      }
+
+      return stars;
     }
   },
   mounted() {
@@ -180,7 +194,7 @@ export default {
 
 .review_date {
   color: #888;
-  flex: 1; /* 날짜의 너비를 유동적으로 조정 */
+  /* flex: 1; 날짜의 너비를 유동적으로 조정 */
 }
 
 .review_comment {
@@ -196,21 +210,19 @@ export default {
   border: 1px solid pink;
   background-color: pink;
   color: rgb(123, 122, 122);
-  width: 100%; /* 버튼 너비를 100%로 조정하여 부모 요소에 맞게 조정 */
-  max-width: 120px; /* 최대 너비를 설정 */
   height: 30px;
-  display: block; /* 블록 요소로 표시 */
-  text-align: center; /* 버튼 텍스트 가운데 정렬 */
-  margin-left: 0; /* 좌측 여백 제거 */
+  margin-left: 730px; /* 좌측 여백 제거 */
+  width: 70px;
+    border-radius: 5px; /* 버튼의 모서리를 둥글게 */
 }
 
 .paging {
   display: flex;
-  flex-wrap: wrap; /* 페이지 네비게이션이 넘치지 않도록 래핑 */
   list-style: none;
   padding: 0;
-  margin-top: 20px;
+  margin: 20px 0;
   justify-content: center;
+  margin-left: 325px;
 }
 
 .paging li {
@@ -225,7 +237,6 @@ export default {
   color: #333;
   text-decoration: none;
   cursor: pointer;
-  text-align: center; /* 페이지 번호 가운데 정렬 */
 }
 
 .paging a.active {
@@ -237,5 +248,9 @@ export default {
 .paging a:hover {
   background-color: #d8c6b0;
   border-color: #bfae9d;
+}
+.review_rate span {
+  color: gold; /* 별 색상 */
+  font-size: 20px; /* 별 크기 */
 }
 </style>

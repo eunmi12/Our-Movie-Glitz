@@ -277,7 +277,7 @@ const routes = [
   component: Wish
 },
 {
-  path: '/createreview/:user_no',
+  path: '/createreview/:ticket_no',
   name: 'CreateReview',
   component: CreateReview
 },
