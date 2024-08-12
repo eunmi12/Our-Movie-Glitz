@@ -23,9 +23,23 @@
             <div class="movie_img">
                 <h1>스틸컷</h1>
             </div>
+            <!-- <div class="moviedetail_content">
+                <img  v-if="movielist.movie_img1" :src="getMovieImg(movielist.movie_img1)" alt="영화 이미지">
+                <img  v-if="movielist.movie_img2" :src="getMovieImg(movielist.movie_img2)" alt="영화 이미지">
+                <img  v-if="movielist.movie_img3" :src="getMovieImg(movielist.movie_img3)" alt="영화 이미지">
+                <img  v-if="movielist.movie_img4" :src="getMovieImg(movielist.movie_img4)" alt="영화 이미지">
+                <img  v-if="movielist.movie_img5" :src="getMovieImg(movielist.movie_img5)" alt="영화 이미지">
+            </div> -->
             <div class="moviedetail_content">
-                <img :src="getImagePath(movielist.movie_img1)" alt="영화 이미지">
-                <img :src="getImagePath(movielist.movie_img2)" alt="영화 이미지">
+                <div class="slider">
+                    <div class="slides" :style="{ transform: `translateX(-${currentIndex * 250}px)` }">
+                        <div class="slide" v-for="(img, index) in filteredSlides" :key="index">
+          <img :src="getMovieImg(img)" alt="영화 이미지">
+        </div>
+                    </div>
+                    <button class="prev" @click="prevSlide" :disabled="currentIndex === 0" :class="{ 'disabled': currentIndex === 0 }">❮</button>
+                    <button class="next" @click="nextSlide" :disabled="currentIndex === slidesCount - 1" :class="{ 'disabled': currentIndex === slidesCount - 1 }">❯</button>
+                    </div>
             </div>
             <div class="moviedetail_review">
                 <h2>관람후기</h2>
@@ -81,6 +95,7 @@ export default {
             },
             movielist:[],
             reviewList:[],
+            currentIndex: 0,
         }
     },
     computed:{
@@ -95,7 +110,19 @@ export default {
             19 : '청소년 관람 불가'
         }
         return age[this.movielist.movie_age];
-      }
+      },
+       filteredSlides() {
+    if (!this.movielist || Object.keys(this.movielist).length === 0) {
+      return [];
+    }
+    return Object.keys(this.movielist)
+      .filter(key => key.startsWith('movie_img') && key !== 'movie_img0' && this.movielist[key])
+      .map(key => this.movielist[key]);
+  },
+    maxIndex() {
+      // 최대 슬라이드 인덱스는 필터링된 슬라이드의 총 개수에서 3을 뺀 값 (한번에 3개씩 보이므로)
+      return Math.max(0, this.filteredSlides.length - 1);
+    }
     },
     created() {
         this.getMovieList();
@@ -121,8 +148,8 @@ export default {
         getImagePath(image){
             return (`https://image.tmdb.org/t/p/w500/${image}`);
         },
-        getMovieImg(image){
-            
+        getMovieImg(movie_no){
+            return require(`../../../omg_back/uploads/movies/${movie_no}`); 
         },
         async getReviewList(){
             const movie_no = this.$route.params.movie_no;
@@ -148,7 +175,8 @@ export default {
             try {
                 if(!user_no){
                     this.$swal('로그인이 필요한 서비스입니다.');
-                    return setTimeout(() => window.location.href="/login", 1000);
+                    // return setTimeout(() => window.location.href="/login", 1000);
+                    return setTimeout(() => this.$router.push('/login'), 1000);
                 }
                 const result = await this.$swal({
                     title: '좋아요를 누르시겠습니까?',
@@ -176,7 +204,8 @@ export default {
             try{
                 if(!user_no){
                     this.$swal('로그인이 필요한 서비스입니다.');
-                    return setTimeout(() => window.location.href="/login", 1000);
+                    // return setTimeout(() => window.location.href="/login", 1000);
+                    return setTimeout(() => this.$router.push('/login'), 1000);
                 } 
                     const result = await this.$swal({
                     title: '위시리스트에 추가하시겠습니까?',
@@ -197,6 +226,17 @@ export default {
                 console.error('위시리스트 추가 중 에러 발생');
             }
 
+        },
+        //슬라이드
+        nextSlide() {
+            if (this.currentIndex < this.maxIndex) {
+                this.currentIndex++;
+            }
+        },
+        prevSlide() {
+            if (this.currentIndex > 0) {
+                this.currentIndex--;
+            }
         }
     }
 }
@@ -261,13 +301,74 @@ h1{
     font-size:24px;
     width:50%;
     margin: 0 auto;
-    margin-top: 50px;
+    margin-top: 30px;
     padding: 10px;
-    padding-bottom:20px;
+    padding-bottom:30px;
     height: 100%;
     border-bottom: 1px solid #ccc;
     /* margin-left:1050px; */
     
+}
+
+.moviedetail_content img{
+    width:250px;
+    height: auto;
+    margin: 0 auto;
+    /* margin-right: 5px; */
+    margin-bottom: 20px;
+}
+.slider {
+  position: relative;
+  width: 250px; /* 3개의 이미지(250px * 3) */
+  overflow: hidden;
+  margin: 0 auto; /* 가운데 정렬 */
+}
+
+.slides {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+   /* justify-content: center; */
+}
+
+.slide {
+  min-width: 250px;
+  box-sizing: border-box;
+}
+
+.slide img {
+  /* width: 100%; */
+  height: auto;
+}
+
+.prev, .next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 100;
+  font-size: 18px;
+}
+
+.prev {
+  left: 10px;
+}
+
+.next {
+  right: 10px;
+}
+
+.prev.disabled, .next.disabled {
+  background-color: rgba(0, 0, 0, 0.2);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.prev:disabled, .next:disabled {
+  pointer-events: none;
 }
 .moviedetail_review{
     display: flex;

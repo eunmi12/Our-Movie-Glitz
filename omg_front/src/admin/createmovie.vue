@@ -343,7 +343,7 @@ export default {
                     console.log("정보삽입중?",data);
 
                 this.$swal('영화 등록 성공.');
-                this.$router.push(`/`);
+                this.$router.push(`/admin/cinema`);
             }
             catch(error){
                 console.error("영화 등록 실패");

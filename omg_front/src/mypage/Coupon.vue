@@ -77,7 +77,7 @@ export default {
     },
     CouponStatus(uc_coupon_able) {
       const status = {
-        0: '사용불가',
+        0: '사용완료',
         1: '사용가능'
       };
       return status[uc_coupon_able] || '상태 불명';

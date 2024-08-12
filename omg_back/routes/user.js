@@ -35,9 +35,7 @@ router.post('/reviewticketno', function(req, res) {
 router.post('/rev/:user_no', function(req, res){
     const user_no = req.params.user_no;
     db.query(`SELECT 
-                r.re_movie_no,
-                r.re_user_no,
-                r.review_comment,
+distinct
                 m.movie_no, 
                 t.ticket_no, 
                 t.ticket_user_no, 
@@ -48,18 +46,17 @@ router.post('/rev/:user_no', function(req, res){
                 DATE_FORMAT(t.ticket_time, "%H시") AS ticket_time, 
                 t.ticket_total_price,
                 t.ticket_cnt,
-                t.ticket_seat,
-                r.review_no IS NOT NULL AS review_written
+                t.ticket_seat
             FROM 
                 ticket t
             JOIN 
                 user u ON t.ticket_user_no = u.user_no
             JOIN 
                 movie m ON t.ticket_movie_no = m.movie_no
-            LEFT JOIN 
-                review r ON t.ticket_movie_no = r.re_movie_no AND t.ticket_user_no = r.re_user_no
+
             WHERE 
-                u.user_no = ?;`, [user_no], function(err, results){
+                u.user_no = ? AND t.payment = 1;`, [user_no], function(err, results){
+      
         if (err) {
             console.log('오류');
             return res.status(500).json({ error: err });
@@ -111,7 +108,7 @@ router.post('/eventlist', (req, res) => {
 
 router.get('/maineventlist', (req, res) => {
     const sql = `
-        select event_no, event_img1, event_title,date_format(event_startdate, '%y-%m-%d') as event_startdate, date_format(event_enddate, '%y-%m-%d') as event_enddate from event order by event_no desc;
+        select event_no, event_img1, event_title,date_format(event_startdate, '%y-%m-%d') as event_startdate, date_format(event_enddate, '%y-%m-%d') as event_enddate from event where event_enddate > now() order by event_no desc;
     `;
     db.query(sql, (err, results) => {
       if (err) {
@@ -193,7 +190,8 @@ router.post('/revs/:user_no', function(request, response, next){
               FROM ticket t 
               JOIN user u ON t.ticket_user_no = u.user_no 
               JOIN movie m ON t.ticket_movie_no = m.movie_no 
-              WHERE user_no = ? 
+              WHERE user_no = ?
+              AND payment = 1 
               AND (ticket_date > ? OR (ticket_date = ? AND ticket_time > ?))`,
         [user_no, currentDate, currentDate, currentTime],
         function(error, result, field){
@@ -229,25 +227,53 @@ router.post('/revs/:user_no', function(request, response, next){
 // });
 
 
-//리뷰 영화 제목 불러오기
-router.post('/reviewtitle', function(request, response, next){
-    const user_no = request.body.user_no; // 수정된 부분
+// 리뷰 영화 제목 불러오기
 
-    if (!user_no) {
-        return response.status(400).json({ error: 'user_no가 필요합니다.' });
-    }
-
-    db.query(`SELECT movie_no, m.movie_title FROM ticket t JOIN user u ON t.ticket_user_no = u.user_no JOIN movie m ON t.ticket_movie_no = m.movie_no WHERE user_no = ?`, // 수정된 부분
-        [user_no], // 수정된 부분
-        function(error, result, field){
+router.post('/reviewtitle', function(request, response, next) {
+    const ticket_no = request.body.ticket_no;
+    
+    db.query(`SELECT m.movie_title,m.movie_no, t.ticket_no
+              FROM ticket t
+              JOIN movie m ON t.ticket_movie_no = m.movie_no
+              WHERE t.ticket_no = ?;`,
+        [ticket_no],
+        function(error, result) {
         if (error) {
             console.error(error);
-            return response.status(500).json({ error: '예매내역 에러' });
+            return response.status(500).json({ error: '리뷰 제목 에러' });
         }
-        response.json(result);
-        console.log(result);
+        response.json(result); // result가 빈 배열인지 확인
+        console.log("Query Result:", result);
     });
 });
+
+// router.post('/reviewtitle', function(request, response, next) {
+//     const ticket_no = request.body.ticket_no;  // ticket_no를 요청 본문에서 받음
+
+//     if (!ticket_no) {
+//         return response.status(400).json({ error: 'ticket_no가 필요합니다.' });
+//     }
+
+//     // 특정 ticket_no에 대한 영화 제목을 가져오는 쿼리
+//     db.query(`SELECT m.movie_title, t.ticket_no
+//               FROM ticket t
+//               JOIN movie m ON t.ticket_movie_no = m.movie_no
+//               WHERE t.ticket_no = ?;`,
+//         [ticket_no],
+//         function(error, result) {
+//             if (error) {
+//                 console.error('예매내역 에러:', error);  // 에러 로그 출력
+//                 return response.status(500).json({ error: '예매내역 에러' });
+//             }
+//             response.json(result);
+//             console.log(result);
+//         }
+//     );
+// });
+
+
+
+
 
 // router.post('/reviewtitle/:user_no', function(request, response, next){
 //     const user_no = request.params.user_no;

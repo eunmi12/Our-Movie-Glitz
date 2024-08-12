@@ -36,8 +36,11 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/movies'); // 파일이 저장될 경로
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); // 파일 이름 설정
+        cb(null,file.originalname); // 파일 이름 설정
     }
+    // filename: (req, file, cb) => {
+    //     cb(null, Date.now() + path.extname(file.originalname)); // 파일 이름 설정
+    // }
 });
 
 const upload = multer({ storage: storage });
@@ -342,21 +345,21 @@ router.get('/movies', (req, res) => {
     });
 });
 // 영화 목록 페이지네이션
-router.get('/movies/page', (req, res) => {
-    const limit = parseInt(req.query.limit, 10) || 10;
-    const offset = parseInt(req.query.offset, 10) || 0;
+// router.get('/movies/page', (req, res) => {
+//     const limit = parseInt(req.query.limit, 10) || 10;
+//     const offset = parseInt(req.query.offset, 10) || 0;
 
-    const query = `select * from movie limit ? offset ?`;
+//     const query = `select * from movie limit ? offset ?`;
 
-    db.query(query, [limit, offset], (error, results) => {
-        if (error) {
+//     db.query(query, [limit, offset], (error, results) => {
+//         if (error) {
 
-            console.log('영화를 조회할 수 없습니다.');
-            return res.status(500).json({ error: 'error' });
-        }
-        return res.json(results);
-    });
-});
+//             console.log('영화를 조회할 수 없습니다.');
+//             return res.status(500).json({ error: 'error' });
+//         }
+//         return res.json(results);
+//     });
+// });
 // 영화 예매 - 상영관 선택
 router.post('/cinemas', (req, res) => {
     const { movie_no } = req.body
@@ -661,6 +664,16 @@ router.post('/orderPay', (req, res, next) => {
                         return res.status(500).json({ message : '결제 실패' });
                     } 
 
+                    // 티켓 테이블의 payment 칼럼 업데이트
+                    const ticketId = order.ticket_no;
+                    console.log('티켓넘버', ticketId);
+                    db.query(`update ticket set payment = 1 where ticket_no = ?`, [ticketId], (error, results) => {
+                        if (error) {
+                            console.error('티켓 상태 업뎃오류', error);
+                            return res.status(200).json({ message: '결제 성공, but 티켓 상태 업뎃 실패' });
+                        }
+                    })
+
                     // 결제 정보가 성공적으로 저장된 경우, 쿠폰 상태 업데이트
                     const couponId = order.couponId; 
                     const userNo = order.user_no;
@@ -709,24 +722,69 @@ router.post('/applyCoupon', (req, res, next) => {
 // 결제 - 예매 취소
 router.post('/canclePay', (req, res, next) => {
     console.log('취소가능하겠니?', req.body);
+
+    // 결제여부 0으로 바꾸는 쿼리
+    db.query(`update ticket set payment = 0 where ticket_no = ?`, [req.body.ticket_no], (error, result) => {
+        if (error) {
+            return res.status(500).json({ message: '결제취소 오류' });
+        }
+        return res.status(200).json({result});
+    })
     // 1. 좌석 이름을 가져오는 쿼리
-    db.query(`select ticket_seat from ticket where ticket_no = ?`, [req.body.ticket_no], (err, result) => {
-        if (err) {
+    db.query(`select ticket_seat from ticket where ticket_no = ?`, [req.body.ticket_no], (error, result) => {
+        if (error) {
             return res.status(500).json({ message: '예매 취소 실패: 좌석 이름 조회 오류' });
         }
 
+        // console.log('쿼리 결과'. result);
+
         // 좌석 이름 배열 생성
         const seatNames = result.map(row => row.ticket_seat);
+        console.log('좌석이름배열', seatNames);
+        // 좌석 번호 배열 생성
+        // const seatNo = result.map(row => row.seat_no);
+        // console.log('좌석번호배열', seatNo);
+
+        // 배열을 문자열로 변환
+        const seatNamesString = seatNames.map(name => `${name}`).join(',');
+        console.log(seatNamesString);
+        // const seatNamesString = seatNames.map(name => {str = str + ',' + name});
+        // console.log(str);
+        // 쉼표로 분리
+        const seperNames = seatNamesString.split(',');
+        console.log(seperNames);
+
+        // 각 항목에 따옴표 추가
+        const quotedParts = seperNames.map(part => `'${part}'`);
+
+        // 다시 문자열로 조합
+        const resultString = quotedParts.join(',');
+
+        console.log('형성된 쿼리:', `UPDATE seat SET seat_reserve = 1 WHERE seat_name IN (${resultString})`);
+        console.log('문자열전환', resultString);
 
         // 2. 좌석 상태를 업데이트 하는 쿼리
-        db.query(`update seat set seat_reserve = 1 where seat_name in (?)`, [seatNames], (error, results) => {
-            if(err) {
+        db.query(`update seat set seat_reserve = 1 where seat_name in (${resultString})`, (error, results) => {
+            if(error) {
                 return res.status(500).json({ message: '예매 취소 실패' });
             }
             return res.status(200).json(results);
         });
     });
 });
+
+// 좌석 초기화
+router.post('/outOfPayment', async (req, res) => {
+       console.log('바디바디', req.body);
+
+        db.query(`update seat set seat_reserve = 1 where ticket_no = ?`, [req.body.ticket_no], (error, results) => {
+            if(error) {
+                return res.status(500).json({ message: '좌석 상태변경 실패' });
+            }
+            return res.status(200).json(results);
+        });
+});
+
 //아름작성 완
 
 //회창작성

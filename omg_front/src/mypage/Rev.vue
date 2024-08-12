@@ -27,12 +27,10 @@
                       <div class="ticket-from">
                         <span class="label">Title</span>
                         <span class="value">{{ rev.movie_title }}</span>
-                        <span class="sub-label">enjoy</span>
                       </div>
                       <div class="ticket-to">
                         <span class="label">Price</span>
-                        <span class="value">{{ rev.ticket_total_price }}</span>
-                        <span class="sub-label">원</span>
+                        <span class="value">{{ rev.ticket_total_price }} 원</span>
                       </div>
                     </div>
                     <div class="ticket-info">
@@ -46,7 +44,7 @@
                       </div>
                       <div class="ticket-time">
                         <span class="label">Start Time</span>
-                        <span class="value">{{ rev.ticket_date }} {{ rev.ticket_time }}</span>
+                        <span class="timevalue">{{ rev.ticket_date }} {{ rev.ticket_time }}</span>
                       </div>
                     </div>
                   </div>
@@ -54,8 +52,8 @@
                     <button v-if="isPastReservation(rev.ticket_date, rev.ticket_time) && rev.ticket_re == '0'" class="reviewbtn" @click="gotocreatereview(rev.ticket_no)">관람평 남기기</button>
                     <button type="submit" v-else-if="rev.ticket_re == '1'" class="reviewbtn">관람평 작성 완료</button>
                     <button type="submit" v-else class="reviewbtn">예매 완료</button>
+                    <button v-if="!isPastReservation(rev.ticket_date, rev.ticket_time)" class="cancle" @click="movie(rev.ticket_no)">예매 취소</button>
                   </div>
-                  <!-- 리뷰 남기기 버튼 조건부 렌더링 -->
                 </div>
               </div>
             </div>
@@ -76,6 +74,7 @@
 import MypageSideBar from '../layouts/MypageSideBar.vue';
 import MypageTop from '../layouts/MypageTop.vue';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   components: {
@@ -85,7 +84,7 @@ export default {
   data() {
     return {
       reservations: [],
-      selectedRevIndex: null, // 선택된 예약의 인덱스를 저장할 변수
+      selectedRevIndex: null,
       currentPage: 1,
       perPage: 5,
     };
@@ -102,17 +101,13 @@ export default {
   },
   methods: {
     gotocreatereview(ticket_no) {
-      this.$router.push(`/createreview/${ticket_no}`)
+      this.$router.push(`/createreview/${ticket_no}`);
     },
     revtoggle(index) {
-      // 같은 인덱스를 클릭하면 토글, 다른 인덱스를 클릭하면 선택 변경
       this.selectedRevIndex = this.selectedRevIndex === index ? null : index;
     },
     async userrev() {
       const user_no = this.$route.params.user_no;
-      const reviewcomt = this.review_comment;
-      console.log(reviewcomt);
-      
       try {
         const response = await axios.post(`http://localhost:3000/user/rev/${user_no}`);
         this.reservations = response.data;
@@ -129,11 +124,35 @@ export default {
       }
     },
     isPastReservation(ticketDate, ticketTime) {
-      // 시간에서 "시"를 제거하고 24시간 형식으로 변환
       const formattedTime = ticketTime.replace('시', ':00');
       const ticketDateTime = new Date(`${ticketDate}T${formattedTime}`);
       return new Date() > ticketDateTime;
     },
+    async movie(ticket_no) {
+      Swal.fire({
+        title: '정말로 예매 취소 하시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '예매취소',
+        cancelButtonText: '취소하기'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const user_no = this.$route.params.user_no;
+          try {
+            const response = await axios.post('http://localhost:3000/user/canclemovie', { user_no, ticket_no });
+            Swal.fire('취소되었습니다!', '예매가 취소되었습니다.', 'success');
+            this.userrev();
+          } catch (error) {
+            console.error("예매 취소 도중 에러 발생", error);
+            Swal.fire('에러 발생', '예매 취소 도중 에러가 발생했습니다.', 'error');
+          }
+        } else {
+          console.log("예매 취소가 취소되었습니다.");
+        }
+      });
+    }
   },
   mounted() {
     this.userrev();
@@ -170,6 +189,7 @@ export default {
   border-radius: 10px;
   background-color: #f9f9f9;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 900px;
 }
 
 .text1 {
@@ -223,7 +243,7 @@ export default {
 
 .ticket-container {
   display: flex;
-  gap: 20px; /* 이미지와 컨텐츠 사이의 간격을 넓혔습니다 */
+  gap: 20px;
   width: 100%;
 }
 
@@ -233,86 +253,73 @@ export default {
 }
 
 .ticket-content {
-  width: 50%;
+  width: 100%; 
   display: flex;
-  flex-direction: column;
-  gap: 20px; /* 컨텐츠 내부 요소 간의 간격을 넓혔습니다 */
+  flex-direction: column; /* 항목을 세로로 정렬 */
+  justify-content: space-between; 
+  gap: 10px; /* 항목 간의 간격 */
 }
 
-.ticket-header {
+.ticket-header,
+.ticket-info {
   display: flex;
-  justify-content: space-between;
-}
-
-.qwer {
-  float: right;
-  display: flex;
-  justify-content: flex-end;
+  flex-direction: column; /* 항목을 세로로 정렬 */
+  gap: 5px;
 }
 
 .ticket-from,
-.ticket-to {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.ticket-info {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px; /* 티켓 정보 요소 간의 간격을 넓혔습니다 */
-}
-
-.ticket-time,
+.ticket-to,
 .ticket-seat,
 .ticket-gate,
-.ticket-class {
+.ticket-time {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: space-between;
 }
 
 .label {
   font-weight: bold;
-  color: #333;
 }
 
 .value {
-  font-size: 1.2em;
-  color: #555;
+  font-size: 18px;
 }
 
-.sub-label {
-  color: #999;
+.timevalue {
+  font-size: 16px;
 }
 
-.ticket-qr {
-  display: flex;
-  justify-content: center;
-  padding-top: 10px;
+.qwer {
+  margin-top: 20px;
+}
+
+.reviewbtn,
+.cancle {
+  padding: 8px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .reviewbtn {
-  text-align: center;
-  width: 140px;
-  display: flex;
-  justify-content: center;
-  height: 40px;
-  margin-top: 60px;
-  border: 1px solid rgb(225, 225, 225);
   background-color: #f0eeda;
-  padding: 10px 5px 10px 5px;
-  border-radius: 7px;
-  margin-left: 100px;
+  color: black;
+  margin-right: 10px;
+}
+
+.cancle {
+  background-color: #d33;
+  color: white;
+  margin-top: 10px;
 }
 
 .paging {
   display: flex;
   list-style: none;
   padding: 0;
-  margin: 20px 0;
-  justify-content: center;
   margin-left: 400px;
+  margin-top: 20px;
+  justify-content: center;
 }
 
 .paging li {
