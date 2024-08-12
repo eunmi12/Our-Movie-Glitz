@@ -4,7 +4,11 @@
     <div class="chat_wrap">
       <h1>예매 현황</h1>
       <div class="adminmain">
-        10대 예매현황
+        <div class="main_title">
+          <h3>
+            10대 예매현황
+          </h3>
+        </div>
         <GChart
           type="PieChart"
           :data="chartData1"
@@ -13,7 +17,11 @@
         />
       </div>
       <div class="adminmain">
-        20대 예매현황
+        <div class="main_title">
+          <h3>
+            20대 예매현황
+          </h3>
+        </div>
         <GChart
           type="PieChart"
           :data="chartData2"
@@ -22,7 +30,11 @@
         />
       </div>
       <div class="adminmain">
-        30대 예매현황
+        <div class="main_title">
+          <h3>
+            30대 예매현황
+          </h3>
+        </div>
         <GChart
           type="PieChart"
           :data="chartData3"
@@ -31,7 +43,11 @@
         />
       </div>
       <div class="adminmain">
-        40대 예매현황
+        <div class="main_title">
+          <h3>
+            40대 예매현황
+          </h3>
+        </div>
         <GChart
           type="PieChart"
           :data="chartData4"
@@ -40,7 +56,11 @@
         />
       </div>
       <div class="adminmain">
-        50대 예매현황
+        <div class="main_title">
+          <h3>
+            50대 예매현황
+          </h3>
+        </div>
         <GChart
           type="PieChart"
           :data="chartData5"
@@ -49,7 +69,11 @@
         />
       </div>
       <div class="adminmain">
-        60대 예매현황
+        <div class="main_title">
+          <h3>
+            60대 예매현황
+          </h3>
+        </div>
         <GChart
           type="PieChart"
           :data="chartData6"
@@ -296,15 +320,24 @@ export default {
     display: flex;
 }
 .adminmain {
-    display: flex;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+    /* display: flex; */
     justify-content: center;
     align-items: center;
 }
+.main_title{
+  padding-top: 50px;
+  text-align: center;
+}
 .chart {
-  display: flex;
+  /* display: flex; */
   overflow: hidden;
-  width: 1000px;
+  width: 100%;
+  /* width: 600px; */
   height: 500px;
-  padding-left: 400px;
+  
+  /* padding-left: 400px; */
 }
 </style>

@@ -368,7 +368,9 @@ router.post('/cinemas', (req, res) => {
                 from screen
                 join cinema on cinema_no = sc_cinema_no
                 join movie on movie_no = sc_movie_no
-                where  movie_no = ?`, [movie_no], (error, results) => {
+                where  movie_no = ?
+                order by cinema_no`, [movie_no], (error, results) => {
+                // order by cinema_no 추가
         if (error) {
             return res.status(500).json({ error: '상영관 목록을 불러올 수 없습니다.' });
         }

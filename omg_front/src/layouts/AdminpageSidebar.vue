@@ -7,10 +7,10 @@
                     <span @click="goToMovie">• 영화 등록</span>
                 </li>
                 <li>
-                    <span @click="goToUser">• 회원 관리</span>
+                    <span @click="goToCinema">• 상영 관리</span>
                 </li>
                 <li>
-                    <span @click="goToCinema">• 상영 관리</span>
+                    <span @click="goToUser">• 회원 관리</span>
                 </li>
                 <li>
                     <span @click="goToCoupon">• 쿠폰 관리</span>

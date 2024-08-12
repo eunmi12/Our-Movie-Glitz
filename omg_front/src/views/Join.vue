@@ -268,12 +268,27 @@ export default {
                 console.error('폼 제출 중 오류 발생', error);
             }
         },
-        exit(){
+        exit() {
+            // 데이터 필드에 값이 있는지 확인
             if (Object.values(this.$data).some(field => field)) {
-                if (confirm("회원가입을 취소하시겠습니까?")) {
-                    this.$router.push({ path: "/" });
-                }
+                // SweetAlert2를 사용하여 확인 대화 상자 표시
+                this.$swal({
+                    title: '회원가입을 취소하시겠습니까?',
+                    text: "변경사항이 저장되지 않을 수 있습니다.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: '예, 취소합니다.',
+                    cancelButtonText: '아니요'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // 사용자가 확인 버튼을 누른 경우
+                        this.$router.push({ path: "/" });
+                    }
+                });
             } else {
+                // 데이터 필드에 값이 없으면 그냥 이동
                 this.$router.push({ path: "/" });
             }
         }
@@ -424,8 +439,8 @@ option{
     border-radius: 5px;
     cursor: pointer;
     border: 0;
-    background-color:#ffffff;
-    color:#3fced3;
+    background-color:#adadad;
+    color:#f0eeda;
     border-radius: 5px;
     border: 1px solid;
     box-shadow: 1px 1px 5px rgba(97, 242, 255, 0.5);
@@ -438,7 +453,7 @@ option{
     border-radius: 5px;
     cursor: pointer;
     border: 0;
-    background-color: #d0d0d0;
+    background-color: #f9c3c3;
     color: white;
 }
 #exit:hover{

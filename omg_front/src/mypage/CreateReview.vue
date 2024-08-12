@@ -72,6 +72,8 @@ export default {
                 const response = await axios.post(`http://localhost:3000/user/reviewtitle`, { user_no });
                 this.movie.movie_title = response.data[0].movie_title; // 수정된 부분
                 this.movie.movie_no = response.data[0].movie_no; // 수정된 부분
+                console.log("response.data[0].movie_title:------->",response.data[0].movie_title);
+                
 
             } catch (error) {
                 console.error("영화제목 불러오기 에러 발생", error);
@@ -83,6 +85,8 @@ export default {
                 const response = await axios.post(`http://localhost:3000/user/reviewticketno`, { user_no });
                 this.ticket.ticket_no = response.data[0].ticket_no;
                 this.ticket.ticket_re = response.data[0].ticket_re;
+                console.log( "response.data[0].ticket_no:------->",response.data[0].ticket_no);
+                
                 
             } catch (error) {
                 console.error("영화제목 불러오기 에러 발생", error);
