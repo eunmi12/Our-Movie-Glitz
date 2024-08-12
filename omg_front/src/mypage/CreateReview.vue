@@ -70,8 +70,7 @@ export default {
             const ticket_no = this.$route.params.ticket_no;
             const user_no = this.re_user_no;
             console.log(ticket_no, user_no);
-            
-
+           
             try {
                 console.log("Sending ticket_no:", ticket_no); // 콘솔 로그로 확인
                 const response = await axios.post(`http://localhost:3000/user/reviewtitle`, { ticket_no:ticket_no, user_no });

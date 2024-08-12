@@ -20,7 +20,7 @@
                   <span class="movie_enddate">{{ item.movie_enddate }}</span>
                   <span class="movie_tag">{{ item.movie_tag }}</span>
                   <span class="movie_director">{{ item.movie_director }}</span>
-                  <button class="wish_btn" @click="gotorev">예매하기</button>
+                  <button class="wish_btn" @click="gotorev(item.movie_no)">예매하기</button>
                   <div>
                   <button class="wish_btn" @click="delwish(item.movie_no)">관심영화 삭제</button>
                   </div>
@@ -71,8 +71,11 @@ export default {
     },
   },
   methods: {
-    gotorev() {
-      this.$router.push(`/moviebooking`);
+    gotorev(movie_no) {
+      this.$router.push({
+        path: `/moviebooking`,
+        params: { movie_no: movie_no }
+      });
     },
     async delwish(movie_no) {
       const user_no = this.$route.params.user_no;
