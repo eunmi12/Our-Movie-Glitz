@@ -6,7 +6,9 @@
                 <span>{{ event.event_startdate }}~{{ event.event_enddate }}</span>
             </div>
             <div class="main2">
-                <img :src="getImagePath2(event.event_img2)" alt="이벤트 이미지">
+              <!-- <img :src="getImagePath(event.event_img2)" alt="이벤트 이미지당"> -->
+              <img src="../../../omg_back/uploads/event/11-1.webp" alt="이벤트 이미지">
+
             </div>
             <div class="notice-btn">
             <button class="top" @click="gototop">▲Top</button>
@@ -24,11 +26,7 @@ export default {
       event: {},
     };
   },
-  mounted() {
-  window.scrollTo(0, 0);
-},
   created() {
-    window.scrollTo(0, 0);
     this.getevent();
   },
 
@@ -41,10 +39,15 @@ export default {
           console.log('Events fetched:', res.data);
           this.event = res.data[0]; // 응답 데이터가 배열일 경우
           console.log('디스이벤트입니다', this.event);
+          console.log('event.event_img2:', this.event.event_img2);
         })
         .catch(error => {
           console.error('Error fetching event:', error);
         });
+    },
+    getImagePath(imageName) {
+      console.log('Image name:', imageName); // 디버깅 로그 추가
+      return require(`../../../omg_back/uploads/event/${imageName}`);
     },
     gototop() {
       window.scrollTo({
