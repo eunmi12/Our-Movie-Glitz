@@ -16,6 +16,58 @@ const { log } = require('console');
 
 //치혁작성
 
+//마이페이지 예매내역 리뷰 작성 여부 확인
+router.post('/reviewticketno', function(req, res) {
+    const user_no = req.body.user_no;
+    if (!user_no) {
+        return res.status(400).json({ error: 'user_no가 필요합니다.' });
+    }
+    db.query(`SELECT ticket_no,ticket_re FROM ticket t JOIN user u ON t.ticket_user_no = u.user_no WHERE user_no = ?`, [user_no], function(err, results) {
+        if (err) {
+            console.log('오류');
+            return res.status(500).json({ error: err });
+        }
+        res.json(results);
+    });
+});
+
+//모든 예매 불러오기
+router.post('/rev/:user_no', function(req, res){
+    const user_no = req.params.user_no;
+    db.query(`SELECT 
+                r.re_movie_no,
+                r.re_user_no,
+                r.review_comment,
+                m.movie_no, 
+                t.ticket_no, 
+                t.ticket_user_no, 
+                t.ticket_re,
+                m.movie_img0, 
+                m.movie_title, 
+                DATE_FORMAT(t.ticket_date, "%Y-%m-%d") AS ticket_date, 
+                DATE_FORMAT(t.ticket_time, "%H시") AS ticket_time, 
+                t.ticket_total_price,
+                t.ticket_cnt,
+                t.ticket_seat,
+                r.review_no IS NOT NULL AS review_written
+            FROM 
+                ticket t
+            JOIN 
+                user u ON t.ticket_user_no = u.user_no
+            JOIN 
+                movie m ON t.ticket_movie_no = m.movie_no
+            LEFT JOIN 
+                review r ON t.ticket_movie_no = r.re_movie_no AND t.ticket_user_no = r.re_user_no
+            WHERE 
+                u.user_no = ?;`, [user_no], function(err, results){
+        if (err) {
+            console.log('오류');
+            return res.status(500).json({ error: err });
+        }
+        res.json(results);
+    });
+});
+
 //치혁작성 완
 
 //은미작성
@@ -153,45 +205,7 @@ router.post('/revs/:user_no', function(request, response, next){
         console.log(result);
     });
 });
-//모든 예매 불러오기
-router.post('/rev/:user_no', function(request, response, next){
-    const user_no = request.params.user_no;
 
-    db.query(`SELECT 
-                r.re_movie_no,
-                r.re_user_no,
-                r.review_comment,
-                m.movie_no, 
-                t.ticket_no, 
-                t.ticket_user_no, 
-                m.movie_img0, 
-                m.movie_title, 
-                DATE_FORMAT(t.ticket_date, "%Y-%m-%d") AS ticket_date, 
-                DATE_FORMAT(t.ticket_time, "%H시") AS ticket_time, 
-                t.ticket_total_price,
-                t.ticket_cnt,
-                t.ticket_seat,
-                r.review_no IS NOT NULL AS review_written
-            FROM 
-                ticket t
-            JOIN 
-                user u ON t.ticket_user_no = u.user_no
-            JOIN 
-                movie m ON t.ticket_movie_no = m.movie_no
-            LEFT JOIN 
-                review r ON t.ticket_movie_no = r.re_movie_no AND t.ticket_user_no = r.re_user_no
-            WHERE 
-                u.user_no = ?;`,
-        [user_no],
-        function(error, result, field){
-        if (error) {
-            console.error(error);
-            return response.status(500).json({ error: '예매내역 에러' });
-        }
-        response.json(result);
-        console.log(result);
-    });
-});
 // //모든 예매 불러오기
 // router.post('/rev/:user_no', async (request, response) => {
 //     const user_no = request.params.user_no;
@@ -213,6 +227,7 @@ router.post('/rev/:user_no', function(request, response, next){
 //         response.status(500).send("서버 에러");
 //     }
 // });
+
 
 //리뷰 영화 제목 불러오기
 router.post('/reviewtitle', function(request, response, next){
@@ -288,17 +303,29 @@ router.post('/crereview', (request, response) =>{
     const review_rate = request.body.review_rate;
     const re_user_no = request.body.user_no;
     const re_movie_no = request.body.movie_no;
-    console.log('내용 >>', review_comment,'평점 >>',review_rate,'유저넘버 >>',re_user_no,'영화넘버 >>',re_movie_no);
+    const ticket_no = request.body.ticket_no;
+    const ticket_re = request.body.ticket_re;
+    console.log('내용 >>', review_comment,'평점 >>',review_rate,'유저넘버 >>',re_user_no,'영화넘버 >>',re_movie_no,'티켓넘버 >>',ticket_no,'리뷰여부',ticket_re);
     
 
-    db.query(`insert into review (review_rate, review_comment, re_movie_no, re_user_no) values (?,?,?,?);`,
-        [review_rate, review_comment, re_movie_no, re_user_no],
-        (error, result)=>{
+    const insertReviewQuery = `INSERT INTO review (review_rate, review_comment, re_movie_no, re_user_no) VALUES (?, ?, ?, ?);`;
+    db.query(insertReviewQuery, [review_rate, review_comment, re_movie_no, re_user_no], (error, result) => {
         if (error) {
-            console.error(error);
-            return response.status(500).json({ error: '리뷰 작성 도중 에러' });
+            console.error('리뷰 작성 오류:', error);
+            return response.status(500).json({ error: '리뷰 작성 오류' });
         }
-        response.json(result);
+
+        // 티켓 업데이트 쿼리
+        const updateTicketQuery = `UPDATE ticket SET ticket_re = 1 WHERE ticket_no = ?;`;
+        db.query(updateTicketQuery, [ticket_no], (error, result) => {
+            if (error) {
+                console.error('티켓 업데이트 오류:', error);
+                return response.status(500).json({ error: '티켓 업데이트 오류' });
+            }
+
+            // 성공 응답
+            response.json({ message: '리뷰 작성 및 티켓 업데이트 성공' });
+        });
     });
 });
 // 리뷰내역 불러오기
