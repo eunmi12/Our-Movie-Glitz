@@ -36,8 +36,11 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/movies'); // 파일이 저장될 경로
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); // 파일 이름 설정
+        cb(null,file.originalname); // 파일 이름 설정
     }
+    // filename: (req, file, cb) => {
+    //     cb(null, Date.now() + path.extname(file.originalname)); // 파일 이름 설정
+    // }
 });
 
 const upload = multer({ storage: storage });
