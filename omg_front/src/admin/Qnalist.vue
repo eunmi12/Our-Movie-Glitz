@@ -150,7 +150,6 @@ export default {
             }).then(() => {
                 this.$swal('답변이 삭제되었습니다');
                 this.getqnalist();
-                window.location.reload();
             })
         },
         gotowrite(qna_no) {

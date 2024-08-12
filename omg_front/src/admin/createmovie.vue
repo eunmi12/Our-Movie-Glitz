@@ -121,7 +121,9 @@ export default {
             age:"",
             actor:[],
             imgs:[],
-            newimgs:[]
+            newimgs:[],
+            //영화 중복확인
+            exists:false,
             
         }
     },
@@ -285,6 +287,13 @@ export default {
         },
         async CreateMovie(){
             try{
+                const existmovie = await axios.post('http://localhost:3000/movie/moviecheck', { title : this.title });
+                console.log('existmovie->',existmovie.data);
+
+                if(existmovie.data.exists){
+                    this.$swal('이미 영화 등록하셨습니다. 다른 영화를 등록해주세요.');
+                    return;
+                }
                 if(!this.title){
                     this.$swal('제목은 자동입력일텐데... 혹시 지우셨나요?');
                     return;
@@ -311,6 +320,9 @@ export default {
                     this.$swal('상세설명 지우기도 힘드셨을텐데...다시!');
                     return;
                 }
+
+                
+
                 const response = await axios.post(`http://localhost:3000/movie/createMovie`,
                     {
                         title : this.title,

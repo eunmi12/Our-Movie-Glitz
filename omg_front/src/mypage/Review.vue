@@ -5,7 +5,7 @@
       <MypageSideBar />
       <div class="mypagebox">
         <div class="rev_box">
-          <p class="text1">MY 관람평 내역</p>
+          <p class="text1">나의 관람평 내역</p>
           <div v-if="paginatedReviews.length > 0">
             <div v-for="review in paginatedReviews" :key="review.review_no" class="user_review">
               <div class="review_info">
@@ -38,6 +38,7 @@
 import MypageSideBar from '../layouts/MypageSideBar.vue';
 import MypageTop from '../layouts/MypageTop.vue';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   components: {
@@ -72,12 +73,28 @@ export default {
       }
     },
     async delreview(review_no) {
-      try {
-        await axios.post('http://localhost:3000/user/delreview', { review_no });
-        this.userreview();  // 삭제 후 리뷰 목록을 다시 가져옵니다.
-      } catch (error) {
-        console.error("리뷰 삭제 도중 에러 발생", error);
-      }
+      Swal.fire({
+        title: '정말로 리뷰를 삭제하시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '삭제하기',
+        cancelButtonText: '취소하기'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axios.post('http://localhost:3000/user/delreview', { review_no });
+            Swal.fire('삭제되었습니다!', '리뷰가 삭제되었습니다.', 'success');
+            this.userreview();  // 삭제 후 리뷰 목록을 다시 가져옵니다.
+          } catch (error) {
+            console.error("리뷰 삭제 도중 에러 발생", error);
+            Swal.fire('에러 발생', '리뷰 삭제 도중 에러가 발생했습니다.', 'error');
+          }
+        } else {
+          console.log("리뷰 삭제가 취소되었습니다.");
+        }
+      });
     },
     gotoPage(page) {
       if (page > 0 && page <= this.totalPages) {
@@ -93,22 +110,25 @@ export default {
 
 <style scoped>
 .container {
-  width: 80%;
+  width: 90%;
+  max-width: 1200px; /* 최대 너비를 설정하여 화면 크기에 따라 적절히 조정 */
   margin: 0 auto;
   padding: 20px;
   background-color: #fff;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box; /* 패딩과 보더를 너비에 포함시킵니다 */
 }
 
 .mypagemain {
   display: flex;
+  flex-wrap: wrap; /* 콘텐츠가 넘치지 않도록 래핑 */
   margin-top: 20px;
 }
 
 .mypagebox {
-  width: 100%;
-  margin-left: 100px;
+  flex: 1; /* 너비를 유동적으로 조정 */
+  margin-left: 20px; /* 좌측 여백 조정 */
   display: flex;
   flex-direction: column;
   gap: 30px;
@@ -120,6 +140,8 @@ export default {
   border-radius: 10px;
   background-color: #f9f9f9;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 100%; /* 너비를 100%로 설정하여 부모 요소에 맞게 조정 */
+  box-sizing: border-box; /* 패딩과 보더를 너비에 포함시킵니다 */
 }
 
 .text1 {
@@ -134,30 +156,35 @@ export default {
   margin-bottom: 20px;
   border-bottom: 1px solid #ddd;
   padding-bottom: 10px;
+  overflow: hidden; /* 자식 요소가 넘치지 않도록 처리 */
 }
 
 .review_info {
   display: flex;
+  flex-wrap: wrap; /* 내용이 넘치지 않도록 래핑 */
   justify-content: space-between;
   font-weight: bold;
 }
 
 .review_details {
   display: flex;
+  flex-wrap: wrap; /* 내용이 넘치지 않도록 래핑 */
   justify-content: space-between;
   padding-top: 10px;
 }
 
 .review_title {
   font-weight: bold;
+  flex: 1; /* 제목의 너비를 유동적으로 조정 */
 }
 
 .review_date {
   color: #888;
+  flex: 1; /* 날짜의 너비를 유동적으로 조정 */
 }
 
 .review_comment {
-  flex-grow: 2;
+  flex: 2; /* 댓글의 너비를 유동적으로 조정 */
 }
 
 .review_like, .review_rate {
@@ -169,16 +196,19 @@ export default {
   border: 1px solid pink;
   background-color: pink;
   color: rgb(123, 122, 122);
-  width: 80px;
+  width: 100%; /* 버튼 너비를 100%로 조정하여 부모 요소에 맞게 조정 */
+  max-width: 120px; /* 최대 너비를 설정 */
   height: 30px;
-  margin-left: 830px;
+  display: block; /* 블록 요소로 표시 */
+  text-align: center; /* 버튼 텍스트 가운데 정렬 */
+  margin-left: 0; /* 좌측 여백 제거 */
 }
 
 .paging {
   display: flex;
+  flex-wrap: wrap; /* 페이지 네비게이션이 넘치지 않도록 래핑 */
   list-style: none;
   padding: 0;
-  margin-left: 400px;
   margin-top: 20px;
   justify-content: center;
 }
@@ -195,6 +225,7 @@ export default {
   color: #333;
   text-decoration: none;
   cursor: pointer;
+  text-align: center; /* 페이지 번호 가운데 정렬 */
 }
 
 .paging a.active {

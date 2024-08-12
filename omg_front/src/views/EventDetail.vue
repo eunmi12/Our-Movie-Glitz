@@ -8,6 +8,7 @@
             <div class="main2">
               <!-- <img :src="getImagePath(event.event_img2)" alt="이벤트 이미지당"> -->
               <img src="../../../omg_back/uploads/event/11-1.webp" alt="이벤트 이미지">
+
             </div>
             <div class="notice-btn">
             <button class="top" @click="gototop">▲Top</button>
@@ -53,13 +54,33 @@ export default {
         top: 0,
         behavior: 'smooth'
       });
-    }
+    },
+    getImagePath2(imageName) {
+        if (!imageName) {
+            // 이미지 이름이 없을 경우 기본 이미지 또는 빈 문자열을 반환합니다.
+            return '';  // 또는 'path/to/default/image.jpg' 와 같은 기본 이미지 경로
+        }
+        try {
+            return require(`../../../omg_back/uploads/event/${imageName}`);
+        } catch (error) {
+            console.error('Error loading image:', error);
+            return ''; // 이미지 로드에 실패했을 경우 빈 문자열 또는 기본 이미지 경로
+        }
+    },
+    //  getImagePath2(imageName) {
+    //     return require(`../../../omg_back/uploads/event/${imageName}`);
+    //     // D:\이젠\OMG\Our-Moive-Glitz\omg_back\uploads\event
+    //     },
   },
 };
 
 </script>
 
 <style scoped>
+.main1{
+  width:80%;
+  margin:0 auto;
+}
 .title{
     height: 50px;
     display: flex;

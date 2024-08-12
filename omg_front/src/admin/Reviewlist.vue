@@ -27,7 +27,7 @@
             <span class="rate-value">{{ review.review_rate }} / 5</span>
             <span class="user-value">{{ review.user_name }}</span>
             <span class="date-value">{{ new Date(review.review_date).toISOString().split('T')[0] }}</span>
-            <span class="del-value"><button class="delete" @click="gotodelete(review.review_no)">삭제</button></span>
+            <span class="del-value"><button class="delete" @click.stop="gotodelete(review.review_no)">삭제</button></span>
         </div>
           <div :class="['review_comt_container', 'review_comt_container'+review.review_no, showreview ? 'show' : '']">
             <div class="comt-value"><span>{{ review.review_comment }}</span></div>
@@ -121,18 +121,29 @@ export default {
                 this.review = results.data;
             });
         },
-        gotodelete(review_no){
-            console.log(review_no);
-            axios({
-                url: "http://localhost:3000/admin/deletereview",
-                method: "POST",
-                data: {
-                    review_no: review_no
+
+        gotodelete(review_no) {
+            this.$swal({
+                title: `정말 삭제하시겠습니까?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '삭제',
+                cancelButtonText: '취소',
+                reverseButtons: true,
+            }).then(result => {
+                if (result.value) {
+                    axios({
+                        url: `http://localhost:3000/admin/deletereview`,
+                        method: "POST",
+                        data: {
+                            review_no: review_no
+                        },
+                    }).then(() => {
+                            this.$swal("삭제되었습니다.");
+                            this.getreview();
+                    })
                 }
-            }).then(() => {
-                this.$swal('관람평이 삭제되었습니다');
-                this.getreview();
-            })
+            });
         },
         sortreview() {
             this.currentPage = 1;

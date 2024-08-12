@@ -6,7 +6,7 @@
       <div class="mypagebox">
         <div class="qna_box">
           <div>
-            <span class="text1">MY 문의 내역</span>
+            <span class="text1">나의 문의 내역</span>
             <button class="bt" @click="gotohelp">문의하기</button>
           </div>
           <div v-if="paginatedHelpcenter.length > 0">
@@ -40,6 +40,7 @@
 import MypageSideBar from '../layouts/MypageSideBar.vue';
 import MypageTop from '../layouts/MypageTop.vue';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   components: {
@@ -86,12 +87,28 @@ export default {
       }
     },
     async delqna(qna_no) {
-      try {
-        await axios.post('http://localhost:3000/user/delqna', { qna_no });
-        this.userqna();  // 삭제 후 문의내역을 다시 가져옵니다.
-      } catch (error) {
-        console.error("QnA 삭제 도중 에러 발생", error);
-      }
+      Swal.fire({
+        title: '정말로 문의를 삭제하시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '삭제하기',
+        cancelButtonText: '취소하기'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axios.post('http://localhost:3000/user/delqna', { qna_no });
+            Swal.fire('삭제되었습니다!', '문의가 삭제되었습니다.', 'success');
+            this.userqna();  // 삭제 후 문의내역을 다시 가져옵니다.
+          } catch (error) {
+            console.error("QnA 삭제 도중 에러 발생", error);
+            Swal.fire('에러 발생', '문의 삭제 도중 에러가 발생했습니다.', 'error');
+          }
+        } else {
+          console.log("문의 삭제가 취소되었습니다.");
+        }
+      });
     },
     getQnaType(qna_type) {
       const types = {
