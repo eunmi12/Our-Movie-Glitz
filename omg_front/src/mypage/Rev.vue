@@ -5,7 +5,7 @@
       <MypageSideBar />
       <div class="mypagebox">
         <div class="rev_box">
-          <p class="text1">MY 예매내역</p>
+          <p class="text1">나의 예매내역</p>
           <div v-if="reservations.length > 0">
             <div v-for="(rev, index) in paginatedReservations" :key="rev.ticket_no" class="user_rev" @click="revtoggle(index)">
               <div class="rev_info">

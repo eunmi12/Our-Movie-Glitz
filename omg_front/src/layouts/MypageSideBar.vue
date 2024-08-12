@@ -12,7 +12,8 @@
         <div class="sub-text" @click="gotoganpyun">&bull; 간편 로그인</div>
       </div>
       <div class="text" @click="goToAboutPage8">&bull; 나의 관람평내역</div>
-      <div class="text" @click="goToAboutPage7">&bull; 나문희내역</div>
+      <div class="text" @click="goToAboutPage7">&bull; 나의 문의 내역</div>
+      <div class="text" @click="goToAboutPage9">&bull; 나의 관심영화 내역</div>
     </div>
   </div>
 </template>
@@ -57,6 +58,9 @@ export default {
     },
     goToAboutPage8() {
       this.$router.push(`/review/${this.user.user_no}`);
+    },
+    goToAboutPage9() {
+      this.$router.push(`/wish/${this.user.user_no}`)
     },
     gotoganpyun() {
       this.$router.push(`/ellogin/${this.user.user_no}`)
