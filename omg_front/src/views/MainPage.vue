@@ -2,11 +2,11 @@
     <div class="good">
       <div class="carousel">
         <!-- <img src="../images/mainpage/movie/액션1.png" alt=""> -->
-        <video src="../videos/영화1.mp4" autoplay muted loop></video>
+        <video src="../videos/영화1.mp4" autoplay muted></video>
         <!-- <video src="../videos/영화1.mp4"><a href=""></a></video> -->
         <strong class="main_name">파일럿</strong>
-        <span class="main_sname">파일럿의 상세내용 입니다.<br>asdsadsadasdsadsa</span>
-        <div class="main_select"><a href="http://localhost:8081/MovieDetail/25" id="select">상세보기</a></div>
+        <span class="main_sname">하루 아침에 인생 추락한 스타 파일럿<br>제 2의 인생 이륙 준비 중!</span>
+        <div class="main_select"><a href="http://localhost:8081/MovieDetail/1" id="select">상세보기</a></div>
       </div>
   
       <div class="list">
@@ -17,7 +17,7 @@
               <dl class="type">
                 <dt>
                   <span>{{ tag }}</span>
-                  <a href="" class="btn_more">더보기</a>
+                  <a href="http://localhost:8081/movielist" class="btn_more">더보기</a>
                 </dt>
                 <dd v-for="movie in movielists[index]" :key="movie.movie_no">
                   
@@ -29,6 +29,7 @@
                       <span>{{ movie.movie_title }}</span>
                       <strong >{{ movie.review_rate ? movie.review_rate +'점': '평점 정보 없음' }}</strong>
                     </div>
+                    <img id="star" src="/star.18cbf3b3.png" alt="">
                   </a>
                 </dd>
               </dl>
@@ -140,6 +141,10 @@ export default {
 </script>
 
 <style scoped>
+#star {
+  width: 7%;
+  margin-top: 20px;
+}
 /* 전체 캐러셀 컨테이너 스타일 */
 .carousel {
     display: flex;
@@ -174,7 +179,7 @@ export default {
   top: 239px;
   left: 200px;
   max-width: 100%;
-  width: 230px;
+  /* width: 230px; */
   font-size: 20px;
   color: #fff;
   line-height: 1.450em;
@@ -193,7 +198,7 @@ export default {
 }
 #select{
   display: block;
-  padding: 5px 30px 5px 18px;
+  padding: 5px 18px 5px 18px;
   font-size: 14px;
   color: #343434;
   line-height: 1.429em;
@@ -298,11 +303,12 @@ align-items: center; /* 수직으로 가운데 정렬 */
   flex-direction: column;
   padding-left: 15px;
 }
-.type dd a .img_wrapinfo span{
-  font-weight: 500;
-  font-size: 14px;
-  color: #222;
-  line-height: 1.429em;
+.type dd a .img_wrapinfo span {
+  display: inline-block;
+  width: 8em; /* 8글자에 맞는 너비로 설정 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .type dd a .img_wrapinfo strong{
   font-weight: 700;
@@ -310,7 +316,9 @@ align-items: center; /* 수직으로 가운데 정렬 */
   color: #222;
   letter-spacing: -0.020em;
   line-height: 1.444em;
+  
 }
+
 .events{
   overflow: hidden;
   position: relative;
