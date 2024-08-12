@@ -48,6 +48,7 @@
                 </div>
                 <div>
                     <button class="payment-btn" @click="requestPay()">결제하기</button>
+                    <button class="cancle-btn" @click="canclePay()">취소하기</button>
                 </div>
             </div>
         </div>
@@ -67,6 +68,7 @@ export default {
                 ticket_date: {},
                 ticket_total_price: {}, // 전체 결제금액 (할인쿠폰이 있다면 사용하기 전)
                 uc_coupon_no: [],
+                ticket_no: [],
             },
             coupons: [],
             selectedCoupon: null,
@@ -120,8 +122,9 @@ export default {
                     this.ticket_no = response.data[0].ticket_no;
                     // 영화 번호도 저장
                     this.movie_no = response.data[0].ticket_movie_no;
+                    this.finalPrice = this.ticket.ticket_total_price; // 티켓 금액을 최종 결제 금액으로 설정
                 } else {
-                    alert ('티켓정보를 불러올 수 없습니다.');
+                    this.$swal ('티켓정보를 불러올 수 없습니다.');
                 }
             } catch (error) {
                 console.error('티켓 정보 오류:', error);
@@ -178,13 +181,13 @@ export default {
                 });
 
                 if(response.status === 200) {
-                    alert('쿠폰이 적용되었습니다.');
+                    this.$swal('쿠폰이 적용되었습니다.');
                 } else {
-                    alert('쿠폰 적용에 실패했습니다.');
+                    this.$swal('쿠폰 적용에 실패했습니다.');
                 }
             } catch (error) {
                 console.error('쿠폰 적용 오류', error);
-                alert('쿠폰 적용 중 오류 발생');
+                this.$swal('쿠폰 적용 중 오류 발생');
             }
         },
         calculateDiscount(couponNo) {
@@ -284,10 +287,11 @@ export default {
                     user_no: this.$store.state.user.user_no,
                     payment_type: 1,
                     couponId: this.selectedCoupon,
+                    ticket_no: this.ticket.ticket_no, // 티켓 번호 추가
                 }
             })
             .then(() => {
-                alert('영화예약이 완료되었습니다.');
+                this.$swal('영화예약이 완료되었습니다.');
             })
 
             const IMP = window.IMP;
@@ -327,15 +331,35 @@ export default {
                         couponId: this.selectedCoupon,
                         payment_type: 1,
                         couponId: this.selectedCoupon,
+                        ticket_no: this.ticket.ticket_no, // 티켓 번호 추가
                     }
                 })
                 .then(() => {
-                    alert('영화예매가 완료되었습니다');
+                    this.$swal('영화예매가 완료되었습니다');
                     window.location.href = "http://localhost:8081/";
                 })
             }
         })
 
+        },
+
+        canclePay() {
+            axios ({
+                url: `http://localhost:3000/movie/canclePay`,
+                method: "POST",
+                data: {
+                    ticket_no: this.ticket.ticket_no, // 티켓 넘버 보냄
+                }
+            })
+            .then(() => {
+                this.$swal('예매가 정상적으로 취소되었습니다.');
+                // window.location.href = "http://localhost:8081/";
+                this.$router.push('/')
+            })
+            .catch((error) => {
+                console.error('예매 취소 오류', error);
+                this.$swal('예매 취소 중 오류가 발생했습니다.');
+            });
         },
 
         async handleCashPayment() {
@@ -362,14 +386,14 @@ export default {
                         // console.log('결과요결과', results);
                         if (results.status === 200) {
                             // 결제 정보 전송 성공하면 메인페이지로 이동
-                            alert ('예매완료. 30분 이내에 입금하지 않을시 예매 취소됨.');
+                            this.$swal ('예매완료. 30분 이내에 입금하지 않을시 예매 취소됨.');
                             this.$router.push({ name: 'MainPage' });
                         } else {
-                            alert('다시 시도해주세요.');
+                            this.$swal('다시 시도해주세요.');
                         }
                     } catch (error) {
                         console.error('결제 정보 전송 오류:', error);
-                        alert('다시 시도해주세요.');
+                        this.$swal('다시 시도해주세요.');
                     }
                     // 확인 클릭하면 메인 페이지로 이동
                     // alert ('30분 이내에 결제해주세요.');
@@ -437,7 +461,7 @@ export default {
 }
 
 .discount select {
-    width: 12%; /* 드롭다운의 폭을 조정합니다. 필요에 따라 조절 가능 */
+    width: 19%; /* 드롭다운의 폭을 조정합니다. 필요에 따라 조절 가능 */
     padding: 5px; /* 드롭다운의 내부 여백을 조정합니다 */
     border: 2px solid #ccc; /* 드롭다운의 테두리 스타일 */
     border-radius: 4px; /* 드롭다운의 모서리 둥글게 처리 */
@@ -478,7 +502,19 @@ export default {
     margin-top: 70px;
     position: absolute; /* 부모 요소를 기준으로 절대 위치 설정 */
     bottom: 0; /* 부모 요소의 하단에 위치 */
-    left: 50%;
+    left: 40%;
+    transform: translateX(-50%); /* 가로 방향 중앙 정렬 */
+}
+
+.cancle-btn {
+    padding: 10px 20px;
+    background-color: #e9ec8d;
+    border: none;
+    cursor: pointer;
+    margin-top: 70px;
+    position: absolute; /* 부모 요소를 기준으로 절대 위치 설정 */
+    bottom: 0; /* 부모 요소의 하단에 위치 */
+    left: 60%;
     transform: translateX(-50%); /* 가로 방향 중앙 정렬 */
 }
 

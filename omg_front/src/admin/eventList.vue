@@ -8,13 +8,16 @@
             <div class="event_list">
                 <table>
                     <thead>
-                        <tr class="list_title">
+                        <tr v-if="eventlist.length > 0" class="list_title">
                             <th class="event_no">이름</th>
                             <th class="event_name">제목</th>
                             <th class="event_name">시작일</th>
                             <th class="event_name">마감일</th>
                             <th class="event_name">조회수</th>
                             <th class="event_update">삭제하기</th>
+                        </tr>
+                        <tr style="border-bottom:none; font-size:26px;" v-else>
+                            이벤트를 등록해주세요.
                         </tr>
                     </thead>
                     <tbody>
@@ -30,7 +33,7 @@
                 </table> 
             </div>
             <br>    
-            <div class="pagination">
+            <div v-if="eventlist.length > 0" class="pagination">
                 <ul class="number_box">
                     <li @click="prevPageGroup" :class="{disabled: currentPageGroup === 1}"><img src="../images/prev.png"/></li>
                     <li v-for="page in currentGroupPages" :key="page" @click="changePage(page)" :class="{active: page === currentPage}">

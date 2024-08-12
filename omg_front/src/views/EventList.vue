@@ -17,7 +17,7 @@
                             <li v-for="(event, i) in event" :key="i">
                                 <a :href="'http://localhost:8081/EventDetail/' + event.event_no" @click="upeventcnt(event.event_no)">
                                     <div class="event_img">
-                                        <img src="../images/mainpage/events/이벤트3.jpg">
+                                        <img :src="getImagePath2(event.event_img1)" alt="이벤트 이미지당">
                                     </div>
                                     <div class="event_text">
                                         <p class="text1">
@@ -63,6 +63,19 @@ export default {
         sortoption(event) {
             const selectedValue = event.target.value;
             this.getEventList(selectedValue);
+        },
+        getImagePath2(imageName) {
+        return require(`../../../omg_back/uploads/event/${imageName}`);
+        // D:\이젠\OMG\Our-Moive-Glitz\omg_back\uploads\event
+        },
+        upeventcnt(event_no){
+            console.log('event확인',event_no);
+                try {
+                     axios.post(`http://localhost:3000/user/maineventcnt`,{event_no :event_no});
+                    console.log(`이벤트 번호 ${event_no}의 조회수가 증가했습니다.`);
+                } catch (error) {
+                    console.error(`이벤트 번호 ${event_no}의 조회수 증가 중 오류 발생:`, error);
+                }
         },
     },
 };

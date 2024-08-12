@@ -10,7 +10,8 @@
                     <li v-for="(movie, i) in movies" :key="i" @click="selectMovie(movie)" :class="{ selected: selectedMovie && selectedMovie.movie_no === movie.movie_no }" style="display: flex;">
                         <!-- &nbsp; : 띄어쓰기 -->
                         <span class="movie-title">{{ movie.movie_title }}</span>&nbsp;&nbsp;
-                        <span class="movie-age">{{ movie.movie_age }}</span>
+                        <!-- 삼항연산자 사용 -->
+                        <span class="movie-age">{{ movie.movie_age === 1 ? 'All' : movie.movie_age }}</span>
                     </li>
                 </ul>
             </div>
@@ -50,7 +51,7 @@
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <!-- Confirm booking -->
            <div class="confirm-booking">
-            <button @click="goToSeatSelection" :disabled="!selectedMovie || !selectedDate || !selectedTime">좌석 선택으로 이동</button>
+            <button @click="goToSeatSelection()" :disabled="!selectedMovie || !selectedDate || !selectedTime">좌석 선택으로 이동</button>
              <!-- <button @click="goToSeatSelection()">좌석 선택으로 이동</button> -->
            </div>
           
@@ -177,13 +178,13 @@
                 this.cinemas = results.data;
                 // 현재 상영관이 없는 영화는 알럿 띄움
                 if (this.cinemas.length === 0) {
-                    alert('현재 상영 중이지 않은 영화입니다.');
+                    this.$swal('현재 상영 중이지 않은 영화입니다.');
                 } else {
                     this.currentStep = 2;
                 }
             }).catch(error => {
                 console.error('상영관 정보를 불러올 수 없습니다.', error);
-                alert('상영관 정보를 불러올 수 없습니다.');
+                this.$swal('상영관 정보를 불러올 수 없습니다.');
             });
         },
         selectCinema(cinema) {
@@ -215,14 +216,14 @@
                 };
             });
             if (this.availableDates.length === 0) {
-                alert('해당 영화의 상영 일정이 없습니다.');
+                this.$swal('해당 영화의 상영 일정이 없습니다.');
                 this.currentStep = 2;
             } else {
                 this.currentStep = 3;
             }
             }).catch(error => {
                 console.error('상영 날짜를 불러오는 중 오류가 발생했습니다.', error);
-                alert('상영 날짜를 불러오는 중 오류가 발생했습니다.');
+                this.$swal('상영 날짜를 불러오는 중 오류가 발생했습니다.');
             });
         },
         selectDate(date) {
@@ -251,14 +252,14 @@
                 this.times = results.data;
                 // console.log('rerererere', results.data);
                 if (this.times.length === 0) {
-                    alert('해당 영화의 상영 일정이 없습니다.');
+                    this.$swal('해당 영화의 상영 일정이 없습니다.');
                     this.currentStep = 3;
                 } else {
                     this.currentStep = 4;
                 }
             }).catch(error => {
                 console.error('상영 시간을 불러오는 중 오류가 발생했습니다.', error);
-                alert('상영 시간을 불러오는 중 오류가 발생했습니다.');
+                this.$swal('상영 시간을 불러오는 중 오류가 발생했습니다.');
             });
         },
         selectTime(time) {
@@ -271,10 +272,25 @@
         goToSeatSelection() {
             // 예매 전(좌석선택 전) 로그인여부 체크
             if (!this.$store.state.user.user_no) {
-                alert ('로그인 후 이용 가능합니다.');
+                this.$swal ('로그인 후 이용 가능합니다.');
                 this.$router.push('/login'); // 로그인 페이지로 리다이렉트
                 return;
             }
+
+            // 현재 사용자의 나이 가져오기
+            const userBirthdate = this.$store.state.user.user_age; // 'YYYY-MM-DD' 형식
+            const userBirthdateMoment = moment(userBirthdate, 'YYYY-MM-DD');
+            const currentAge = moment().diff(userBirthdateMoment, 'years'); // 현재 나이 계산
+
+            // 선택된 영화의 나이 등급
+            const movieAge = this.selectedMovie.movie_age;
+
+            // 사용자의 나이가 영화이 나이 등급 이상인지 확인
+            if (currentAge < movieAge) {
+                this.$swal(`이 영화는 ${movieAge}세 이상 관람 가능합니다.`);
+                return;
+            }
+
 
             if (this.selectedMovie && this.selectedCinema && this.selectedDate && this.selectedTime) {
                 axios({
@@ -289,6 +305,7 @@
                     }
                 }).then(results => {
                     console.log('예매 정보 저장 완료');
+
                 })
             }
             // axios({
@@ -422,7 +439,7 @@
   
   .movie-age {
     border: 1px solid #000000;
-    width: 20px;
+    width: 25px;
     height: 20px;
     /* background-color: #d54646; */
     color: #312b2b;

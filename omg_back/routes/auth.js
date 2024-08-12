@@ -126,6 +126,7 @@ router.post("/login", async(req, res) => {
                 user_auth: user.user_auth,
                 user_name: user.user_name,
                 user_age : user.user_age,
+
               })
             } else{
               res.send({

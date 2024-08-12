@@ -6,7 +6,7 @@
       <div class="mypagebox">
         <div class="qna_box">
           <p class="text1">
-            MY 문의내역
+            나의 문의내역
           </p>
           <div class="user_qna_detail" v-for="(qna, i) in helpdetail" :key="i">
             <div class="qna_detail_title">
@@ -37,6 +37,7 @@
 import MypageSideBar from '../layouts/MypageSideBar.vue';
 import MypageTop from '../layouts/MypageTop.vue';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   components: {
@@ -63,24 +64,40 @@ export default {
         this.helpdetail = response.data;
         console.log("this.userqnadetail",this.helpdetail);
       } catch (error) {
-        console.error("문희내역 에러 발생", error);
+        console.error("문의내역 에러 발생", error);
       }
     },
     getQnaType(qna_type) {
     const types = {
-      0: '문희유형 : 예매',
-      1: '문희유형 : 이벤트',
-      2: '문희유형 : 멤버쉽'
+      0: '문의유형 : 예매',
+      1: '문의유형 : 이벤트',
+      2: '문의유형 : 멤버쉽'
     };
     return types[qna_type] || '기타';
     },
     async delqna(qna_no) {
-    try {
-      await axios.post('http://localhost:3000/user/delqna', { qna_no });
-      this.$router.go(-1); // 이전 페이지로 이동
-    } catch (error) {
-      console.error("QnA 삭제 도중 에러 발생", error);
-    }
+      Swal.fire({
+        title: '정말로 문의를 삭제하시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '삭제하기',
+        cancelButtonText: '취소하기'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axios.post('http://localhost:3000/user/delqna', { qna_no });
+            Swal.fire('삭제되었습니다!', '문의가 삭제되었습니다.', 'success');
+            this.$router.go(-1); // 삭제 후 이전 페이지로 이동
+          } catch (error) {
+            console.error("QnA 삭제 도중 에러 발생", error);
+            Swal.fire('에러 발생', '문의 삭제 도중 에러가 발생했습니다.', 'error');
+          }
+        } else {
+          console.log("문의 삭제가 취소되었습니다.");
+        }
+      });
     },
   },
   created() {

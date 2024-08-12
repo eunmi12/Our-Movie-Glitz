@@ -5,7 +5,7 @@
       <MypageSideBar />
       <div class="mypagebox">
         <div class="rev_box">
-          <p class="text1">MY 쿠폰</p>
+          <p class="text1">나의 쿠폰</p>
           <div v-if="paginatedCoupons.length > 0">
             <div v-for="cp in paginatedCoupons" :key="cp.coupon_no" class="user_coupon">
               <div class="coupon_info">

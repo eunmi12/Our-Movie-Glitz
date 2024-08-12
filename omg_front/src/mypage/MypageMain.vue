@@ -6,7 +6,7 @@
       <div class="mypagebox">
         <!-- 예매내역 섹션 -->
         <div class="rev_box">
-          <p class="text1">MY 예매내역</p>
+          <p class="text1">나의 예매내역</p>
           <div v-if="paginatedReservations.length > 0">
             <div v-for="rev in paginatedReservations" :key="rev.ticket_no" class="user_rev">
               <div class="rev_info">
@@ -30,7 +30,7 @@
 
         <!-- 문의내역 섹션 -->
         <div class="qna_box">
-          <p class="text1">MY 문의내역</p>
+          <p class="text1">나의 문의내역</p>
           <div v-if="paginatedHelpcenter.length > 0">
             <div v-for="qna in paginatedHelpcenter" :key="qna.qna_no" class="user_qna">
               <div class="qna_info">
@@ -45,11 +45,11 @@
 
         <!-- 리뷰내역 섹션 -->
         <div class="rev_box">
-          <p class="text1">MY 관람평 내역</p>
+          <p class="text1">나의 관람평 내역</p>
           <div v-if="paginatedReview.length > 0">
             <div v-for="reviews in paginatedReview" :key="reviews.review_no" class="user_review">
               <div class="review_info">
-                <span class="review_title">{{ reviews.movie_title }}</span>
+                <span class="review_title" @click="gotoreview">{{ reviews.movie_title }}</span>
                 <span class="review_date">{{ reviews.review_date }}</span>
               </div>
               <div class="review_details">
@@ -71,6 +71,7 @@
 import MypageSideBar from '../layouts/MypageSideBar.vue';
 import MypageTop from '../layouts/MypageTop.vue';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   components: {
@@ -148,19 +149,30 @@ export default {
       }
     },
     async movie(ticket_no){
-      if (confirm('정말로 예매 취소 하시겠습니까?')) {
-        const user_no = this.user.user_no; // user_no를 this.user에서 가져옴
-        try {
-          const response = await axios.post('http://localhost:3000/user/canclemovie', { user_no, ticket_no });
-          console.log("예매 취소 성공", response.data);
-          this.$swal('예매가 취소되었습니다.');
-          this.userrev(); // 예매 내역을 다시 불러와서 갱신
-        } catch (error) {
-          console.error("예매 취소 도중 에러 발생", error);
+      Swal.fire({
+        title: '정말로 예매 취소 하시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '예매취소',
+        cancelButtonText: '취소하기'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const user_no = this.user.user_no; // user_no를 this.user에서 가져옴
+          try {
+            const response = await axios.post('http://localhost:3000/user/canclemovie', { user_no, ticket_no });
+            console.log("예매 취소 성공", response.data);
+            Swal.fire('취소되었습니다!', '예매가 취소되었습니다.', 'success');
+            this.userrev(); // 예매 내역을 다시 불러와서 갱신
+          } catch (error) {
+            console.error("예매 취소 도중 에러 발생", error);
+            Swal.fire('에러 발생', '예매 취소 도중 에러가 발생했습니다.', 'error');
+          }
+        } else {
+          console.log("예매 취소가 취소되었습니다.");
         }
-      } else {
-        console.log("예매 취소가 취소되었습니다.");
-      }
+      });
     },
     getPaginated(items, type) {
       const limit = this.expanded[type] ? items.length : this.itemsPerSection;
@@ -174,6 +186,7 @@ export default {
   }
 }
 </script>
+
 
 <style scoped>
 .container {
@@ -235,7 +248,9 @@ export default {
 .rev_title, .qna_title, .review_title {
   font-weight: bold;
 }
-
+.review_title {
+  cursor: pointer;
+}
 .qna_title {
   cursor: pointer;
 }
