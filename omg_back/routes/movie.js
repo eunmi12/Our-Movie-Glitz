@@ -597,7 +597,7 @@ router.post('/ticketNo', (req, res) => {
 // })
 router.post('/orderPay', (req, res, next) => {
     const order = req.body;
-    console.log(order);
+    // console.log(order);
 
     // 결제 정보 저장
     db.query(`insert into payment
@@ -616,7 +616,7 @@ router.post('/orderPay', (req, res, next) => {
                         db.query(`update user_coupon set uc_coupon_able = 0 where uc_coupon_no = ? and uc_user_no = ?`, [couponId, userNo], (err, results) => {
                             if (err) {
                                 console.error('쿠폰 상태 업데이트 오류', err);
-                                return res.status(200).json({message: '결제는 성공했으나 쿠폰상태 업테이트 실패'});
+                                return res.status(200).json({message: '결제는 성공했으나 쿠폰상태 업데이트 실패'});
                             }
                             return res.status(200).json(results);
                         });
@@ -652,7 +652,27 @@ router.post('/applyCoupon', (req, res, next) => {
         res.status(200).json(results);
     });
 });
+// 결제 - 예매 취소
+router.post('/canclePay', (req, res, next) => {
+    console.log('취소가능하겠니?', req.body);
+    // 1. 좌석 이름을 가져오는 쿼리
+    db.query(`select ticket_seat from ticket where ticket_no = ?`, [req.body.ticket_no], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: '예매 취소 실패: 좌석 이름 조회 오류' });
+        }
 
+        // 좌석 이름 배열 생성
+        const seatNames = result.map(row => row.ticket_seat);
+
+        // 2. 좌석 상태를 업데이트 하는 쿼리
+        db.query(`update seat set seat_reserve = 1 where seat_name in (?)`, [seatNames], (error, results) => {
+            if(err) {
+                return res.status(500).json({ message: '예매 취소 실패' });
+            }
+            return res.status(200).json(results);
+        });
+    });
+});
 //아름작성 완
 
 //회창작성
