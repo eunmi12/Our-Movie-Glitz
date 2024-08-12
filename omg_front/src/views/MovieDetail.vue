@@ -8,7 +8,7 @@
                     <div class="detail_director">영화 감독 : {{movielist.movie_director}}</div>
                     <div class="detail_actor"> 출연 배우: {{movielist.movie_actor}}</div>
                     <div class="detail_genre"> 장르 : {{movielist.movie_tag}} </div>
-                    <div class="detail_age"> 연령 등급: {{movielist.movie_age}}</div>
+                    <div class="detail_age"> 연령 등급: {{movie_age}}</div>
                     <div class="detail_startdate"> 개봉일 : {{movielist.movie_startdate}} </div> 
                 <button class="reservebtn" @click="gotoreserve">예매하기</button>
                 <button class="wishbtn" @click="addwishlist(movielist.movie_no)">♥</button>
@@ -19,6 +19,13 @@
             </div>
             <div class="moviedetail_content">
                 {{movielist.movie_comment}}
+            </div>
+            <div class="movie_img">
+                <h1>스틸컷</h1>
+            </div>
+            <div class="moviedetail_content">
+                <img :src="getImagePath(movielist.movie_img1)" alt="영화 이미지">
+                <img :src="getImagePath(movielist.movie_img2)" alt="영화 이미지">
             </div>
             <div class="moviedetail_review">
                 <h2>관람후기</h2>
@@ -80,6 +87,15 @@ export default {
       user(){
         return this.$store.state.user;
       },  
+      movie_age(){
+        const age = {
+            1 : '전체이용가',
+            12 : '12+',
+            15 : '15+',
+            19 : '청소년 관람 불가'
+        }
+        return age[this.movielist.movie_age];
+      }
     },
     created() {
         this.getMovieList();
@@ -104,6 +120,9 @@ export default {
         },
         getImagePath(image){
             return (`https://image.tmdb.org/t/p/w500/${image}`);
+        },
+        getMovieImg(image){
+            
         },
         async getReviewList(){
             const movie_no = this.$route.params.movie_no;
@@ -220,6 +239,13 @@ h1{
     margin-left:10px;
     text-align: left;
 }
+.movie_img{
+    width:50%;
+    display: block;
+    margin: 0 auto;
+    margin-top:50px;
+}
+
 .detail_title{
     width:100%;
     font-size:36px;
