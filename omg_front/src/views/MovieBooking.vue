@@ -123,7 +123,7 @@
         fetchMovies() {
             if (this.loading) return;
             this.loading = true;
-            axios.get(`http://localhost:3000/movie/movies/page`, {
+            axios.get(`http://localhost:3000/movie/movies`, {
                 params: {
                     limit: this.limit,
                     offset: this.offset,
@@ -139,18 +139,23 @@
             });
         },
         handleScroll(event) {
-            if (!this.selectedMovie) {
-                console.error('선택된 영화가 없습니다.');
-                return;
-            }
-            if (!this.movie_no) {
-                console.error('무비넘버가 스크롤 될 때 찾을 수 없음');
-                return;
-            }
+            // if (!this.selectedMovie) {
+            //     console.error('선택된 영화가 없습니다.');
+            //     return;
+            // }
+            // if (!this.movie_no) {
+            //     console.error('무비넘버가 스크롤 될 때 찾을 수 없음');
+            //     return;
+            // }
+            // const container = event.target;
+            // if (container.scrollHeight - container.scrollTop <= container.clientHeight + 10) {
+            //     this.fetchMovies();
+            //     this.fetchAvailableDates();
+            if (this.loading || !this.selectedMovie) return;
+
             const container = event.target;
-            if (container.scrollHeight - container.scrollTop <= container.clientHeight + 10) {
+            if(container.scrollHeight - container.scrollTop <= container.clientHeight + 10) {
                 this.fetchMovies();
-                this.fetchAvailableDates();
             }
         },
         selectMovie(movie) {

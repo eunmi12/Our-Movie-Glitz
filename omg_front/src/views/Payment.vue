@@ -35,12 +35,13 @@
                 <div class="select-pay">
                     <h3>결제수단 선택</h3>
                     <div>
+                        <!-- id 속성을 추가하여 label의 for 속성과 매칭되도록 설정 -->
                         <input id="payment-by-card" name="how" type="radio" value="card" v-model="how" />
-                        <label for="how-card" @click="requestPay">신용카드</label>
+                        <label for="payment-by-card">신용카드</label>
                     </div>
                     <div>
                         <input id="payment-by-cash" name="how" type="radio" value="cash" v-model="how" @change="handleCashPayment" />
-                        <label for="how-cash">무통장입금</label>
+                        <label for="payment-by-cash">무통장입금</label>
                     </div>
                     <div class="account-info">
                         계좌번호: (이젠은행)111-2222-33333
@@ -73,6 +74,7 @@ export default {
             coupons: [],
             selectedCoupon: null,
             finalPrice: 0,
+            isPaymentComplete: false,
         };
     },
 
@@ -80,6 +82,7 @@ export default {
         this.getTicket();
         // this.getTitle();
         this.fetchCoupons(); // 컴포넌트 생성 시 쿠폰 데이터 가져오기
+        this.setupBeforeUnloadHandler();
     },
 
     computed: {
@@ -249,24 +252,41 @@ export default {
         //         console.error('결제 요청 오류:', error);
         //     }
         // }
+        
+        // 결제완료 혹은 결제취소를 하지 않고 페이지를 이동하면 좌석상태 다시 1로 변경
+        setupBeforeUnloadHandler() {
+            window.onbeforeunload = (event) => {
+                if (!this.isPaymentComplete) {
+                    event.preventDefault(); // 크롬에서 페이지 이탈 방지를 위한 처리
+                    event.returnValue = ''; // 크롬에서는 이거 설정해야 함
+                    this.resetSeat(); // 좌석 상태 초기화
+                }
+            };
+        },
+        async resetSeat() {
+            try {
+                await axios.post(`http://localhost:3000/movie/outOfPayment`, {
+                    ticket_no: this.ticket.ticket_no,
+                });
+                console.log('좌석 상태가 초기화되었습니다.');
+            } catch (error) {
+                console.error('좌석 상태 초기화 오류:', error);
+            }
+        },
+
         requestPay() {
-            // if (!this.validationCheck()) {
-            //     return;
-            // } else if (!this.how) {  
-            //     alert('결제 수단을 선택해주세요.');
-            //     return;
+            if (!this.how) {  
+                this.$swal('결제 수단을 선택해주세요.');
+                return;
             // } else if (this.how === 'card') {
             //     return true;
-            // }
+            }
                 // this.getTicket();
 
-            let amount;
-            let name;
+            let amount = this.ticket.ticket_total_price;
+            let name = this.ticket.movie_title;
             // let count;
-
-            amount = this.ticket.ticket_total_price
             // console.log(amount);
-            name = this.ticket.movie_title
             // console.log(name);
             // count = this.ticket.ticket_cnt
 
@@ -285,6 +305,7 @@ export default {
                     order_phone: this.ticket.user_phone,
                     // order_coupon: this.user_coupon,
                     user_no: this.$store.state.user.user_no,
+                    // payment_type: this.how === 'card' ? 1 : 0, // 결제 수단에 따라 payment_type 설정
                     payment_type: 1,
                     couponId: this.selectedCoupon,
                     ticket_no: this.ticket.ticket_no, // 티켓 번호 추가
@@ -300,7 +321,7 @@ export default {
 
             IMP.request_pay({ // 아임포트에서 지정된 키 (request_pay : 내가 지정한게 아님. 공식임)
                 pg: "html5_inicis",
-                pay_method: "card",
+                pay_method: "card", //this.how, // 원래 : "card", 선택된 결제수단을 사용
                 name: name,
                 amount: amount,
                 buyer_name: this.ticket.user_name,
@@ -329,6 +350,7 @@ export default {
                         // order_coupon: this.user_coupon,
                         user_no: this.$store.state.user.user_no,
                         couponId: this.selectedCoupon,
+                        // payment_type: this.how === 'card' ? 1 : 0, // 결제 수단에 따라 payment_type 설정
                         payment_type: 1,
                         couponId: this.selectedCoupon,
                         ticket_no: this.ticket.ticket_no, // 티켓 번호 추가
@@ -336,7 +358,7 @@ export default {
                 })
                 .then(() => {
                     this.$swal('영화예매가 완료되었습니다');
-                    window.location.href = "http://localhost:8081/";
+                    // window.location.href = "http://localhost:8081/";
                 })
             }
         })
@@ -352,6 +374,7 @@ export default {
                 }
             })
             .then(() => {
+                // console.log('백에서오늬?', results);
                 this.$swal('예매가 정상적으로 취소되었습니다.');
                 // window.location.href = "http://localhost:8081/";
                 this.$router.push('/')
@@ -381,6 +404,7 @@ export default {
                             // order_coupon: this.user_coupon,
                             user_no: this.$store.state.user.user_no,
                             couponId: this.selectedCoupon,
+                            ticket_no: this.ticket.ticket_no, // 티켓 번호 추가
                         });
                         
                         // console.log('결과요결과', results);
@@ -404,8 +428,6 @@ export default {
                 }
             }
         },
-
-
     },
 }
 </script>

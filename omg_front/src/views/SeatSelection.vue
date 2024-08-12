@@ -1,5 +1,4 @@
 <template>
-
   <div class="select">
       <div class="seat-selection">
       <h1>좌석 선택</h1>
