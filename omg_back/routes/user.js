@@ -59,7 +59,9 @@ router.post('/rev/:user_no', function(req, res){
             LEFT JOIN 
                 review r ON t.ticket_movie_no = r.re_movie_no AND t.ticket_user_no = r.re_user_no
             WHERE 
-                u.user_no = ?;`, [user_no], function(err, results){
+                u.user_no = ?
+            AND
+                t.payment = 1;`, [user_no], function(err, results){
         if (err) {
             console.log('오류');
             return res.status(500).json({ error: err });
@@ -193,7 +195,8 @@ router.post('/revs/:user_no', function(request, response, next){
               FROM ticket t 
               JOIN user u ON t.ticket_user_no = u.user_no 
               JOIN movie m ON t.ticket_movie_no = m.movie_no 
-              WHERE user_no = ? 
+              WHERE user_no = ?
+              AND payment = 1 
               AND (ticket_date > ? OR (ticket_date = ? AND ticket_time > ?))`,
         [user_no, currentDate, currentDate, currentTime],
         function(error, result, field){
