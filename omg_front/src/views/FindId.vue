@@ -108,7 +108,7 @@ export default {
         },
         goToLogin(){
             // 로그인
-            // this.$store.dispatch('updateUserEmail', this.user_email);
+            this.$store.dispatch('updateUserEmail', this.user_id);
             this.resetForm();
             this.$emit('close');
             this.$router.push({ path: '/login' });
@@ -180,7 +180,7 @@ export default {
     margin-top: 10px;
     /* color: white; */
     background-color: #fdfbe7;
-    box-shadow: 2px 2px 5px rgba(0, 199, 174, 0.5);
+    box-shadow: 2px 2px 5px rgba(183, 183, 183, 0.5);
 
 }
 

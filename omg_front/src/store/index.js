@@ -33,7 +33,10 @@ const store = createStore({
                 user_auth: '',
                 user_del: ''
             };
-        }
+        },
+        setUserEmail(state, user_id) {
+            state.user.user_id = user_id;
+        },
     },
     actions: {
         updateUserEmail({ commit }, user_id) {
