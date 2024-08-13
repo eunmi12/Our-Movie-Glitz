@@ -654,7 +654,7 @@ router.post('/ticketNo', (req, res) => {
 // })
 router.post('/orderPay', (req, res, next) => {
     const order = req.body;
-    // console.log(order);
+    console.log(order);
 
     // 결제 정보 저장
     db.query(`insert into payment
@@ -672,7 +672,8 @@ router.post('/orderPay', (req, res, next) => {
                             console.error('티켓 상태 업뎃오류', error);
                             return res.status(200).json({ message: '결제 성공, but 티켓 상태 업뎃 실패' });
                         }
-                    })
+                        console.log('티켓 상태 업뎃 결과', results);
+                
 
                     // 결제 정보가 성공적으로 저장된 경우, 쿠폰 상태 업데이트
                     const couponId = order.couponId; 
@@ -685,13 +686,14 @@ router.post('/orderPay', (req, res, next) => {
                                 console.error('쿠폰 상태 업데이트 오류', err);
                                 return res.status(200).json({message: '결제는 성공했으나 쿠폰상태 업데이트 실패'});
                             }
-                            return res.status(200).json(results);
+                            return res.status(200).json({ message: '결제 성공 및 쿠폰 상태 업뎃', results });
                         });
                     } else {
                         // 쿠폰이 없는 경우
-                        return res.status(200).json(results);
+                        return res.status(200).json({ message: '결제 성공 및 쿠폰 상태 업뎃'. results });
                     }
                 });
+            });
 });
 
 // 결제 - 쿠폰조회
@@ -728,7 +730,6 @@ router.post('/canclePay', (req, res, next) => {
         if (error) {
             return res.status(500).json({ message: '결제취소 오류' });
         }
-        return res.status(200).json({result});
     })
     // 1. 좌석 이름을 가져오는 쿼리
     db.query(`select ticket_seat from ticket where ticket_no = ?`, [req.body.ticket_no], (error, result) => {
@@ -774,10 +775,10 @@ router.post('/canclePay', (req, res, next) => {
 });
 
 // 좌석 초기화
-router.post('/outOfPayment', async (req, res) => {
+router.post('/outOfPayment', (req, res) => {
        console.log('바디바디', req.body);
 
-        db.query(`update seat set seat_reserve = 1 where ticket_no = ?`, [req.body.ticket_no], (error, results) => {
+        db.query(`update seat join ticket on seat.seat_name = ticket.ticket_seat set seat.seat_reserve = 1 where ticket.ticket_no = ?;`, [req.body.ticket_no], (error, results) => {
             if(error) {
                 return res.status(500).json({ message: '좌석 상태변경 실패' });
             }

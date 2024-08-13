@@ -60,6 +60,15 @@
 import axios from 'axios';
 
 export default {
+    beforeRouteLeave(to, from, next) {
+            console.log(('becoreRouteLeave 호출됨?'));
+            // 페이지를 떠나기 전에 resetSeat 호출
+            this.resetSeat().then(() => {
+                next(); // 페이지 이동을 계속 진행
+            }).catch(() => {
+                next(); // 에러가 발생해도 페이지 이동 진행
+            });
+        },
     data() {
         return {
             user_no: this.$store.state.user.user_no,
@@ -74,7 +83,7 @@ export default {
             coupons: [],
             selectedCoupon: null,
             finalPrice: 0,
-            isPaymentComplete: false,
+            // isPaymentComplete: false,
         };
     },
 
@@ -82,7 +91,6 @@ export default {
         this.getTicket();
         // this.getTitle();
         this.fetchCoupons(); // 컴포넌트 생성 시 쿠폰 데이터 가져오기
-        this.setupBeforeUnloadHandler();
     },
 
     computed: {
@@ -253,17 +261,9 @@ export default {
         //     }
         // }
         
-        // 결제완료 혹은 결제취소를 하지 않고 페이지를 이동하면 좌석상태 다시 1로 변경
-        setupBeforeUnloadHandler() {
-            window.onbeforeunload = (event) => {
-                if (!this.isPaymentComplete) {
-                    event.preventDefault(); // 크롬에서 페이지 이탈 방지를 위한 처리
-                    event.returnValue = ''; // 크롬에서는 이거 설정해야 함
-                    this.resetSeat(); // 좌석 상태 초기화
-                }
-            };
-        },
-        async resetSeat() {
+        // 결제완료 혹은 결제취소를 하지 않고 페이지를 이동하면 back단 값을 변경하도록 해주는 함수(좌석상태 다시 1로 변경하도록 하기 위함)
+        async resetSeat() { // back으로 넘어가서 좌석상태(seat_reserve) 1로 다시 변경해주도록 연결하는 api 생성
+            console.log('resetSeat호출되고있니?');
             try {
                 await axios.post(`http://localhost:3000/movie/outOfPayment`, {
                     ticket_no: this.ticket.ticket_no,
@@ -359,6 +359,7 @@ export default {
                 .then(() => {
                     this.$swal('영화예매가 완료되었습니다');
                     // window.location.href = "http://localhost:8081/";
+                    this.$router.push('/');
                 })
             }
         })
