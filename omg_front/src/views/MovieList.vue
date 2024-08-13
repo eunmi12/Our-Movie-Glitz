@@ -212,6 +212,8 @@ export default {
 
 .movie_img img{
     border-radius: 10px;
+    height: 285px;
+    object-fit: cover;
 }
 /* .movie_content_li:nth-child(4n+1){
     margin: 10px 0 13px 0;
@@ -227,6 +229,7 @@ export default {
 }
 
 p{
+    margin-top: 10px;
     margin-bottom: 5px;
 }
 
