@@ -49,6 +49,7 @@
 </template>
 <script>
 import axios from "axios";
+import Swal from 'sweetalert2';
 import AdminpageSidebar from "../layouts/AdminpageSidebar.vue";
 export default {
     components: {
@@ -162,18 +163,48 @@ export default {
             });     
         },
         //FAQ 삭제하기
-        deleteFAQ(faq,index){
-            const faq_no = faq.faq_no;
-            axios.post('http://localhost:3000/admin/deletefaq', {
+        async deleteFAQ(faq, index) {
+    const faq_no = faq.faq_no;
+    console.log("FAQ 번호:", faq_no);
+
+    try {
+        // 사용자가 삭제를 확인하는 Swal 팝업을 표시
+        const result = await Swal.fire({
+            title: '정말 삭제하시겠습니까?',
+            text: "이 작업은 취소할 수 없습니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소'
+        });
+
+        // 사용자가 확인 버튼을 클릭한 경우
+        if (result.isConfirmed) {
+            // 서버에 삭제 요청을 보냄
+            const response = await axios.post('http://localhost:3000/admin/deletefaq', {
                 faq_no: faq_no
-            }).then(() => {
-                this.faqlist.splice(index, 1); // 목록에서 항목 제거
-                this.$swal('질문이 성공적으로 삭제되었습니다.');
-                console.log(`Saved FAQ ${faq.faq_no}: ${faq.faq_a}`);
-            }).catch(error => {
-                console.error("FAQ 수정 중 오류 발생:", error);
             });
-        },
+
+            // 목록에서 항목 제거
+            this.faqlist.splice(index, 1);
+
+            // 성공 메시지 표시
+            await Swal.fire('삭제 완료', 'FAQ가 성공적으로 삭제되었습니다.', 'success');
+            console.log(`삭제된 FAQ 번호: ${faq_no}`);
+            
+            // 페이지 새로 고침 (선택사항)
+            // window.location.reload();
+        } else {
+            // 사용자가 취소 버튼을 클릭한 경우
+            await Swal.fire('취소됨', 'FAQ 삭제가 취소되었습니다.', 'info');
+        }
+    } catch (error) {
+        console.error('삭제 도중 오류 발생', error);
+        await Swal.fire('오류', 'FAQ 삭제 중 문제가 발생했습니다.', 'error');
+    }
+},
         //FAQ 작성하기
         goToCreateFaq(){
             this.$router.push(`/admin/CreateFaq`);
