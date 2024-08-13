@@ -58,14 +58,14 @@
         <div class="menu">
             <div class="menu_wrap">
                 <ul v-if="this.user.user_auth !== 1 && this.user.user_auth !== 0" class="menu_list">
-                    <li><a href="http://localhost:8081/movielist">영화</a></li>
-                    <li><a  href="http://localhost:8081/moviebooking">예매</a></li>
-                    <li><a href="http://localhost:8081/eventlist">이벤트</a></li>
+                    <li><router-link to="/movielist">영화</router-link></li>
+                    <li><router-link to="/moviebooking">예매</router-link></li>
+                    <li><router-link to="/eventlist">이벤트</router-link></li>
                 </ul>
                 <ul v-if="this.user.user_auth === 1" class="menu_list">
-                    <li><a href="http://localhost:8081/movielist">영화</a></li>
-                    <li><a  href="http://localhost:8081/moviebooking">예매</a></li>
-                    <li><a href="http://localhost:8081/eventlist">이벤트</a></li>
+                    <li><router-link to="/movielist">영화</router-link></li>
+                    <li><router-link to="/moviebooking">예매</router-link></li>
+                    <li><router-link to="/eventlist">이벤트</router-link></li>
                 </ul>
                 <!-- <ul>
                     <div class="total_search">
