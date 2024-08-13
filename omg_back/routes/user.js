@@ -65,6 +65,54 @@ distinct
     });
 });
 
+// 리뷰 삭제하기
+router.post('/delreview', function(request, response, next){
+    const review_no = request.body.review_no;
+    console.log('review_no', review_no);
+    
+    // 리뷰 삭제 전에 해당 리뷰에 대한 영화 번호와 사용자 번호를 가져옴
+    const selectReviewQuery = `SELECT re_movie_no, re_user_no FROM review WHERE review_no = ?;`;
+    
+    db.query(selectReviewQuery, [review_no], (error, results) => {
+        if (error) {
+            console.error('리뷰 정보 조회 오류:', error);
+            return response.status(500).json({ error: '리뷰 정보 조회 오류' });
+        }
+
+        if (results.length === 0) {
+            return response.status(404).json({ error: '해당 리뷰를 찾을 수 없습니다.' });
+        }
+
+        const { re_movie_no, re_user_no } = results[0];
+
+        // 리뷰 삭제 쿼리
+        const deleteReviewQuery = `DELETE FROM review WHERE review_no = ?;`;
+        db.query(deleteReviewQuery, [review_no], (error, result) => {
+            if (error) {
+                console.error('리뷰 삭제 오류:', error);
+                return response.status(500).json({ error: '리뷰 삭제 오류' });
+            }
+
+            // 티켓 업데이트 쿼리
+            const updateTicketQuery = `
+                UPDATE ticket 
+                SET ticket_re = 0
+                WHERE ticket_movie_no = ?
+                AND ticket_user_no = ?;`;
+
+            db.query(updateTicketQuery, [re_movie_no, re_user_no], (error, result) => {
+                if (error) {
+                    console.error('티켓 업데이트 오류:', error);
+                    return response.status(500).json({ error: '티켓 업데이트 오류' });
+                }
+
+                // 성공 응답
+                response.json({ message: '리뷰 삭제 및 티켓 업데이트 성공' });
+            });
+        });
+    });
+});
+
 //치혁작성 완
 
 //은미작성
@@ -392,21 +440,64 @@ router.post('/coupon/:user_no', function(request, response, next){
     });
 });
 
-//리뷰 삭제하기
-router.post('/delreview', function(request, response, next){
-    const review_no = request.body.review_no;
 
-    db.query(`DELETE FROM review WHERE review_no = ?;`,
-        [review_no],
-        function(error, result, field){
-        if (error) {
-            console.error(error);
-            return response.status(500).json({ error: '리뷰 삭제 중 에러 발생' });
-        }
-        response.json(result);
-        console.log(result);
-    });
-});
+// //리뷰 삭제하기
+// router.post('/delreview', function(request, response, next){
+//     const review_no = request.body.review_no;
+//     const ticket_no = request.body.ticket_no;
+//     console.log('ticket_no',ticket_no);
+    
+
+//     const deleteReviewQuery = `DELETE FROM review WHERE review_no = ?;`;
+//     db.query(deleteReviewQuery, [review_no], (error, result) => {
+//         if (error) {
+//             console.error('리뷰 삭제 오류:', error);
+//             return response.status(500).json({ error: '리뷰 삭제 오류' });
+//         }
+
+//         // 티켓 업데이트 쿼리
+//         const updateTicketQuery =   `UPDATE ticket t
+//                                     SET t.ticket_re = 0
+//                                     WHERE t.ticket_movie_no = (
+//                                         SELECT r.re_movie_no
+//                                         FROM review r
+//                                         WHERE r.review_no = ?
+//                                     )
+//                                     AND EXISTS (
+//                                         SELECT 1
+//                                         FROM review r
+//                                         WHERE r.review_no = ?
+//                                         AND r.re_movie_no = t.ticket_movie_no
+//                                         AND r.re_user_no = t.ticket_user_no
+//                                     )
+//                                         LIMIT 1;`;
+//         db.query(updateTicketQuery, [ticket_no], (error, result) => {
+//             if (error) {
+//                 console.error('티켓 업데이트 오류:', error);
+//                 return response.status(500).json({ error: '티켓 업데이트 오류' });
+//             }
+
+//             // 성공 응답
+//             response.json({ message: '리뷰 삭제 및 티켓 업데이트 성공' });
+//         });
+//     });
+// });
+
+
+
+
+
+//     db.query(`DELETE FROM review WHERE review_no = ?;`,
+//         [review_no],
+//         function(error, result, field){
+//         if (error) {
+//             console.error(error);
+//             return response.status(500).json({ error: '리뷰 삭제 중 에러 발생' });
+//         }
+//         response.json(result);
+//         console.log(result);
+//     });
+// });
 //qna 삭제하기
 router.post('/delqna', function(request, response, next){
     const qna_no = request.body.qna_no;
