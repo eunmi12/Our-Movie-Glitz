@@ -241,7 +241,7 @@ router.post('/getmoviereview', (req,res) => {
     const movie_no = req.body.movie_no;
     
     //리뷰 좋아요누를때 유저넘버 필요해서 re_user_no 추가
-    db.query(`select re_user_no, review_no, review_comment, review_rate,review_like,review_rate,user_name, 
+    db.query(`select re_user_no, review_no, review_comment, movie_title, review_report, review_rate,review_like,review_rate,user_name, 
             date_format(review_date, '%y-%m-%d') as review_date from review r
             left join user u on r.re_user_no = u.user_no
             left join movie m on r.re_movie_no = m.movie_no
@@ -259,6 +259,35 @@ router.post('/incrementreviewlike', (req,res)=>{
     const review_no = req.body.review_no;
     
     db.query(`update review set review_like = review_like + 1 where review_no = ?`, [review_no], (err,result) =>{
+        if(err){
+            console.log('리뷰 좋아요 증가 중 에러 발생');
+            return res.status(500).json({ err:'error'});
+        }
+        return res.json(result);
+    });
+});
+
+
+//리뷰 좋아요 증가
+router.post('/decrementreviewlike', (req,res)=>{
+    const review_no = req.body.review_no;
+    
+    db.query(`update review set review_like = review_like - 1 where review_no = ?`, [review_no], (err,result) =>{
+        if(err){
+            console.log('리뷰 좋아요 증가 중 에러 발생');
+            return res.status(500).json({ err:'error'});
+        }
+        return res.json(result);
+    });
+});
+
+//리뷰 신고용 review_report 증가
+router.post('/incrementreport', (req,res)=>{
+    const review_no = req.body.review_no;
+    console.log('신고 review_no', review_no);
+    
+    
+    db.query(`update review set review_report = review_report + 1 where review_no = ?`, [review_no], (err,result) =>{
         if(err){
             console.log('리뷰 좋아요 증가 중 에러 발생');
             return res.status(500).json({ err:'error'});
@@ -288,6 +317,18 @@ router.post('/insertwish', (req,res) => {
         } else{
             return res.json({ message: ' 이미 위시리스트에 존재합니다. '});
         }
+    });
+});
+
+//메인페이지 동영상 찾기
+router.post('/searchmain', (req,res) => {
+
+    db.query(`select movie_no from movie where movie_title = '파일럿'`, (err, result) => {
+        if(err){
+            console.log('메인용 타이틀 찾는 중 에러 발생');
+            return res.status(500).json({ err : 'error' });
+            
+        } return res.json(result);
     });
 });
 

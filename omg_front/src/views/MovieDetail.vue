@@ -23,82 +23,141 @@
             <div class="movie_img">
                 <h1>스틸컷</h1>
             </div>
-            <!-- <div class="moviedetail_content">
-                <img  v-if="movielist.movie_img1" :src="getMovieImg(movielist.movie_img1)" alt="영화 이미지">
-                <img  v-if="movielist.movie_img2" :src="getMovieImg(movielist.movie_img2)" alt="영화 이미지">
-                <img  v-if="movielist.movie_img3" :src="getMovieImg(movielist.movie_img3)" alt="영화 이미지">
-                <img  v-if="movielist.movie_img4" :src="getMovieImg(movielist.movie_img4)" alt="영화 이미지">
-                <img  v-if="movielist.movie_img5" :src="getMovieImg(movielist.movie_img5)" alt="영화 이미지">
-            </div> -->
             <div class="moviedetail_content">
                 <div class="slider">
                     <div class="slides" :style="{ transform: `translateX(-${currentIndex * 250}px)` }">
                         <div class="slide" v-for="(img, index) in filteredSlides" :key="index">
-          <img :src="getMovieImg(img)" alt="영화 이미지">
-        </div>
+                <img :src="getMovieImg(img)" alt="영화 이미지">
+            </div>
                     </div>
-                    <button class="prev" @click="prevSlide" :disabled="currentIndex === 0" :class="{ 'disabled': currentIndex === 0 }">❮</button>
-                    <button class="next" @click="nextSlide" :disabled="currentIndex === slidesCount - 1" :class="{ 'disabled': currentIndex === slidesCount - 1 }">❯</button>
+                    <button class="prev" @click="prevSlide">❮</button>
+                    <button class="next" @click="nextSlide">❯</button>
                     </div>
             </div>
             <div class="moviedetail_review">
                 <h2>관람후기</h2>
-                <div class="review_content" v-for="(review,i) in reviewList" :key="i" >
-                    <ul class="review_container">
-                        <li class="review_comment">
-                            <div class="review_profile">
-                                <!-- <img style="width:100px" src="../images/mypageicon.png"> -->
-                                <img style="width:60px" src="../images/profile.png">
-                                <span></span>
-                            </div>
-                            <div class="review_detail">
-                                <ul class="writer_info">
-                                    <li class="writer_name">
-                                        {{review.user_name}}
-                                    </li>
-                                    <li class="writer_report">
-                                        신고<img style="width:30px" src="../images/report.png">
-                                    </li>
-                                    <li class="writer_rate">
-                                        <div class="star-rating">
-                                            <span v-for="n in 5" :key="n" class="star" :class="{ 'filled': n <= review.review_rate }">&#9733;</span>
-                                        </div>
-                                        <!-- {{review.review_rate}} -->
-                                    </li>
-                                    <li class="writer_date">
-                                        <span>{{review.review_date}} |</span>
-                                    </li>
-                                    <li class="writer_like"> <!--내리뷰엔 좋아요 못누르게 하고싶어서 re_user_no까지 전달-->
-                                        <span @click="incrementreview(review.review_no,review.re_user_no)"><a src="../images/like.png"><img style="width:18px" src="../images/like.png"></a> {{review.review_like}}</span>
-                                    </li>
-                                    <li class="comment">
-                                        <p>{{review.review_comment}}</p>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                    </ul>
+                <div class="review_content" v-for="(review,i) in reviewList" :key="i">
+                    <div class="reivew_content" v-if="review.review_report <= 3">
+                        <ul class="review_container">
+                            <li class="review_comment">
+                                <div class="review_profile">
+                                    <!-- <img style="width:100px" src="../images/mypageicon.png"> -->
+                                    <img style="width:60px" src="../images/profile.png">
+                                    <span></span>
+                                </div>
+                                <div class="review_detail">
+                                    <ul class="writer_info">
+                                        <li class="writer_name">
+                                            {{naming(review.user_name)}}
+                                        </li>
+                                        <li class="writer_report">
+                                            <span>
+                                            신고<a @click="openReportModal(review)"><img style="width:30px" src="../images/report.png"></a>
+                                            </span>
+                                        </li>
+                                        <li class="writer_rate">
+                                            <div class="star-rating">
+                                                <span v-for="n in 5" :key="n" class="star" :class="{ 'filled': n <= review.review_rate }">&#9733;</span>
+                                            </div>
+                                            <!-- {{review.review_rate}} -->
+                                        </li>
+                                        <li class="writer_date">
+                                            <span>{{review.review_date}} |</span>
+                                        </li>
+                                        <li class="writer_like"> <!--내리뷰엔 좋아요 못누르게 하고싶어서 re_user_no까지 전달-->
+                                            <span @click="incrementreview(review.review_no,review.re_user_no)">
+                                                <a src="../images/like.png"><img style="width:18px" src="../images/like.png"></a> {{review.review_like}}
+                                            </span>
+                                        </li>
+                                        <li class="comment">
+                                            <p>{{review.review_comment}}</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div v-else class="review_content">
+                        <ul class="review_container">
+                            <li class="review_comment">
+                                <div class="review_profile">
+                                    <!-- <img style="width:100px" src="../images/mypageicon.png"> -->
+                                    <img style="width:60px" src="../images/profile.png">
+                                    <span></span>
+                                </div>
+                                <div class="review_detail">
+                                    <ul class="writer_info">
+                                        <li class="writer_name">
+                                            {{naming(review.user_name)}}
+                                        </li>
+                                        <li class="writer_report">
+                                            <span>
+                                            신고<a @click="openReportModal(review)"><img style="width:30px" src="../images/report.png"></a>
+                                            </span>
+                                        </li>
+                                        <li class="writer_rate">
+                                            <div class="star-rating">
+                                                <span v-for="n in 5" :key="n" class="star" :class="{ 'filled': n <= review.review_rate }">&#9733;</span>
+                                            </div>
+                                            <!-- {{review.review_rate}} -->
+                                        </li>
+                                        <li class="writer_date">
+                                            <span>{{review.review_date}} |</span>
+                                        </li>
+                                        <li class="writer_like"> <!--내리뷰엔 좋아요 못누르게 하고싶어서 re_user_no까지 전달-->
+                                            <span @click="incrementreview(review.review_no,review.re_user_no)">
+                                                <a src="../images/like.png"><img style="width:18px" src="../images/like.png"></a> {{review.review_like}}
+                                            </span>
+                                        </li>
+                                        <li class="comment">
+                                            <p>신고된 리뷰입니다.</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 
+                <ReportModal :isOpen="isReportOpen" :banData="banData" @close="closeReportModal" />
+
             </div>
         </div>
     </div>    
 </template>
 <script>
 import axios from 'axios';
+import { mapActions, mapState} from 'vuex';
+import ReportModal from '../views/ReviewReport.vue'
 
 export default {
+    components:{
+        ReportModal,
+    },
     data(){
         return {
-            user:{
-                user_no: '',
-            },
             movielist:[],
             reviewList:[],
             currentIndex: 0,
+            // slidesCount:5
+            // 신고용 모달 데이터
+            isReportOpen: false,
+            banData:{
+                review_no : '',
+                review_comment : '',
+                re_movie_no : '',
+                re_user_no : '',
+                review_date : '',
+                user_name:'',
+                movie_title:'',
+            },
+
         }
     },
     computed:{
+        //리뷰 좋아요용,store.js에 persistedtate에 저장되고있는지 확인ㅇㅇ
+        ...mapState(['re_like']),
+
       user(){
         return this.$store.state.user;
       },  
@@ -168,30 +227,52 @@ export default {
         gotoreserve(){
             this.$router.push(`/moviebooking`);
         },
+
         //리뷰 좋아요 증가
-        async incrementreview(review_no,re_user_no) {
-            const user_no = this.$store.state.user.user_no;
-            
-            try {
-                if(!user_no){
-                    this.$swal('로그인이 필요한 서비스입니다.');
-                    // return setTimeout(() => window.location.href="/login", 1000);
-                    return setTimeout(() => this.$router.push('/login'), 1000);
-                }
+        ...mapActions(['updateReLike']),
+        async incrementreview(review_no, re_user_no) {
+        const user_no = this.$store.state.user.user_no;
+        // const re_like = this.$store.state.re_like;
+        // console.log('좋아요누를떄 re_like', re_like);
+        
+        try {
+            if(!user_no){
+                this.$swal('로그인이 필요한 서비스입니다.');
+                return setTimeout(() => this.$router.push('/login'), 1000);
+            }
+
+            if(user_no !== re_user_no && this.$store.state.re_like) {
                 const result = await this.$swal({
                     title: '좋아요를 누르시겠습니까?',
                     showCancelButton: true,
                     confirmButtonText: '확인',
                     cancelButtonText: '취소'
                 });
-                if(user_no !== re_user_no){
-                    if (result.isConfirmed) { //isConfirmed가 swal에서 cinfirmbutton 눌렀는지 확인하는것
-                        await axios.post(`http://localhost:3000/movie/incrementreviewlike`, { review_no: review_no });
-                        this.$router.go(0);  // 페이지 리로드
-                    }
-                } else {
-                    this.$swal('회원님의 리뷰입니다.')
+                if (result.isConfirmed) {
+                    await axios.post(`http://localhost:3000/movie/incrementreviewlike`, { review_no: review_no });
+                    // this.re_like = false;
+                    this.updateReLike(false); //updateReLike 소환해서 상태변환
+                    this.$router.go(0);
+                    
+                    // console.log('좋아요 후 re_like', this.re_like);
                 }
+            } else if(user_no !== re_user_no && !this.$store.state.re_like) {
+                const cancelResult = await this.$swal({
+                    title: '좋아요를 취소하시겠습니까?',
+                    showCancelButton: true,
+                    confirmButtonText: '확인',
+                    cancelButtonText: '취소'
+                });
+                if(cancelResult.isConfirmed) {
+                    await axios.post(`http://localhost:3000/movie/decrementreviewlike`, { review_no: review_no });
+                    // this.re_like = true;
+                    this.updateReLike(true); //updateReLike 소환해서 상태변환
+                    this.$router.go(0);
+                    console.log('좋아요 취소 후 re_like', this.re_like);
+                }
+            } else {
+                this.$swal('회원님의 리뷰입니다.')
+            }
 
             } catch (error) {
                 console.error('Error incrementing review like:', error);
@@ -227,6 +308,46 @@ export default {
             }
 
         },
+        //신고용
+        openReportModal(review){
+            console.log('review_no', review.review_no);
+            console.log('모달 열기 호출됨');
+            this.banData = {
+                review_no : review.review_no,
+                review_comment : review.review_comment,
+                re_movie_no : this.$route.params.movie_no,
+                re_user_no : review.re_user_no,
+                review_date : review.review_date,
+                user_name : review.user_name,
+                movie_title : review.movie_title
+            };
+            console.log("banData", this.banData);
+            this.isReportOpen = true;
+            // 버튼 숨기기
+            document.querySelector('.prev').style.display = 'none';
+            document.querySelector('.next').style.display = 'none';
+        },
+
+        closeReportModal(){
+            console.log('모달 닫기 호출됨');
+            this.$router.go(0);
+            this.isReportOpen = false;
+            // 버튼 다시 보이기
+            document.querySelector('.prev').style.display = 'block';
+            document.querySelector('.next').style.display = 'block';
+
+        },
+
+        //이름 마스킹용
+        naming(username){
+            if(!username){
+                return '';
+            }
+            const making = username.slice(0,1) + '**' + username.slice(3,5);
+            return making;
+        },
+
+
         //슬라이드
         nextSlide() {
             if (this.currentIndex < this.maxIndex) {

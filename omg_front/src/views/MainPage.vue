@@ -6,7 +6,8 @@
         <!-- <video src="../videos/영화1.mp4"><a href=""></a></video> -->
         <strong class="main_name">파일럿</strong>
         <span class="main_sname">하루 아침에 인생 추락한 스타 파일럿<br>제 2의 인생 이륙 준비 중!</span>
-        <div class="main_select"><a href="http://localhost:8081/MovieDetail/1" id="select">상세보기</a></div>
+        <div class="main_select"><a :href="`/MovieDetail/${movie_no.movie_no}`" id="select">상세보기</a></div>
+        <!-- :href="`/MovieDetail/${movie.movie_no}`" -->
       </div>
   
       <div class="list">
@@ -77,6 +78,7 @@ export default {
       tags: ['액션', '가족', '로맨스', '공포', '코미디'], // 태그 배열
       movielists: [[], [], [], [], []], // 태그별 영화 목록 배열
       eventlists: [],
+      movie_no:{},
     };
   },
   created() {
@@ -84,6 +86,7 @@ export default {
       this.fetchMovielist(tag, index);
     }),
     this.fechEventlist();
+    this.getMainTitle();
   },
   computed: {
   limitedEventlists() {
@@ -136,6 +139,13 @@ export default {
       return require(`../../../omg_back/uploads/event/${imageName}`);
       // D:\이젠\OMG\Our-Moive-Glitz\omg_back\uploads\event
     },
+
+    async getMainTitle(){
+      const response = await axios.post(`http://localhost:3000/movie/searchmain`)
+      this.movie_no = response.data[0];
+      console.log('movie_no>>>>',this.movie_no);
+      
+    }
   },
 };
 </script>
