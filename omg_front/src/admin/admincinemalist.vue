@@ -46,6 +46,7 @@
 <script>
 import AdminpageSidebar from "../layouts/AdminpageSidebar.vue";
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
     components: {
@@ -145,18 +146,34 @@ export default {
         },
         async deletecinema(screen_no){
             console.log("screen_no",screen_no);
-            try{
-                const response = await axios.post(`http://localhost:3000/admin/deletescreen`,{screen_no : screen_no});
-                console.log("스크린 삭제 성공", response.data);
-                this.$swal('스크린 삭제 성공하였습니다.')
-                .then(()=>{
-                    window.location.reload(); //swal 닫히면 reload 실행하기위해 then으로 promise씀
-                });
-            }
-            catch(error){
-                console.error('삭제 도중 에러 발생',error);
-            }
-        },
+            try {
+        // 사용자가 삭제를 확인하는 Swal 팝업을 표시
+        const result = await Swal.fire({
+            title: '정말 삭제하시겠습니까?',
+            text: "이 작업은 취소할 수 없습니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소'
+        });
+
+        // 사용자가 확인 버튼을 클릭한 경우
+        if (result.isConfirmed) {
+            const response = await axios.post(`http://localhost:3000/admin/deletescreen`,{screen_no : screen_no});
+            console.log("스크린 삭제 성공", response.data);
+            await Swal.fire('삭제 완료', '스크린이 삭제되었습니다.', 'success');
+            window.location.reload(); // Swal 닫히면 reload 실행하기 위해 then으로 promise 씀
+        } else {
+            // 사용자가 취소 버튼을 클릭한 경우
+            await Swal.fire('취소됨', '스크린 삭제가 취소되었습니다.', 'info');
+        }
+    } catch (error) {
+        console.error('삭제 도중 에러 발생', error);
+        await Swal.fire('오류', '스크린 삭제 중 문제가 발생했습니다.', 'error');
+    }
+},
          //페이징
         changePage(page){
             if(page > 0 && page <= this.totalPages){

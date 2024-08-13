@@ -322,7 +322,7 @@ router.get('/movielist/:tag', (req, res) => {
 
 router.post('/mainmoviecnt', (req,res)=>{
     const movie_no = req.body.movie_no;
-    console.log('제이에스임' ,movie_no);
+    console.log('조회수 올라가는중' ,movie_no);
     db.query(`update movie set movie_cnt = movie_cnt + 1 where movie_no = ?;`, [movie_no], (err,result) =>{
         if(err){
             console.log(' 영화 조회수 증가 중 에러 발생');
