@@ -66,12 +66,17 @@ distinct
 });
 
 // 리뷰 삭제하기
+
+// 리뷰 삭제하기
 router.post('/delreview', function(request, response, next){
     const review_no = request.body.review_no;
+    const ticket_no = request.body.ticket_no;
+    console.log('티켓넘버>>',ticket_no);
+    
     console.log('review_no', review_no);
     
-    // 리뷰 삭제 전에 해당 리뷰에 대한 영화 번호와 사용자 번호를 가져옴
-    const selectReviewQuery = `SELECT re_movie_no, re_user_no FROM review WHERE review_no = ?;`;
+    // 리뷰 삭제 전에 해당 리뷰에 대한 영화 번호와 사용자 번호, 티켓 번호를 가져옴
+    const selectReviewQuery = `SELECT re_movie_no, re_user_no, re_ticket_no FROM review WHERE review_no = ?;`;
     
     db.query(selectReviewQuery, [review_no], (error, results) => {
         if (error) {
@@ -83,7 +88,7 @@ router.post('/delreview', function(request, response, next){
             return response.status(404).json({ error: '해당 리뷰를 찾을 수 없습니다.' });
         }
 
-        const { re_movie_no, re_user_no } = results[0];
+        const { re_movie_no, re_user_no, re_ticket_no } = results[0];
 
         // 리뷰 삭제 쿼리
         const deleteReviewQuery = `DELETE FROM review WHERE review_no = ?;`;
@@ -98,9 +103,11 @@ router.post('/delreview', function(request, response, next){
                 UPDATE ticket 
                 SET ticket_re = 0
                 WHERE ticket_movie_no = ?
-                AND ticket_user_no = ?;`;
+                AND ticket_user_no = ?
+                AND ticket_no = ?;`;
 
-            db.query(updateTicketQuery, [re_movie_no, re_user_no], (error, result) => {
+            // re_ticket_no 사용하여 업데이트
+            db.query(updateTicketQuery, [re_movie_no, re_user_no, re_ticket_no], (error, result) => {
                 if (error) {
                     console.error('티켓 업데이트 오류:', error);
                     return response.status(500).json({ error: '티켓 업데이트 오류' });
@@ -112,6 +119,58 @@ router.post('/delreview', function(request, response, next){
         });
     });
 });
+
+
+// router.post('/delreview', function(request, response, next){
+//     const review_no = request.body.review_no;
+//     const ticket_no = request.body.ticket_no;
+//     console.log('티켓넘버>>',ticket_no);
+    
+//     console.log('review_no', review_no);
+    
+//     // 리뷰 삭제 전에 해당 리뷰에 대한 영화 번호와 사용자 번호를 가져옴
+//     const selectReviewQuery = `SELECT re_movie_no, re_user_no FROM review WHERE review_no = ?;`;
+    
+//     db.query(selectReviewQuery, [review_no], (error, results) => {
+//         if (error) {
+//             console.error('리뷰 정보 조회 오류:', error);
+//             return response.status(500).json({ error: '리뷰 정보 조회 오류' });
+//         }
+
+//         if (results.length === 0) {
+//             return response.status(404).json({ error: '해당 리뷰를 찾을 수 없습니다.' });
+//         }
+
+//         const { re_movie_no, re_user_no } = results[0];
+
+//         // 리뷰 삭제 쿼리
+//         const deleteReviewQuery = `DELETE FROM review WHERE review_no = ?;`;
+//         db.query(deleteReviewQuery, [review_no], (error, result) => {
+//             if (error) {
+//                 console.error('리뷰 삭제 오류:', error);
+//                 return response.status(500).json({ error: '리뷰 삭제 오류' });
+//             }
+
+//             // 티켓 업데이트 쿼리
+//             const updateTicketQuery = `
+//                 UPDATE ticket 
+//                 SET ticket_re = 0
+//                 WHERE ticket_movie_no = ?
+//                 AND ticket_user_no = ?
+//                 AND ticket_no = ?;`;
+
+//             db.query(updateTicketQuery, [re_movie_no, re_user_no,ticket_no], (error, result) => {
+//                 if (error) {
+//                     console.error('티켓 업데이트 오류:', error);
+//                     return response.status(500).json({ error: '티켓 업데이트 오류' });
+//                 }
+
+//                 // 성공 응답
+//                 response.json({ message: '리뷰 삭제 및 티켓 업데이트 성공' });
+//             });
+//         });
+//     });
+// });
 
 //치혁작성 완
 
@@ -280,10 +339,10 @@ router.post('/revs/:user_no', function(request, response, next){
 router.post('/reviewtitle', function(request, response, next) {
     const ticket_no = request.body.ticket_no;
     
-    db.query(`SELECT m.movie_title,m.movie_no, t.ticket_no
-              FROM ticket t
-              JOIN movie m ON t.ticket_movie_no = m.movie_no
-              WHERE t.ticket_no = ?;`,
+    db.query(`SELECT m.movie_title,m.movie_no, t.ticket_no, DATE_FORMAT(t.ticket_date, "%Y-%m-%d") AS ticket_date, DATE_FORMAT(t.ticket_time, "%H:%i") AS ticket_time, t.ti_se_cinema_no
+                FROM ticket t
+                JOIN movie m ON t.ticket_movie_no = m.movie_no
+                WHERE t.ticket_no = ?;`,
         [ticket_no],
         function(error, result) {
         if (error) {
@@ -379,11 +438,14 @@ router.post('/crereview', (request, response) =>{
     const re_movie_no = request.body.movie_no;
     const ticket_no = request.body.ticket_no;
     const ticket_re = request.body.ticket_re;
+    const re_ticket_no = request.body.ticket_no;
+    console.log("re_ticket_no",re_ticket_no);
+    
     console.log('내용 >>', review_comment,'평점 >>',review_rate,'유저넘버 >>',re_user_no,'영화넘버 >>',re_movie_no,'티켓넘버 >>',ticket_no,'리뷰여부',ticket_re);
     
 
-    const insertReviewQuery = `INSERT INTO review (review_rate, review_comment, re_movie_no, re_user_no) VALUES (?, ?, ?, ?);`;
-    db.query(insertReviewQuery, [review_rate, review_comment, re_movie_no, re_user_no], (error, result) => {
+    const insertReviewQuery = `INSERT INTO review (review_rate, review_comment, re_movie_no, re_user_no, re_ticket_no) VALUES (?, ?, ?, ?, ?);`;
+    db.query(insertReviewQuery, [review_rate, review_comment, re_movie_no, re_user_no, re_ticket_no], (error, result) => {
         if (error) {
             console.error('리뷰 작성 오류:', error);
             return response.status(500).json({ error: '리뷰 작성 오류' });

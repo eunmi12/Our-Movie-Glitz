@@ -51,7 +51,6 @@
                   <div class="qwer">
                     <button v-if="isPastReservation(rev.ticket_date, rev.ticket_time) && rev.ticket_re == '0'" class="reviewbtn" @click="gotocreatereview(rev.ticket_no)">관람평 남기기</button>
                     <button type="submit" v-else-if="rev.ticket_re == '1'" class="reviewbtn">관람평 작성 완료</button>
-                    <button type="submit" v-else class="reviewbtn">예매 완료</button>
                     <button v-if="!isPastReservation(rev.ticket_date, rev.ticket_time)" class="cancle" @click="movie(rev.ticket_no)">예매 취소</button>
                   </div>
                 </div>

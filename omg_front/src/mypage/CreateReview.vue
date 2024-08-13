@@ -8,12 +8,17 @@
                     <button class="dropdown-toggle" type="button" @click="toggleType">{{ selectedTypeText }}</button>
                     <ul class="dropdown-menu" :class="{ show: isDropdownOpen }">
                         <li v-for="(type, i) in typelist" :key="i">
-                            <a class="dropdown-item" href="#" @click.prevent="selectType(i)">{{ type }}점</a>
+                            <a class="dropdown-item" href="#" @click.prevent="selectType(i)">{{ type }}</a>
                         </li>
                     </ul>
                 </div>
                 <div class="title-value">
-                        <div>{{ movie.movie_title }}</div>
+                    <div class="movie-title">{{ movie.movie_title }}</div>
+                    <div class="ticket-details">
+                        <span class="ticket-date">날짜: {{ movie.ticket_date }}</span>
+                        <span class="ticket-time">시간: {{ movie.ticket_time }}</span>
+                        <span class="cinema-no">상영관 번호: {{ movie.ti_se_cinema_no }}관</span>
+                    </div>
                 </div>
             </div>
             <div class="review-comt">
@@ -34,7 +39,7 @@ export default {
     data() {
         return {
             isDropdownOpen: false,
-            typelist: [5,4,3,2,1],
+            typelist: ['★', '★★', '★★★', '★★★★', '★★★★★'],
             selectedType: null,
             review_comment: "",
             movie: {
@@ -55,28 +60,27 @@ export default {
             return this.user ? this.user.user_no : null;
         },
         selectedTypeText() {
-            return this.selectedType !== null ? `${this.typelist[this.selectedType]}점` : '평점';
+            return this.selectedType !== null ? this.typelist[this.selectedType] : '평점';
         }
     },
     methods: {
         toggleType() {
             this.isDropdownOpen = !this.isDropdownOpen;
         },
-        selectType(index) { // selectType 메서드 정의
+        selectType(index) {
             this.selectedType = index;
-            this.isDropdownOpen = false; // 드롭다운 메뉴를 닫습니다.
+            this.isDropdownOpen = false;
         },
         async movietitle() {
             const ticket_no = this.$route.params.ticket_no;
             const user_no = this.re_user_no;
             console.log(ticket_no, user_no);
-           
+
             try {
-                console.log("Sending ticket_no:", ticket_no); // 콘솔 로그로 확인
-                const response = await axios.post(`http://localhost:3000/user/reviewtitle`, { ticket_no:ticket_no, user_no });
-                // this.movie.movie_title = response.data[0]?.movie_title || '';
+                console.log("Sending ticket_no:", ticket_no);
+                const response = await axios.post(`http://localhost:3000/user/reviewtitle`, { ticket_no, user_no });
                 this.movie = response.data[0];
-                console.log("movie title:", this.movie.movie_title); // movie_title 확인
+                console.log("movie title:", this.movie.movie_title);
             } catch (error) {
                 console.error("영화제목 불러오기 에러 발생", error);
             }
@@ -88,7 +92,7 @@ export default {
                 if (response.data.length > 0) {
                     this.ticket.ticket_no = response.data[0].ticket_no;
                     this.ticket.ticket_re = response.data[0].ticket_re;
-                    this.movietitle();  // 티켓 번호를 설정한 후 영화 제목을 가져옴
+                    this.movietitle();
                 } else {
                     this.$swal('해당 유저의 예매내역이 없습니다.');
                 }
@@ -99,7 +103,7 @@ export default {
         async registt() {
             console.log("review_user_no:", this.re_user_no);
             console.log("review_movie_no:", this.movie.movie_no);
-            console.log("ticket_no:", this.ticket.ticket_no);
+            console.log("ticket_no:", this.$route.params.ticket_no);
             console.log("ticket_re:", this.ticket.ticket_re);
 
             try {
@@ -112,11 +116,11 @@ export default {
                 }
 
                 const response = await axios.post(`http://localhost:3000/user/crereview`, {
-                    review_rate: this.typelist[this.selectedType],
+                    review_rate: this.selectedType + 1,
                     review_comment: this.review_comment,
-                    movie_no: this.movie.movie_no, // 수정된 부분
-                    user_no: this.re_user_no,      // 수정된 부분
-                    ticket_no: this.ticket.ticket_no,  
+                    movie_no: this.movie.movie_no,
+                    user_no: this.re_user_no,
+                    ticket_no: this.$route.params.ticket_no,
                     ticket_re: this.ticket.ticket_re
                 });
 
@@ -129,34 +133,6 @@ export default {
                 this.$swal('리뷰 등록 중 오류가 발생했습니다.');
             }
         },
-        // async registt() {
-
-        //     console.log("review_user_no:", this.re_user_no);
-        //     console.log("review_movie_no:", this.movie.movie_no);
-        //     try {
-        //         if (!this.review_comment) {
-        //             this.$swal('내용을 입력하세요.');
-        //             return;
-        //         } else if (this.selectedType === null) {
-        //             this.$swal('평점이 없습니다.');
-        //             return;
-        //         }
-
-        //         const response = await axios.post(`http://localhost:3000/user/crereview`, {
-        //             review_rate: this.typelist[this.selectedType],
-        //             review_comment: this.review_comment,
-        //             movie_no: this.movie.movie_no, // 수정된 부분
-        //             user_no: this.re_user_no // 수정된 부분
-        //         });
-
-        //         const data = response.data;
-        //         console.log("DATA : ", data);
-        //         this.$swal('리뷰 내용이 등록되었습니다.');
-        //         this.$router.push(`/mypagemain/${this.re_user_no}`);
-        //     } catch (error) {
-        //         console.error("리뷰 등록 중 오류 발생", error);
-        //     }
-        // },
         cancel() {
             this.$router.push(`/mypagemain/${this.user.user_no}`);
         },
@@ -169,7 +145,6 @@ export default {
 </script>
 
 <style scoped>
-/* 스타일은 기존과 동일 */
 h6 {
   text-align: center;
   font-weight: bold;
@@ -178,7 +153,10 @@ h6 {
   width: 95%;
   margin: auto;
 }
-
+.review {
+    width: 80%;
+    margin-left: 175px;
+}
 .review-cont {
     margin: auto;
     width: 80%;
@@ -203,13 +181,15 @@ h6 {
 .dropdown-toggle {
     display: inline-block;
     cursor: pointer;
-    width: 90px;
+    width: 150px;
     height: 35px;
     border-radius: 5px;
     background-color: ivory;
     box-sizing: border-box;
     padding: 0 10px;
     position: relative;
+    color: red; /* 별 색상 */
+    font-size: 20px; /* 별 크기 */
 }
 
 .dropdown-menu {
@@ -219,11 +199,11 @@ h6 {
   margin: 0;
   border: 1px solid #ccc;
   background-color: ivory;
-  width: 90px;
+  width: 150px; /* 버튼과 같은 너비로 설정 */
   box-sizing: border-box;
   position: absolute;
-  top: 100%;
-  left: 0;
+  left: 0; /* 버튼의 왼쪽에 맞추기 */
+  z-index: 1000; /* 다른 요소 위로 표시 */
 }
 
 .dropdown-menu.show {
@@ -234,6 +214,8 @@ h6 {
   padding: 10px;
   cursor: pointer;
   text-align: left;
+  color: red; /* 별 색상 */
+  font-size: 20px; /* 별 크기 */
 }
 
 .dropdown-item:hover {
@@ -242,10 +224,29 @@ h6 {
 
 .title-value {
     flex: 8;
-    height: 35px;
+    height: auto;
     padding: 10px;
     box-sizing: border-box;
-    margin-left: 630px;
+    text-align: center;
+}
+
+.movie-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.ticket-details {
+    font-size: 16px;
+    color: #555;
+    text-align: right;
+
+}
+
+.ticket-date, .ticket-time, .cinema-no {
+    display: block;
+    margin: 5px 0;
 }
 
 .review-comt {
@@ -287,5 +288,10 @@ h6 {
     border-radius: 5px;
     width: 50px;
     height: 30px;
+}
+
+.typelist {
+    color: gold; /* 별 색상 */
+    font-size: 20px; /* 별 크기 */
 }
 </style>

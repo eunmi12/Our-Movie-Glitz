@@ -20,10 +20,12 @@
                 <span class="rev_cnt">{{ rev.ticket_cnt }}명</span>
                 <span class="rev_seat">{{ rev.ticket_seat }}</span>
                 <span class="rev_price">{{ rev.ticket_total_price }}원</span>
-                <button class="cancle" @click="movie(rev.ticket_no)">예매 취소</button>
+                <button class="cancel_btn" @click="cancelReservation(rev.ticket_no)">예매 취소</button>
               </div>
             </div>
-            <button v-if="reservations.length > itemsPerSection" class="more_btn" @click="gotorev">더보기</button>
+            <button v-if="reservations.length > itemsPerSection" class="more_btn" @click="toggleExpand('reservations')">
+              {{ expanded.reservations ? '접기' : '더보기' }}
+            </button>
           </div>
           <p v-else>예매내역이 없습니다</p>
         </div>
@@ -38,7 +40,9 @@
                 <span class="qna_date">{{ qna.qna_date }}</span>
               </div>
             </div>
-            <button v-if="helpcenter.length > itemsPerSection" class="more_btn" @click="gotohelpcenter">더보기</button>
+            <button v-if="helpcenter.length > itemsPerSection" class="more_btn" @click="toggleExpand('helpcenter')">
+              {{ expanded.helpcenter ? '접기' : '더보기' }}
+            </button>
           </div>
           <p v-else>문의내역이 없습니다</p>
         </div>
@@ -55,16 +59,18 @@
               <div class="review_details">
                 <span class="review_comment">{{ reviews.review_comment }}</span>
                 <span class="review_like">좋아요: {{ reviews.review_like }}</span>
-                <span class="review_rate">평점: {{ reviews.review_rate }}</span>
+                <span class="review_rate">평점: <span v-html="renderStars(reviews.review_rate)"></span></span>
               </div>
             </div>
-            <button v-if="review.length > itemsPerSection" class="more_btn" @click="gotoreview">더보기</button>
+            <button v-if="review.length > itemsPerSection" class="more_btn" @click="toggleExpand('review')">
+              {{ expanded.review ? '접기' : '더보기' }}
+            </button>
           </div>
           <p v-else>리뷰내역이 없습니다</p>
         </div>
       </div>
     </div>
-  </div>    
+  </div>
 </template>
 
 <script>
@@ -106,6 +112,14 @@ export default {
     }
   },
   methods: {
+    renderStars(rating) {
+      const fullStar = '★';
+      const emptyStar = '☆';
+      const maxStars = 5;
+      const fullStars = fullStar.repeat(rating);
+      const emptyStars = emptyStar.repeat(maxStars - rating);
+      return fullStars + emptyStars;
+    },
     gotoheldetail(qna_no) {
       this.$router.push({
         path: `/gogaekdetail/${this.user.user_no}`,
@@ -148,7 +162,7 @@ export default {
         console.error("리뷰내역 에러 발생", error);
       }
     },
-    async movie(ticket_no){
+    async cancelReservation(ticket_no){
       Swal.fire({
         title: '정말로 예매 취소 하시겠습니까?',
         icon: 'warning',
@@ -174,6 +188,9 @@ export default {
         }
       });
     },
+    toggleExpand(section) {
+      this.expanded[section] = !this.expanded[section];
+    },
     getPaginated(items, type) {
       const limit = this.expanded[type] ? items.length : this.itemsPerSection;
       return items.slice(0, limit);
@@ -186,7 +203,6 @@ export default {
   }
 }
 </script>
-
 
 <style scoped>
 .container {
@@ -215,8 +231,6 @@ export default {
   border: 1px solid #f0eeda;
   padding: 20px;
   border-radius: 10px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .text1 {
@@ -289,5 +303,18 @@ export default {
   color: white;
   border-radius: 5px;
   padding: 5px 5px 5px 5px;
+}
+.review_rate span {
+  color: red;
+  font-size: 20px;
+}
+.cancel_btn {
+  margin-top: 10px;
+  border: 1px solid pink;
+  background-color: pink;
+  color: rgb(123, 122, 122);
+  height: 30px;
+  width: 80px;
+  border-radius: 5px;
 }
 </style>
