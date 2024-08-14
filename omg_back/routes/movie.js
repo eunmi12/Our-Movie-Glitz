@@ -713,7 +713,7 @@ router.post('/orderPay', (req, res, next) => {
                             console.error('티켓 상태 업뎃오류', error);
                             return res.status(200).json({ message: '결제 성공, but 티켓 상태 업뎃 실패' });
                         }
-                        console.log('티켓 상태 업뎃 결과', results);
+                        // console.log('티켓 상태 업뎃 결과', results);
                 
 
                     // 결제 정보가 성공적으로 저장된 경우, 쿠폰 상태 업데이트

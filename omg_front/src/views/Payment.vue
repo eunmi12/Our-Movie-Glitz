@@ -358,8 +358,8 @@ export default {
                 })
                 .then(() => {
                     this.$swal('영화예매가 완료되었습니다');
-                    // window.location.href = "http://localhost:8081/";
-                    this.$router.push('/');
+                    window.location.href = "http://localhost:8081/";
+                    // this.$router.push('/');
                 })
             }
         })
@@ -411,8 +411,18 @@ export default {
                         // console.log('결과요결과', results);
                         if (results.status === 200) {
                             // 결제 정보 전송 성공하면 메인페이지로 이동
-                            this.$swal ('예매완료. 30분 이내에 입금하지 않을시 예매 취소됨.');
-                            this.$router.push({ name: 'MainPage' });
+                            this.$swal.fire({
+                                title: '예매완료',
+                                text: '30분 이내에 입금하지 않을 시 예매 취소됨',
+                                icon: 'success',
+                                timer: 3000, // 3초동안 표시
+                                timerProgressBar: true, // 타이머 진행상태 표시
+                                willClose: () => {
+                                    // 타이머가 끝나면 실행되는 콜백 함수
+                                    // this.$router.push('/');
+                                    window.location.href = "http://localhost:8081/"; // 해결했으나 찝찝,,
+                                }
+                            })
                         } else {
                             this.$swal('다시 시도해주세요.');
                         }
