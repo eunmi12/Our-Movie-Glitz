@@ -23,9 +23,12 @@
                     <h3>할인쿠폰</h3>
                     <span class="discount-coupon">할인쿠폰 적용</span>
                     <select id="select-coupon" v-model="selectedCoupon" @change="applyCoupon">
+                        <!-- 쿠폰 없을 때 -->
+                         <option v-if="coupons.length === 0" disabled>사용 가능한 쿠폰이 없습니다.</option>
                         <option v-for="coupon in coupons" :key="coupon" :value="coupon.uc_coupon_no" >{{ getCouponLabel(coupon.uc_coupon_no) }}</option>
                         <!-- 반복문에서 coupons에 있는 것을 coupon으로 받았으므로 coupon.~~ 맞음 -->
                     </select>
+                    <button class="cancleCoupon" v-if="selectedCoupon" @click="cancleCoupon">쿠폰 취소</button>
                 </div>
                 <div class="price">
                     <h3>최종 결제금액</h3>
@@ -201,6 +204,28 @@ export default {
                 this.$swal('쿠폰 적용 중 오류 발생');
             }
         },
+        async cancleCoupon() {
+            try {
+                // 원래 금액으로 복구
+                this.finalPrice = this.ticket.ticket_total_price;
+
+                const response = await axios.post(`http://localhost:3000/movie/cancleCoupon`, {
+                    couponId: this.selectedCoupon,
+                    ticketId: this.ticket.ticket_user_no
+                });
+
+                if (response.status === 200) {
+                    this.selectedCoupon = null; // 선택된 쿠폰 초기화
+                    this.$swal('쿠폰이 취소되었습니다.');
+                } else {
+                    this.$swal('쿠폰 취소에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('쿠폰 취소 오류'. error);
+                this.$swal('쿠폰 취소 중 오류 발생');
+            }
+        },
+
         calculateDiscount(couponNo) {
             // 쿠폰 번호에 따른 할인 금액을 반환하는 메서드
             // const couponDiscounts = {
@@ -554,5 +579,11 @@ export default {
 .account-info {
     font-size: x-small;
     color: rgb(149, 147, 147);
+}
+
+.cancleCoupon {
+    padding: 2px 9px;
+    background-color: #eaebcc;
+    margin-left: 30px;
 }
 </style>
