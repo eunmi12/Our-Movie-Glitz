@@ -13,7 +13,7 @@
               </div>
               <div class="coupon_details">
                 <div class="img_box">
-                  <img src="../images/coupon.png" class="coupon_img" alt="쿠폰 이미지">
+                  <img :src="getImagePath2(cp.coupon_img1)" class="coupon_img" alt="쿠폰 이미지">
                 </div>
                 <div class="info">
                   <span class="coupon_sale">{{ cp.coupon_sale }}원 할인</span>
@@ -86,7 +86,11 @@ export default {
       if (page > 0 && page <= this.totalPages) {
         this.currentPage = page;
       }
-    }
+    },
+    getImagePath2(imageName) {
+      return require(`../../../omg_back/uploads/coupon/${imageName}`);
+      // D:\이젠\OMG\Our-Moive-Glitz\omg_back\uploads\event
+    },
   },
   mounted() {
     this.usercoupon();
@@ -174,7 +178,7 @@ export default {
 }
 
 .coupon_img {
-  width: 250px;
+  width: 300px;
   height: 250px;
   object-fit: cover;
 }
