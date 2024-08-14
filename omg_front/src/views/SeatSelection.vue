@@ -266,7 +266,8 @@ export default {
           .then(results => {
             console.log(('티켓 넘버 호출', results));
             this.selectedSeats = [];
-            const ticket_no = results.data[0].ticket_no // 여기서 데이터를 꺼내옴
+            const ticket_no = results.data[results.data.length-1].ticket_no // 여기서 데이터를 꺼내옴 (payment로 보냄)
+            // 위의 티켓넘버에서 results.data[0].ticket_no이면 같은 내용을 갖고 있는 티켓넘의 첫번째 값을 가져오므로, 배열의 마지막 값(현재 티켓넘)을 가져오려면 [0] 아니고 저렇게 써야됨
             console.log('tickt_no:', ticket_no);
             window.location.href =`http://localhost:8081/payment/${ticket_no}`
             // this.$router.push({

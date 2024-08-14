@@ -84,6 +84,7 @@
             // today: new Date().toISOString().split('T')[0],
             // tomorrow: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0],
             // currentHour: new Date().getHours(), // 현재 시간 (24시간제)
+            scrollHandler: null, // 스크롤 핸들러
         };
     },
   
@@ -121,8 +122,8 @@
   
     methods: {
         fetchMovies() {
-            if (this.loading) return;
-            this.loading = true;
+            if (this.loading) return; // 요청 중이면 반환
+            this.loading = true; // 로딩 시작
             axios.get(`http://localhost:3000/movie/movies`, {
                 params: {
                     limit: this.limit,
@@ -132,10 +133,11 @@
             .then(results => {
                 this.movies = [...this.movies, ...results.data];
                 this.offset += this.limit;
-                this.loading = false;
+                
+                this.loading = false; // 로딩 종료
             }).catch(error => {
                 console.error('영화를 불러오는 중 오류가 발생했습니다.', error);
-                this.loading = false;
+                this.loading = false; // 오류 발생시에도 로딩 종료
             });
         },
         handleScroll(event) {
@@ -151,18 +153,20 @@
             // if (container.scrollHeight - container.scrollTop <= container.clientHeight + 10) {
             //     this.fetchMovies();
             //     this.fetchAvailableDates();
-            if (this.loading || !this.selectedMovie) return;
+            // if (this.loading || !this.selectedMovie) return;
 
             const container = event.target;
+
+            if (this.loading) return; // 요청 중이면 반환
+            // 스크롤이 끝에 가까워졌을 때만 추가 데이터를 로드
             if(container.scrollHeight - container.scrollTop <= container.clientHeight + 10) {
-                this.fetchMovies();
+                // this.fetchMovies();
             }
         },
         selectMovie(movie) {
             this.selectedMovie = movie;
             this.movie_no = movie.movie_no;
-            console.log('Fetching cinemas for movie no:', this.movie_no);
-
+            // console.log('Fetching cinemas for movie no:', this.movie_no);
 
             this.fetchCinemas();
             this.resetSelections(['selectedCinema', 'selectedDate', 'selectedTime']);
@@ -170,9 +174,9 @@
             this.selectedDate = null;
             this.selectedTime = null;
 
-            console.log('Selected cinema after reset:', this.selectedCinema);
-            console.log('Selected date after reset:', this.selectedDate);
-            console.log('Selected time after reset:', this.selectedTime);
+            // console.log('Selected cinema after reset:', this.selectedCinema);
+            // console.log('Selected date after reset:', this.selectedDate);
+            // console.log('Selected time after reset:', this.selectedTime);
             // this.currentStep = 2;
             },
         fetchCinemas() {
@@ -546,4 +550,5 @@
     cursor: pointer;
   } */
   
+
   </style>
