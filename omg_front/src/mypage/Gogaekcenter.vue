@@ -164,7 +164,7 @@ export default {
 .text1 {
   text-align: left;
   font-weight: bold;
-  border-bottom: 1px solid rgb(179, 177, 177);
+  /* border-bottom: 1px solid rgb(179, 177, 177); */
   padding-bottom: 10px;
   margin-bottom: 10px;
 }
@@ -239,8 +239,11 @@ export default {
 }
 
 .bt {
+  width:100px;
   margin-left: 30px;
-  border: 1px solid rgb(160, 160, 160);
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 3px;
   background-color: rgb(255, 255, 255);
   color: rgb(111, 111, 111);
 }
