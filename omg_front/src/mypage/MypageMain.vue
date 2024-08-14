@@ -170,7 +170,7 @@ export default {
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
         confirmButtonText: '예매취소',
-        cancelButtonText: '취소하기'
+        cancelButtonText: '닫기'
       }).then(async (result) => {
         if (result.isConfirmed) {
           const user_no = this.user.user_no; // user_no를 this.user에서 가져옴
