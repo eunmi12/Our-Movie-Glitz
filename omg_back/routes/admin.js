@@ -53,7 +53,7 @@ router.get('/teen',(req,res)=>{
                 console.log('예매현황을 불러오던중 오류발생');
                 return res.status(500).json({ error: err });
             } 
-            console.log('results : ',results);
+            // console.log('results : ',results);
             
             return res.json(results);
 
@@ -72,7 +72,7 @@ router.get('/twenties',(req,res)=>{
                 console.log('예매현황을 불러오던중 오류발생');
                 return res.status(500).json({ error: err });
             } 
-            console.log('results : ',results);
+            // console.log('results : ',results);
             
             return res.json(results);
 
@@ -91,7 +91,7 @@ router.get('/thirties',(req,res)=>{
                 console.log('예매현황을 불러오던중 오류발생');
                 return res.status(500).json({ error: err });
             } 
-            console.log('results : ',results);
+            // console.log('results : ',results);
             
             return res.json(results);
 
@@ -109,7 +109,7 @@ router.get('/forties',(req,res)=>{
                 console.log('예매현황을 불러오던중 오류발생');
                 return res.status(500).json({ error: err });
             } 
-            console.log('results : ',results);
+            // console.log('results : ',results);
             
             return res.json(results);
 
@@ -127,7 +127,7 @@ router.get('/fifties',(req,res)=>{
                 console.log('예매현황을 불러오던중 오류발생');
                 return res.status(500).json({ error: err });
             } 
-            console.log('results : ',results);
+            // console.log('results : ',results);
             
             return res.json(results);
 
@@ -145,7 +145,7 @@ router.get('/sixties',(req,res)=>{
                 console.log('예매현황을 불러오던중 오류발생');
                 return res.status(500).json({ error: err });
             } 
-            console.log('results : ',results);
+            // console.log('results : ',results);
             
             return res.json(results);
 
@@ -188,7 +188,7 @@ router.post('/incrementnoticecnt', (req, res) => {
 //공지사항페이지
 router.get('/notice/:notice_no' , (req , res ) => {
     const notice_no = req.params.notice_no;
-    console.log("notice_no ---->", notice_no);
+    // console.log("notice_no ---->", notice_no);
     db.query(`select notice_no,notice_title,notice_date,notice_coment,notice_cnt from notice where notice_no=?;`, [notice_no], (err, results) => {
         if(err) {
             console.log('공지사항을 불러올 수 없습니다.');
@@ -215,7 +215,7 @@ router.post('/registqna',(req,res) =>{
     const qna_comment = req.body.qna_comment;
     const qna_type = req.body.qna_type;
     const qna_user_no = req.body.qna_user_no;    
-    console.log('qna_title >>',qna_title,"qna_comment >>",qna_comment,"qna_type >>",qna_type,"qna_user_no >>",qna_user_no);
+    // console.log('qna_title >>',qna_title,"qna_comment >>",qna_comment,"qna_type >>",qna_type,"qna_user_no >>",qna_user_no);
     db.query(`insert into qna (qna_title,qna_comment,qna_type,qna_user_no) values (?,?,?,?)`,[qna_title,qna_comment,qna_type,qna_user_no], (err, results) =>{
         if(err){
             console.log("1:1문의 등록 중 오류 발생");
@@ -239,7 +239,7 @@ router.post('/qnalist', (req, res) => {
 //관리자 1:1문의 답변 삭제
 router.post('/deleteqna' , (req, res) => {
     const qna_no = req.body.qna_no;
-    console.log(qna_no);
+    // console.log(qna_no);
     db.query(`update qna set qna_answer = null where qna_no = ?;`, [qna_no], function(err, results){
         if(err){
             console.log('답변 삭제 중 오류 발생');
@@ -252,7 +252,7 @@ router.post('/deleteqna' , (req, res) => {
 //관리자 1:1문의 답변 시 문의내용
 router.post('/qna/:qna_no', (req, res) => {
     const qna_no = req.params.qna_no;
-    console.log(qna_no);
+    // console.log(qna_no);
     db.query(`select q.qna_no,q.qna_type,q.qna_title,q.qna_comment,u.user_name,q.qna_date from qna q join user u on q.qna_user_no = u.user_no where qna_no=?`, [qna_no], (err, results) => {
         if(err){
             console.log('1:1문의 정보를 불러올 수 없습니다.');
@@ -266,7 +266,7 @@ router.post('/qna/:qna_no', (req, res) => {
 router.post('/registqnaanswer',(req,res) =>{
     const qna_answer = req.body.qna_answer; 
     const qna_no = req.body.qna_no; 
-    console.log('qna_answer >>',qna_answer,'qna_no >>',qna_no);
+    // console.log('qna_answer >>',qna_answer,'qna_no >>',qna_no);
     db.query(`update qna set qna_answer = ? where qna_no = ?`,[qna_answer,qna_no], (err, results) =>{
         if(err){
             console.log("1:1문의 답변 등록 중 오류 발생");
@@ -290,7 +290,7 @@ router.post('/review', (req, res) => {
 //관리자 관람평 삭제
 router.post('/deletereview' , (req, res) => {
     const review_no = req.body.review_no;
-    console.log('review_no >>',review_no);
+    // console.log('review_no >>',review_no);
     db.query(`delete from review where review_no = ?;`, [review_no], function(err, results){
         if(err){
             console.log('관람평 삭제 중 오류 발생');
@@ -322,7 +322,7 @@ router.post('/aupdate',(req,res) =>{
     const faq_a = req.body.faq_a;
     const faq_no = req.body.faq_no;
 
-    console.log('Received data:', faq_a, faq_no);
+    // console.log('Received data:', faq_a, faq_no);
     db.query(`update faq set faq_a = ? where faq_no = ?`,[faq_a,faq_no], (error, result) =>{
         if(error){
             console.log("FAQ 수정 중 오류 발생");
@@ -369,7 +369,7 @@ router.post('/deletefaq',(req,res) =>{
 router.post('/createfaq',(req,res) =>{
     const faq_a = req.body.faq_a;
     const faq_q = req.body.faq_q;
-    console.log('faq_a:',faq_a,"faq_q:",faq_q);
+    // console.log('faq_a:',faq_a,"faq_q:",faq_q);
     db.query(`insert into faq (faq_q,faq_a) values (?,?)`,[faq_q,faq_a], (error, result) =>{
         if(error){
             console.log("FAQ 등록 중 오류 발생");
@@ -391,7 +391,7 @@ router.post('/cinemalist',(req,res)=>{
             return res.status(500).json({ err:'error'});
         }
         res.json(result);
-        console.log("data",result);
+        // console.log("data",result);
     });
 });
 
@@ -404,7 +404,7 @@ router.post('/scmovielist',(req,res)=>{
             return res.status(500).json({ err: 'error'});
         }
         res.json(result);
-        console.log("moviedata",result);
+        // console.log("moviedata",result);
     });
 });
 //상영할 상영관 리스트 불러오기
@@ -454,7 +454,7 @@ router.post('/insertnotice', (req,res)=>{
     const notice_title = req.body.notice_title;
     const notice_date = req.body.notice_date;
     const notice_comment = req.body.notice_comment;
-    console.log("notice_title:",notice_title,"notice_date",notice_date,"notice_comment",notice_comment);
+    // console.log("notice_title:",notice_title,"notice_date",notice_date,"notice_comment",notice_comment);
 
     db.query(`insert into notice (notice_title,notice_date,notice_coment) values (?,?,?)`,
         [notice_title,notice_date,notice_comment], (error, result) => {
@@ -598,13 +598,13 @@ router.post('/createcoupon', (req,res) => {
     const coupon_comment = req.body.coupon_comment;
     const coupon_able = req.body.coupon_able;
 
-    console.log("coupon_title:",coupon_title);
-    console.log("coupon_sale:",coupon_sale);
-    console.log("coupon_img1:",coupon_img1);
-    console.log("coupon_startdate:",coupon_startdate);
-    console.log("coupon_enddate:",coupon_enddate);
-    console.log("coupon_comment:",coupon_comment);
-    console.log("coupon_able",coupon_able);
+    // console.log("coupon_title:",coupon_title);
+    // console.log("coupon_sale:",coupon_sale);
+    // console.log("coupon_img1:",coupon_img1);
+    // console.log("coupon_startdate:",coupon_startdate);
+    // console.log("coupon_enddate:",coupon_enddate);
+    // console.log("coupon_comment:",coupon_comment);
+    // console.log("coupon_able",coupon_able);
     
 
     //img 빼고 정보 먼저 삽입중
@@ -675,7 +675,7 @@ router.get('/user/seats', (req, res) => {
 //재영작성
 router.get('/event/:event_no' , (req , res ) => {
     const event_no = req.params.event_no;
-    console.log("event_no 나오냐", event_no);
+    // console.log("event_no 나오냐", event_no);
     db.query(`select event_no,event_title,event_cnt,event_img2,date_format(event_startdate, '%y-%m-%d') as event_startdate, date_format(event_enddate, '%y-%m-%d') as event_enddate from event where event_no=?;`, [event_no], (err, results) => {
         if(err) {
             console.log('이벤트를 불러올 수 없습니다.');
@@ -693,11 +693,11 @@ router.post('/createevent', (req,res) => {
     const event_enddate = req.body.event_enddate;
 
 
-    console.log("event_title:",event_title);
-    console.log("event_img1:",event_img1);
-    console.log("event_img2:",event_img2);
-    console.log("event_startdate:",event_startdate);
-    console.log("event_enddate:",event_enddate);
+    // console.log("event_title:",event_title);
+    // console.log("event_img1:",event_img1);
+    // console.log("event_img2:",event_img2);
+    // console.log("event_startdate:",event_startdate);
+    // console.log("event_enddate:",event_enddate);
 
     //img 빼고 정보 먼저 삽입중
     db.query(`insert into event (event_title,event_startdate,event_enddate,event_img1, event_img2)

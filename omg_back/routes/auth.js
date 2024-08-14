@@ -48,7 +48,7 @@ router.post("/id_check", async (req, res) => {
 
 // 회원가입-------------------------------------
 router.post("/join", async (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
 
     const user = {
         user_id: req.body.user_id,
@@ -58,7 +58,7 @@ router.post("/join", async (req, res) => {
         user_gender: req.body.user_gender,
         user_age: req.body.user_age,
     };
-    console.log("user: ---->",user);
+    // console.log("user: ---->",user);
     db.query("insert into user (user_id, user_pwd, user_age, user_name, user_gender, user_phone) values(?,?,?,?,?,?)",
         [user.user_id, user.user_pwd, user.user_age, user.user_name, user.user_gender, user.user_phone],
         (err, results, fields) => {
