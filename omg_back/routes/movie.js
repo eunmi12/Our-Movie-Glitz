@@ -755,9 +755,19 @@ router.post('/applyCoupon', (req, res, next) => {
     const { couponId, ticketId } = req.body;
 
     // 쿠폰 적용 로직
-    db.query(`update user_coupon set uc_coupon_able = 1 where uc_coupon_no = ? and uc_user_no = ?`, [couponId, ticketId], (err, results) => {
+    db.query(`update user_coupon set uc_coupon_able = 1 where uc_coupon_no = ? and uc_user_no = ?`, [req.body.couponId, req.body.ticketId], (err, results) => {
         if(err) {
             return res.status(500).json({ message: '쿠폰 적용 실패' });
+        }
+        res.status(200).json(results);
+    });
+});
+// 결제 - 쿠폰취소
+router.post('/cancleCoupon', (req, res) => {
+    const { couponId, ticketId } = req.body;
+    db.query(`update user_coupon set uc_coupon_able = 1 where uc_coupon_no = ? and uc_user_no = ?`, [req.body.couponId, req.body.ticketId], (error, results) => {
+        if(error) {
+            return res.status(500).json({ message: '쿠폰 취소 실패' });
         }
         res.status(200).json(results);
     });
