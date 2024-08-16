@@ -120,7 +120,7 @@ export default {
                     review_comment: this.review_comment,
                     movie_no: this.movie.movie_no,
                     user_no: this.re_user_no,
-                    ticket_no: this.$route.params.ticket_no,
+                    ticket_no: parseInt(this.$route.params.ticket_no),
                     ticket_re: this.ticket.ticket_re
                 });
 
@@ -138,7 +138,7 @@ export default {
         },
     },
     mounted() {
-        this.movietitle();
+        // this.movietitle();
         this.ticketno();
     }
 }

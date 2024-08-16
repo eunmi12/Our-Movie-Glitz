@@ -438,14 +438,14 @@ router.post('/crereview', (request, response) =>{
     const re_movie_no = request.body.movie_no;
     const ticket_no = request.body.ticket_no;
     const ticket_re = request.body.ticket_re;
-    const re_ticket_no = request.body.ticket_no;
-    console.log("re_ticket_no",re_ticket_no);
+    // const re_ticket_no = request.body.ticket_no;
+    // console.log("re_ticket_no",re_ticket_no);
     
     console.log('내용 >>', review_comment,'평점 >>',review_rate,'유저넘버 >>',re_user_no,'영화넘버 >>',re_movie_no,'티켓넘버 >>',ticket_no,'리뷰여부',ticket_re);
     
 
     const insertReviewQuery = `INSERT INTO review (review_rate, review_comment, re_movie_no, re_user_no, re_ticket_no) VALUES (?, ?, ?, ?, ?);`;
-    db.query(insertReviewQuery, [review_rate, review_comment, re_movie_no, re_user_no, re_ticket_no], (error, result) => {
+    db.query(insertReviewQuery, [review_rate, review_comment, re_movie_no, re_user_no, ticket_no], (error, result) => {
         if (error) {
             console.error('리뷰 작성 오류:', error);
             return response.status(500).json({ error: '리뷰 작성 오류' });
