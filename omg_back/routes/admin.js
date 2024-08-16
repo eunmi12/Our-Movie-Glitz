@@ -60,6 +60,25 @@ router.get('/teen',(req,res)=>{
         })
 })
 
+router.get('/teenGender',(req,res)=>{
+    db.query(`SELECT user_gender, COUNT(*) AS gender_count
+                FROM ticket t
+                    JOIN movie m ON ticket_movie_no = movie_no
+                    JOIN user u ON ticket_user_no = user_no
+                WHERE user_age BETWEEN '2005-01-01'and'2015-12-31'
+                GROUP BY user_gender;`,
+        (err,results)=>{
+            if(err) {
+                console.log('예매현황을 불러오던중 오류발생');
+                return res.status(500).json({ error: err });
+            } 
+            // console.log('results : ',results);
+            
+            return res.json(results);
+
+        })
+})
+
 router.get('/twenties',(req,res)=>{
     db.query(`select movie_title ,count(movie_title) as cnt
             from ticket t
@@ -67,6 +86,25 @@ router.get('/twenties',(req,res)=>{
                 join user u on t.ticket_user_no = u.user_no
             where user_age between '1995-01-01'and'2004-12-31'
             group by movie_title;`,
+        (err,results)=>{
+            if(err) {
+                console.log('예매현황을 불러오던중 오류발생');
+                return res.status(500).json({ error: err });
+            } 
+            // console.log('results : ',results);
+            
+            return res.json(results);
+
+        })
+})
+
+router.get('/twentiesGender',(req,res)=>{
+    db.query(`SELECT user_gender, COUNT(*) AS gender_count
+                FROM ticket t
+                    JOIN movie m ON ticket_movie_no = movie_no
+                    JOIN user u ON ticket_user_no = user_no
+                WHERE user_age BETWEEN '1995-01-01'and'2004-12-31'
+                GROUP BY user_gender;`,
         (err,results)=>{
             if(err) {
                 console.log('예매현황을 불러오던중 오류발생');
@@ -97,6 +135,25 @@ router.get('/thirties',(req,res)=>{
 
         })
 })
+
+router.get('/thirtiesGender',(req,res)=>{
+    db.query(`SELECT user_gender, COUNT(*) AS gender_count
+                FROM ticket t
+                    JOIN movie m ON ticket_movie_no = movie_no
+                    JOIN user u ON ticket_user_no = user_no
+                WHERE user_age BETWEEN '1985-01-01'and'1995-12-31'
+                GROUP BY user_gender;`,
+        (err,results)=>{
+            if(err) {
+                console.log('예매현황을 불러오던중 오류발생');
+                return res.status(500).json({ error: err });
+            } 
+            // console.log('results : ',results);
+            
+            return res.json(results);
+
+        })
+})
 router.get('/forties',(req,res)=>{
     db.query(`select movie_title ,count(movie_title) as cnt
             from ticket t
@@ -115,6 +172,24 @@ router.get('/forties',(req,res)=>{
 
         })
 })
+router.get('/fortiesGender',(req,res)=>{
+    db.query(`SELECT user_gender, COUNT(*) AS gender_count
+                FROM ticket t
+                    JOIN movie m ON ticket_movie_no = movie_no
+                    JOIN user u ON ticket_user_no = user_no
+                WHERE user_age BETWEEN '1975-01-01' and '1985-12-31'
+                GROUP BY user_gender;`,
+        (err,results)=>{
+            if(err) {
+                console.log('예매현황을 불러오던중 오류발생');
+                return res.status(500).json({ error: err });
+            } 
+            console.log('results : ',results);
+            
+            return res.json(results);
+
+        })
+})
 router.get('/fifties',(req,res)=>{
     db.query(`select movie_title ,count(movie_title) as cnt
             from ticket t
@@ -122,6 +197,24 @@ router.get('/fifties',(req,res)=>{
                 join user u on t.ticket_user_no = u.user_no
             where user_age between '1965-01-01'and'1975-12-31'
             group by movie_title;`,
+        (err,results)=>{
+            if(err) {
+                console.log('예매현황을 불러오던중 오류발생');
+                return res.status(500).json({ error: err });
+            } 
+            // console.log('results : ',results);
+            
+            return res.json(results);
+
+        })
+})
+router.get('/fiftiesGender',(req,res)=>{
+    db.query(`SELECT user_gender, COUNT(*) AS gender_count
+                FROM ticket t
+                    JOIN movie m ON ticket_movie_no = movie_no
+                    JOIN user u ON ticket_user_no = user_no
+                WHERE user_age BETWEEN '1965-01-01'and'1975-12-31'
+                GROUP BY user_gender;`,
         (err,results)=>{
             if(err) {
                 console.log('예매현황을 불러오던중 오류발생');
@@ -151,6 +244,25 @@ router.get('/sixties',(req,res)=>{
 
         })
 })
+router.get('/sixtiesGender',(req,res)=>{
+    db.query(`SELECT user_gender, COUNT(*) AS gender_count
+                FROM ticket t
+                    JOIN movie m ON ticket_movie_no = movie_no
+                    JOIN user u ON ticket_user_no = user_no
+                WHERE user_age BETWEEN '1955-01-01'and'1965-12-31'
+                GROUP BY user_gender;`,
+        (err,results)=>{
+            if(err) {
+                console.log('예매현황을 불러오던중 오류발생');
+                return res.status(500).json({ error: err });
+            } 
+            // console.log('results : ',results);
+            
+            return res.json(results);
+
+        })
+})
+
 
 
 //승호작성 완
