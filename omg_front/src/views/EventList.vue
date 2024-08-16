@@ -127,9 +127,11 @@ export default {
 }
 .event_content li:nth-child(5n+1){
     margin: 10px 0 13px 0;
+        /* margin: 1% 0 2% ; */
 
 }
 .event_img img{
+    display: block;
     width:256px;
     height:170px;
 }
@@ -140,7 +142,8 @@ export default {
     height:100%;
 }
 .event_content li{
-    margin: 10px 0 13px 60px;
+    /* margin: 1% 0 2% 3%; */
+    margin: 10px 0 13px 40px;
     background: #fff;
 }
 .event_text{
