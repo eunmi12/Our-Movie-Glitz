@@ -695,7 +695,7 @@ router.post('/ticketNo', (req, res) => {
 // })
 router.post('/orderPay', (req, res, next) => {
     const order = req.body;
-    console.log(order);
+    console.log('결제정보오나요', order);
 
     // 결제 정보 저장
     db.query(`insert into payment
