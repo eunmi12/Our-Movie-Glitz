@@ -484,17 +484,8 @@ router.post('/saveinfo', (req, res) => {
             return res.status(500).json({ error: '저장 error' });
         }
         return res.status(200).json({ message: '저장이 완료되었습니다.' });
-    })
-})
-// router.post('/selectseats', (req, res) => {
-//     db.query(`select * from seat where seat_cinema_no = ?;`, (error, results) => {
-//         if (error) {
-//             console.log('좌석 조회 에러');
-//             return res.status(500).json({ error: '좌석 조회 에러' });
-//         }
-//             return res.json(results);
-//      });
-// });
+    });
+});
 router.post('/seats', (req, res) => {
     // console.log('뭐가문제', req.body);
     const { movie_no, cinema_no, date, time } = req.body;
@@ -515,58 +506,6 @@ router.post('/seats', (req, res) => {
         return res.status(200).json(results);
     });
 });
-// router.post('/seats', (req, res) => {
-//     // console.log(req.body);
-//     const { movie_no, cinema_no, date, time } = req.body;
-
-//     if(!movie_no || !cinema_no || !date || !time) {
-//         console.error('요청값을 찾을 수 없음');
-//         res.status(400).json({ message: '요청값을 찾을 수 없음' });
-//         return;
-//     }
-//     const query = `select s.seat_name, s.seat_reserve
-//                     from screen sc
-//                     join movie m on m.cinema_no = s.seat_cinema_no
-//                     join seat s on s.seat_cinema_no = sc.sc_cinema_no
-//                     where m.movie_no = ? and s.seat_cinema_no = ? and m.date = ? and m.time = ?`;
-//     db.query(query, [movie_no, cinema_no, date, time], (error, results) => {
-//         if (error) {
-//             console.error('좌석 가져오기 에러', error);
-//             res.status(500).json({ message: error.message });
-//         } else {
-//             res.json(results);
-//         }
-//     });
-// });
-// 좌석 예약 상태 업데이트
-// router.post('/reserve', (req, res) => {
-//         const { bookingDetails } = req.body;
-//         console.log('외않되', req.body);
-//         const seatNumbersString = bookingDetails.join(',');
-//         // const placeholders = seatNumbersS.join(',')
-//         // console.log('플홀', placeholders);
-//         const query = `UPDATE seat SET seat_reserve = 0 WHERE seat_no = ?`;
-
-//         db.query(query, [seatNumbersString], (error, results) => {
-//             console.log(seatNumbersString);
-//             if(error) {
-//                 console.error('좌석 선택 에러', error);
-//                 res.status(500).json({ message: error.message });
-//             } else if (results.affectedRows > 0) {
-//                 const selectQuery = `select seat_name from seat`;
-//                 db.query(selectQuery, [seatNumbersString], (selectError, selectResults) => {
-//                     if (selectError) {
-//                         console.error('좌석 상태 업데이트 후 조회 에러', selectError);
-//                         res.status(500).json({ message: selectError.message });
-//                     } else {
-//                         res.json(selectResults);
-//                     }
-//                 });
-//             } else {
-//                 res.status(404).json({ message: '좌석을 찾을 수 없습니다.' });
-//             }
-//     });
-// });
 // 영화 예매 - 예매 완료
 router.post('/book', (req, res) => {
     const { date, time, seatName, movie_no, cinema_no, user_no, total_price, seat_no } = req.body;
@@ -667,32 +606,6 @@ router.post('/ticketNo', (req, res) => {
     });
 });
 // 결제 - 이니시스
-// router.post('/orderPay', async(req, res) => {
-//     const { ticket_no, movie_title, ticket_cnt, ticket_total_price, how, user_name, user_phone } = req.body;
-
-//     try {
-//         // 이니시스 결제 요청을 위한 데이터 준비
-//         const paymentData = {
-//             // 이니시스 결제 API에 필요한 데이터 (상세는 이니시스 문서 참조)
-//             // 예 : amount, order_id, return_url 등
-//             // amount: calculateAmount(), // 금액 계산 함수
-//             order_id: ticket_no,
-//             return_url: `http://localhost:8081/`, // 결제 후 리다이렉트 할 URL
-//             pay_method: "card",
-//             name: movie_title,
-//             payment_cnt: ticket_cnt,
-//             amount: ticket_total_price,
-            
-//         };
-//         // 이니시스 결제 API 호출
-//         const response = await axios.post(`http://api.inicis.com/payments`, paymentData);
-//         // 결제 페이지 URL 반환
-//         res.json({ paymentUrl: response.data.paymentUrl });
-//     } catch (error) {
-//         console.error('이니시스 결제 API 오류:', error);
-//         res.status(500).send('결제 요청 오류');
-//     } return res.status(200).json(response); // ?
-// })
 router.post('/orderPay', (req, res, next) => {
     const order = req.body;
     console.log('결제정보오나요', order);
