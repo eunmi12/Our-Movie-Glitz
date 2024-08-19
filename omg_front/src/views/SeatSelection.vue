@@ -76,15 +76,6 @@ export default {
   }, // store에 저장된 값을 불러옴
 
   methods: {
-      // selectSeat() {
-      //     axios ({
-      //         url: `http://localhost:3000/movie/selectseats`,
-      //         method: "POST"
-      //     }).then(results => {
-      //         console.error({ error: '좌석 목록 조회 에러' });
-      //         return this.seat = results.data;
-      //     })
-      // },
       formatDate(date) {
           const d = new Date(date);
           return d.toISOString().split('T')[0];
@@ -146,17 +137,6 @@ export default {
                   this.selectedSeats.push(seat);
               }
           }
-          // const seatNumbers = this.selectedSeats.map(seat => seat.seat_name);
-          // const seatNo = this.selectedSeats.map(seat => seat.seat_no);
-          // const bookingDetails = {
-          //     seatNumbers: seatNumbers,
-          //     seatNo: seatNo
-          // };
-          // axios.post (`http://localhost:3000/movie/reserve`, bookingDetails)
-          // .then(results => {
-          //     alert('좌석 예약이 완료되었습니다.');
-          //     this.selectedSeats = [];
-          // })
       },
       selectNumSeats(num) {
           this.numSeats = num;

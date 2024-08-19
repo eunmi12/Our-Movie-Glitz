@@ -232,7 +232,7 @@ export default {
             //     1: 5000, // 신규가입 쿠폰 할인 금액
             //     2: 15000 // 등업 쿠폰 할인 금액
             // };
-            // return couponDiscounts[couponNo] || '알 수 없는 쿠폰';
+            // return couponDiscounts[couponNo] || '알 수 없는 쿠폰';   
             if (couponNo === 1) {
                 return 5000; // 신규가입 쿠폰 할인 금액
             } else if (couponNo >= 2 && couponNo <= 23) {
@@ -310,7 +310,6 @@ export default {
 
             let amount = this.ticket.ticket_total_price;
             let name = this.ticket.movie_title;
-            // let count;
             // console.log(amount);
             // console.log(name);
             // count = this.ticket.ticket_cnt
